@@ -112,8 +112,6 @@ En el archivo `api/Hospital.Api/appsettings.json` se define la cadena de conexi�
 }
 ```
 
-Si tus compañeros usan otra instancia de SQL Server, deben modificar `Server=` según su instalación local.
-
 ---
 
 ---
