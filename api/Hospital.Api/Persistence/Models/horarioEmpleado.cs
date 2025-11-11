@@ -1,28 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hospital.Api.Persistence.Models;
 
 [Table("horarioEmpleado")]
-[Index("idUsuario", "diaSemana", Name = "UQ_horarioEmpleado", IsUnique = true)]
-public partial class horarioEmpleado
+[Index(nameof(IdUsuario), nameof(DiaSemana), Name = "UQ_horarioEmpleado", IsUnique = true)]
+public partial class HorarioEmpleado
 {
     [Key]
-    public int idHorarioE { get; set; }
+    [Column("idHorarioE")]
+    public int IdHorarioE { get; set; }
 
+    [Required]
     [StringLength(10)]
-    public string diaSemana { get; set; } = null!;
+    [Column("diaSemana")]
+    public string DiaSemana { get; set; } = null!; // ej. "lunes"
 
-    public TimeOnly horaInicio { get; set; }
+    [Column("horaInicio")]
+    public TimeOnly HoraInicio { get; set; }
 
-    public TimeOnly horaFin { get; set; }
+    [Column("horaFin")]
+    public TimeOnly HoraFin { get; set; }
 
-    public int idUsuario { get; set; }
+    [Column("idUsuario")]
+    public int IdUsuario { get; set; }
 
-    [ForeignKey("idUsuario")]
-    [InverseProperty("horarioEmpleados")]
-    public virtual empleado idUsuarioNavigation { get; set; } = null!;
+    [ForeignKey(nameof(IdUsuario))]
+    [InverseProperty(nameof(Empleado.HorarioEmpleados))]
+    public virtual Empleado Usuario { get; set; } = null!;
 }
