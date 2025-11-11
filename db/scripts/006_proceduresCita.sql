@@ -1,3 +1,4 @@
+USE hospitalBD;
 -- Crear cita
 CREATE OR ALTER PROCEDURE dbo.sp_Cita_Crear
   @PacienteId  INT,
@@ -92,8 +93,9 @@ BEGIN
 END
 GO
 
+
 -- Pagar cita
-CREATE OR ALTER PROCEDURE dbo.sp_Cita_Pagar
+CREATE OR ALTER PROCEDURE dbo.sp_Cita_Pagar_v1
   @idCita INT
 AS
 BEGIN
@@ -177,42 +179,6 @@ BEGIN
     COMMIT;
 
     SELECT @dev AS montoDevuelto, @pct AS porcentaje;
-  END TRY
-  BEGIN CATCH
-    IF @@TRANCOUNT > 0 ROLLBACK;
-    THROW;
-  END CATCH
-END
-GO
-
--- Cancelar por doctor
-CREATE OR ALTER PROCEDURE dbo.sp_Cita_Cancelar_Doctor
-  @idCita INT
-AS
-BEGIN
-  SET NOCOUNT ON;
-  SET XACT_ABORT ON;
-
-  DECLARE @estatus NVARCHAR(25), @monto MONEY;
-  SELECT @estatus = estatusCita, @monto = costo FROM dbo.cita WHERE idCita = @idCita;
-
-  IF @estatus NOT IN (N'AgendadaPendPago', N'PagadaPendAtender')
-     THROW 51030, 'NoCancelable', 1;
-
-  BEGIN TRY
-    BEGIN TRAN;
-
-    UPDATE dbo.pago
-      SET estatusPago = CASE WHEN estatusPago = N'Pendiente' THEN N'Cancelado' ELSE estatusPago END,
-          montoDevuelto = @monto
-    WHERE idCita = @idCita;
-
-    UPDATE dbo.cita SET estatusCita = N'CanceladaDoctor' WHERE idCita = @idCita;
-
-    INSERT dbo.bitacoraEstatusCita(idCita, estatusCita, politica, montoDevuelto)
-    VALUES(@idCita, N'CanceladaDoctor', N'100% por doctor', @monto);
-
-    COMMIT;
   END TRY
   BEGIN CATCH
     IF @@TRANCOUNT > 0 ROLLBACK;

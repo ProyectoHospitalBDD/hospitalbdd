@@ -1,3 +1,4 @@
+USE hospitalBD;
 -- Doctor por fecha (detectar traslapes)
 IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name='IX_CitaDoctorFecha' AND object_id=OBJECT_ID('dbo.cita'))
 BEGIN

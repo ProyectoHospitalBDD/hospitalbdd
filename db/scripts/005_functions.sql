@@ -1,3 +1,4 @@
+USE hospitalBD;
 -- ¿Traslape con otra cita del doctor?
 CREATE OR ALTER FUNCTION dbo.fnCitaSeTraslapa
 (
@@ -34,7 +35,7 @@ CREATE OR ALTER FUNCTION dbo.fnDentroHorarioDoctor
 RETURNS BIT
 AS
 BEGIN
-  DECLARE @ret BIT = 0;
+  DECLARE @ret BIT;
 
   ;WITH D AS(
     SELECT 
@@ -43,21 +44,22 @@ BEGIN
       FORMAT(@Fin,    'dddd', 'es-ES') AS diaFin,
       CAST(@Fin    AS TIME) AS horaFin
   )
-  IF EXISTS(
-    SELECT 1
-    FROM D
-    JOIN dbo.doctor d ON d.idUsuario = @DoctorId
-    JOIN dbo.horarioEmpleado h ON h.idUsuario = d.idUsuario
-    WHERE (h.diaSemana = D.diaInicio COLLATE Modern_Spanish_CI_AS)
-      AND (h.diaSemana = D.diaFin    COLLATE Modern_Spanish_CI_AS)
-      AND D.horaIni >= h.horaInicio
-      AND D.horaFin <= h.horaFin
-  )
-    SET @ret = 1;
+  SELECT @ret =
+    CASE WHEN EXISTS(
+      SELECT 1
+      FROM D
+      JOIN dbo.doctor tmp ON tmp.idUsuario = @DoctorId
+      JOIN dbo.horarioEmpleado h ON h.idUsuario = tmp.idUsuario
+      WHERE (h.diaSemana = D.diaInicio COLLATE Modern_Spanish_CI_AS)
+        AND (h.diaSemana = D.diaFin    COLLATE Modern_Spanish_CI_AS)
+        AND D.horaIni >= h.horaInicio
+        AND D.horaFin <= h.horaFin
+    ) THEN CAST(1 AS BIT) ELSE CAST(0 AS BIT) END;
 
   RETURN @ret;
 END
 GO
+
 
 -- ¿Paciente ya tiene pendiente con el mismo doctor?
 CREATE OR ALTER FUNCTION dbo.fnPacienteTienePendiente
