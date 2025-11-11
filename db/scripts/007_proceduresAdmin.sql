@@ -1,3 +1,4 @@
+USE hospitalBD;
 -- Vencer citas no pagadas (8h)
 CREATE OR ALTER PROCEDURE dbo.sp_Admin_VencerCitas
 AS

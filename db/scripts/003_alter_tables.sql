@@ -1,3 +1,4 @@
+USE hospitalBD;
 -- 1) Columnas / tablas necesarias
 
 IF COL_LENGTH('dbo.pago','montoDevuelto') IS NULL
