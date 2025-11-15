@@ -1,37 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hospital.Api.Persistence.Models;
 
-[Table("ticket")]
-public partial class ticket
+public partial class Ticket
 {
-    [Key]
-    public int idTicket { get; set; }
+    public int IdTicket { get; set; }
 
-    public DateTime fecha { get; set; }
+    public DateTime Fecha { get; set; }
 
-    public int? idFarmacia { get; set; }
+    public int? IdFarmacia { get; set; }
 
-    public int idFarmaceutico { get; set; }
+    public int IdFarmaceutico { get; set; }
 
-    [ForeignKey("idFarmaceutico")]
-    [InverseProperty("tickets")]
-    public virtual farmaceutico idFarmaceuticoNavigation { get; set; } = null!;
+    public virtual Farmaceutico IdFarmaceuticoNavigation { get; set; } = null!;
 
-    [ForeignKey("idFarmacia")]
-    [InverseProperty("tickets")]
-    public virtual farmacium? idFarmaciaNavigation { get; set; }
+    public virtual Farmacium? IdFarmaciaNavigation { get; set; }
 
-    [InverseProperty("idTicketNavigation")]
-    public virtual ICollection<pagoTicket> pagoTickets { get; set; } = new List<pagoTicket>();
+    public virtual ICollection<PagoTicket> PagoTickets { get; set; } = new List<PagoTicket>();
 
-    [InverseProperty("idTicketNavigation")]
-    public virtual ICollection<ticketMedicamento> ticketMedicamentos { get; set; } = new List<ticketMedicamento>();
+    public virtual ICollection<TicketMedicamento> TicketMedicamentos { get; set; } = new List<TicketMedicamento>();
 
-    [InverseProperty("idTicketNavigation")]
-    public virtual ICollection<ticketServicio> ticketServicios { get; set; } = new List<ticketServicio>();
+    public virtual ICollection<TicketServicio> TicketServicios { get; set; } = new List<TicketServicio>();
 }

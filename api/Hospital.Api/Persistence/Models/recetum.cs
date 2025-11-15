@@ -1,33 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hospital.Api.Persistence.Models;
 
-public partial class recetum
+public partial class Recetum
 {
-    [Key]
-    public int idReceta { get; set; }
+    public int IdReceta { get; set; }
 
-    public int idCita { get; set; }
+    public int IdCita { get; set; }
 
-    public DateOnly fechaReceta { get; set; }
+    public DateOnly FechaReceta { get; set; }
 
-    [StringLength(500)]
-    public string? diagnostico { get; set; }
+    public string? Diagnostico { get; set; }
 
-    [StringLength(500)]
-    public string? observaciones { get; set; }
+    public string? Observaciones { get; set; }
 
-    [ForeignKey("idCita")]
-    [InverseProperty("receta")]
-    public virtual citum idCitaNavigation { get; set; } = null!;
+    public virtual Citum IdCitaNavigation { get; set; } = null!;
 
-    [InverseProperty("idRecetaNavigation")]
-    public virtual ICollection<recetaMedicamento> recetaMedicamentos { get; set; } = new List<recetaMedicamento>();
+    public virtual ICollection<RecetaMedicamento> RecetaMedicamentos { get; set; } = new List<RecetaMedicamento>();
 
-    [InverseProperty("idRecetaNavigation")]
-    public virtual ICollection<recetaServicio> recetaServicios { get; set; } = new List<recetaServicio>();
+    public virtual ICollection<RecetaServicio> RecetaServicios { get; set; } = new List<RecetaServicio>();
 }

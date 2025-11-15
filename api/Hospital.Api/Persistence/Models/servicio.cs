@@ -1,37 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hospital.Api.Persistence.Models;
 
-[Table("servicio")]
-public partial class servicio
+public partial class Servicio
 {
-    [Key]
-    public int idServicio { get; set; }
+    public int IdServicio { get; set; }
 
-    [StringLength(256)]
-    public string descripcion { get; set; } = null!;
+    public string Descripcion { get; set; } = null!;
 
-    [StringLength(50)]
-    public string tipo { get; set; } = null!;
+    public string Tipo { get; set; } = null!;
 
-    [Column(TypeName = "money")]
-    public decimal precio { get; set; }
+    public decimal Precio { get; set; }
 
-    public int? stock { get; set; }
+    public int? Stock { get; set; }
 
-    public int? idEnfermera { get; set; }
+    public int? IdEnfermera { get; set; }
 
-    [ForeignKey("idEnfermera")]
-    [InverseProperty("servicios")]
-    public virtual enfermera? idEnfermeraNavigation { get; set; }
+    public virtual Enfermera? IdEnfermeraNavigation { get; set; }
 
-    [InverseProperty("idServicioNavigation")]
-    public virtual ICollection<recetaServicio> recetaServicios { get; set; } = new List<recetaServicio>();
+    public virtual ICollection<RecetaServicio> RecetaServicios { get; set; } = new List<RecetaServicio>();
 
-    [InverseProperty("idServicioNavigation")]
-    public virtual ICollection<ticketServicio> ticketServicios { get; set; } = new List<ticketServicio>();
+    public virtual ICollection<TicketServicio> TicketServicios { get; set; } = new List<TicketServicio>();
 }

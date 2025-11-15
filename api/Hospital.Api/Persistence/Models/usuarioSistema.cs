@@ -1,46 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hospital.Api.Persistence.Models;
 
-[Table("usuarioSistema")]
-[Index("curp", Name = "UQ_usuarioCURP", IsUnique = true)]
-public partial class usuarioSistema
+public partial class UsuarioSistema
 {
-    [Key]
-    public int idUsuario { get; set; }
+    public int IdUsuario { get; set; }
 
-    [StringLength(20)]
-    public string nombre { get; set; } = null!;
+    public string Nombre { get; set; } = null!;
 
-    [StringLength(20)]
-    public string apPat { get; set; } = null!;
+    public string ApPat { get; set; } = null!;
 
-    [StringLength(20)]
-    public string? apMat { get; set; }
+    public string? ApMat { get; set; }
 
-    [StringLength(100)]
-    public string contrasena { get; set; } = null!;
+    public string Contrasena { get; set; } = null!;
 
-    [StringLength(20)]
-    public string tipoUsuario { get; set; } = null!;
+    public string TipoUsuario { get; set; } = null!;
 
-    [StringLength(18)]
-    [Unicode(false)]
-    public string curp { get; set; } = null!;
+    public string Curp { get; set; } = null!;
 
-    public int? idContacto { get; set; }
+    public int? IdContacto { get; set; }
 
-    [InverseProperty("idUsuarioNavigation")]
-    public virtual empleado? empleado { get; set; }
+    public virtual Empleado? Empleado { get; set; }
 
-    [ForeignKey("idContacto")]
-    [InverseProperty("usuarioSistemas")]
-    public virtual contacto? idContactoNavigation { get; set; }
+    public virtual Contacto? IdContactoNavigation { get; set; }
 
-    [InverseProperty("idUsuarioNavigation")]
-    public virtual paciente? paciente { get; set; }
+    public virtual Paciente? Paciente { get; set; }
 }

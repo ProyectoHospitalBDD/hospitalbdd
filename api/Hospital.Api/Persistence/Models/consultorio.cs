@@ -1,30 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hospital.Api.Persistence.Models;
 
-[Table("consultorio")]
-[Index("idEdificio", "numero", Name = "UQ_consultorio", IsUnique = true)]
-public partial class consultorio
+public partial class Consultorio
 {
-    [Key]
-    public int idConsultorio { get; set; }
+    public int IdConsultorio { get; set; }
 
-    [StringLength(10)]
-    public string numero { get; set; } = null!;
+    public string Numero { get; set; } = null!;
 
-    [Column(TypeName = "decimal(10, 2)")]
-    public decimal superficie { get; set; }
+    public decimal Superficie { get; set; }
 
-    public int idEdificio { get; set; }
+    public int IdEdificio { get; set; }
 
-    [InverseProperty("idConsultorioNavigation")]
-    public virtual ICollection<doctor> doctors { get; set; } = new List<doctor>();
+    public virtual ICollection<Doctor> Doctors { get; set; } = new List<Doctor>();
 
-    [ForeignKey("idEdificio")]
-    [InverseProperty("consultorios")]
-    public virtual edificio idEdificioNavigation { get; set; } = null!;
+    public virtual Edificio IdEdificioNavigation { get; set; } = null!;
 }

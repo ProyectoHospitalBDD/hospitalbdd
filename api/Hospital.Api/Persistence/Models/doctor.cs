@@ -1,37 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hospital.Api.Persistence.Models;
 
-[Table("doctor")]
-[Index("cedula", Name = "UQ_doctorCedula", IsUnique = true)]
-public partial class doctor
+public partial class Doctor
 {
-    [Key]
-    public int idUsuario { get; set; }
+    public int IdUsuario { get; set; }
 
-    [StringLength(20)]
-    public string cedula { get; set; } = null!;
+    public string Cedula { get; set; } = null!;
 
-    public int idConsultorio { get; set; }
+    public int IdConsultorio { get; set; }
 
-    public int idEspecialidad { get; set; }
+    public int IdEspecialidad { get; set; }
 
-    [InverseProperty("idDoctorNavigation")]
-    public virtual ICollection<citum> cita { get; set; } = new List<citum>();
+    public virtual ICollection<Citum> Cita { get; set; } = new List<Citum>();
 
-    [ForeignKey("idConsultorio")]
-    [InverseProperty("doctors")]
-    public virtual consultorio idConsultorioNavigation { get; set; } = null!;
+    public virtual Consultorio IdConsultorioNavigation { get; set; } = null!;
 
-    [ForeignKey("idEspecialidad")]
-    [InverseProperty("doctors")]
-    public virtual especialidad idEspecialidadNavigation { get; set; } = null!;
+    public virtual Especialidad IdEspecialidadNavigation { get; set; } = null!;
 
-    [ForeignKey("idUsuario")]
-    [InverseProperty("doctor")]
-    public virtual empleado idUsuarioNavigation { get; set; } = null!;
+    public virtual Empleado IdUsuarioNavigation { get; set; } = null!;
 }

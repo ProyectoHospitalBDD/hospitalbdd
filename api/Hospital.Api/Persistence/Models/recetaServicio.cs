@@ -1,29 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hospital.Api.Persistence.Models;
 
-[PrimaryKey("idReceta", "idServicio")]
-[Table("recetaServicio")]
-public partial class recetaServicio
+public partial class RecetaServicio
 {
-    [Key]
-    public int idReceta { get; set; }
+    public int IdReceta { get; set; }
 
-    [Key]
-    public int idServicio { get; set; }
+    public int IdServicio { get; set; }
 
-    [StringLength(300)]
-    public string? indicaciones { get; set; }
+    public string? Indicaciones { get; set; }
 
-    [ForeignKey("idReceta")]
-    [InverseProperty("recetaServicios")]
-    public virtual recetum idRecetaNavigation { get; set; } = null!;
+    public virtual Recetum IdRecetaNavigation { get; set; } = null!;
 
-    [ForeignKey("idServicio")]
-    [InverseProperty("recetaServicios")]
-    public virtual servicio idServicioNavigation { get; set; } = null!;
+    public virtual Servicio IdServicioNavigation { get; set; } = null!;
 }

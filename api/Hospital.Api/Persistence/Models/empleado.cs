@@ -1,38 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hospital.Api.Persistence.Models;
 
-[Table("empleado")]
-public partial class empleado
+public partial class Empleado
 {
-    [Key]
-    public int idUsuario { get; set; }
+    public int IdUsuario { get; set; }
 
-    public bool estatus { get; set; }
+    public bool Estatus { get; set; }
 
-    [Column(TypeName = "money")]
-    public decimal salario { get; set; }
+    public decimal Salario { get; set; }
 
-    [InverseProperty("idUsuarioNavigation")]
-    public virtual doctor? doctor { get; set; }
+    public virtual Doctor? Doctor { get; set; }
 
-    [InverseProperty("idUsuarioNavigation")]
-    public virtual enfermera? enfermera { get; set; }
+    public virtual Enfermera? Enfermera { get; set; }
 
-    [InverseProperty("idUsuarioNavigation")]
-    public virtual farmaceutico? farmaceutico { get; set; }
+    public virtual Farmaceutico? Farmaceutico { get; set; }
 
-    [InverseProperty("idUsuarioNavigation")]
-    public virtual ICollection<horarioEmpleado> horarioEmpleados { get; set; } = new List<horarioEmpleado>();
+    public virtual ICollection<HorarioEmpleado> HorarioEmpleados { get; set; } = new List<HorarioEmpleado>();
 
-    [ForeignKey("idUsuario")]
-    [InverseProperty("empleado")]
-    public virtual usuarioSistema idUsuarioNavigation { get; set; } = null!;
+    public virtual UsuarioSistema IdUsuarioNavigation { get; set; } = null!;
 
-    [InverseProperty("idUsuarioNavigation")]
-    public virtual recepcionistum? recepcionistum { get; set; }
+    public virtual Recepcionistum? Recepcionistum { get; set; }
 }

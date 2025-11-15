@@ -1,42 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hospital.Api.Persistence.Models;
 
-[PrimaryKey("idPaciente", "idAlerPade")]
-[Table("pacienteAlergiaPadecimiento")]
-public partial class pacienteAlergiaPadecimiento
+public partial class PacienteAlergiaPadecimiento
 {
-    [Key]
-    public int idPaciente { get; set; }
+    public int IdPaciente { get; set; }
 
-    [Key]
-    public int idAlerPade { get; set; }
+    public int IdAlerPade { get; set; }
 
-    [StringLength(20)]
-    public string? severidad { get; set; }
+    public string? Severidad { get; set; }
 
-    [StringLength(15)]
-    public string? estado { get; set; }
+    public string? Estado { get; set; }
 
-    [StringLength(300)]
-    public string? reaccion { get; set; }
+    public string? Reaccion { get; set; }
 
-    public DateOnly? fechaInicio { get; set; }
+    public DateOnly? FechaInicio { get; set; }
 
-    public DateOnly? fechaFin { get; set; }
+    public DateOnly? FechaFin { get; set; }
 
-    [StringLength(500)]
-    public string? observaciones { get; set; }
+    public string? Observaciones { get; set; }
 
-    [ForeignKey("idAlerPade")]
-    [InverseProperty("pacienteAlergiaPadecimientos")]
-    public virtual alergiaPadecimiento idAlerPadeNavigation { get; set; } = null!;
+    public virtual AlergiaPadecimiento IdAlerPadeNavigation { get; set; } = null!;
 
-    [ForeignKey("idPaciente")]
-    [InverseProperty("pacienteAlergiaPadecimientos")]
-    public virtual paciente idPacienteNavigation { get; set; } = null!;
+    public virtual Paciente IdPacienteNavigation { get; set; } = null!;
 }

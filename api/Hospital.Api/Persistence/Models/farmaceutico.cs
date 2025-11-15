@@ -1,24 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hospital.Api.Persistence.Models;
 
-[Table("farmaceutico")]
-public partial class farmaceutico
+public partial class Farmaceutico
 {
-    [Key]
-    public int idUsuario { get; set; }
+    public int IdUsuario { get; set; }
 
-    [ForeignKey("idUsuario")]
-    [InverseProperty("farmaceutico")]
-    public virtual empleado idUsuarioNavigation { get; set; } = null!;
+    public virtual Empleado IdUsuarioNavigation { get; set; } = null!;
 
-    [InverseProperty("idFarmaceuticoNavigation")]
-    public virtual ICollection<pagoTicket> pagoTickets { get; set; } = new List<pagoTicket>();
+    public virtual ICollection<PagoTicket> PagoTickets { get; set; } = new List<PagoTicket>();
 
-    [InverseProperty("idFarmaceuticoNavigation")]
-    public virtual ICollection<ticket> tickets { get; set; } = new List<ticket>();
+    public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 }
