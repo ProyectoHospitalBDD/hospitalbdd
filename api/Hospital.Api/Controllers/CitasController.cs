@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Hospital.Api.Dtos.Citas;
+using Hospital.Api.Services;
 
 namespace Hospital.Api.Controllers;
 
@@ -6,28 +8,31 @@ namespace Hospital.Api.Controllers;
 [Route("api/[controller]")]
 public class CitasController : ControllerBase
 {
-    private static readonly List<object> _citas = new();
-
-    [HttpGet]
-    public IActionResult Get() => Ok(_citas);
-
-    public record CitaPostDto(int idDoctor, int idPaciente, DateTime fechaHoraInicio, DateTime fechaHoraFin, decimal costo, string estatusCita);
+    private readonly CitasService _svc;
+    public CitasController(CitasService svc) => _svc = svc;
 
     [HttpPost]
-    public IActionResult Post([FromBody] CitaPostDto dto)
-    {
-        if (dto.fechaHoraInicio >= dto.fechaHoraFin) return BadRequest("Rango inválido.");
-        var solapa = _citas.Any(x =>
-        {
-            dynamic c = x;
-            return c.idDoctor == dto.idDoctor &&
-                   dto.fechaHoraInicio < c.fechaHoraFin &&
-                   c.fechaHoraInicio < dto.fechaHoraFin;
-        });
-        if (solapa) return BadRequest("El doctor ya tiene una cita en ese horario.");
+    public async Task<ActionResult<CitaResponseDto>> Crear([FromBody] CreateCitaDto dto)
+        => Ok(await _svc.CrearAsync(dto));
 
-        var created = new { idCita = _citas.Count + 1, dto.idDoctor, dto.idPaciente, dto.fechaHoraInicio, dto.fechaHoraFin, dto.costo, dto.estatusCita };
-        _citas.Add(created);
-        return Created($"/api/citas/{created.idCita}", created);
+    [HttpPost("{id:int}/pagar")]
+    public async Task<IActionResult> Pagar([FromRoute] int id)
+    {
+        await _svc.PagarAsync(id);
+        return NoContent();
+    }
+
+    [HttpPost("{id:int}/cancelar/paciente")]
+    public async Task<IActionResult> CancelarPaciente([FromRoute] int id)
+    {
+        await _svc.CancelarPacienteAsync(id);
+        return NoContent();
+    }
+
+    [HttpPost("{id:int}/cancelar/doctor")]
+    public async Task<IActionResult> CancelarDoctor([FromRoute] int id)
+    {
+        await _svc.CancelarDoctorAsync(id);
+        return NoContent();
     }
 }

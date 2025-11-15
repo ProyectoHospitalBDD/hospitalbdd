@@ -1,33 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hospital.Api.Persistence.Models;
 
-[Table("pagoTicket")]
-public partial class pagoTicket
+public partial class PagoTicket
 {
-    [Key]
-    public int idPagoTicket { get; set; }
+    public int IdPagoTicket { get; set; }
 
-    [StringLength(15)]
-    public string estatusPago { get; set; } = null!;
+    public string EstatusPago { get; set; } = null!;
 
-    public DateOnly fechaPago { get; set; }
+    public DateOnly FechaPago { get; set; }
 
-    public TimeOnly horaPago { get; set; }
+    public TimeOnly HoraPago { get; set; }
 
-    public int idTicket { get; set; }
+    public int IdTicket { get; set; }
 
-    public int? idFarmaceutico { get; set; }
+    public int? IdFarmaceutico { get; set; }
 
-    [ForeignKey("idFarmaceutico")]
-    [InverseProperty("pagoTickets")]
-    public virtual farmaceutico? idFarmaceuticoNavigation { get; set; }
+    public virtual Farmaceutico? IdFarmaceuticoNavigation { get; set; }
 
-    [ForeignKey("idTicket")]
-    [InverseProperty("pagoTickets")]
-    public virtual ticket idTicketNavigation { get; set; } = null!;
+    public virtual Ticket IdTicketNavigation { get; set; } = null!;
 }

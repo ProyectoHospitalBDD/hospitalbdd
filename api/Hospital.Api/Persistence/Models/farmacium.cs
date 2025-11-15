@@ -1,28 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hospital.Api.Persistence.Models;
 
-public partial class farmacium
+public partial class Farmacium
 {
-    [Key]
-    public int idFarmacia { get; set; }
+    public int IdFarmacia { get; set; }
 
-    [Column(TypeName = "decimal(10, 2)")]
-    public decimal superficie { get; set; }
+    public decimal Superficie { get; set; }
 
-    public int? idEdificio { get; set; }
+    public int? IdEdificio { get; set; }
 
-    [ForeignKey("idEdificio")]
-    [InverseProperty("farmacia")]
-    public virtual edificio? idEdificioNavigation { get; set; }
+    public virtual Edificio? IdEdificioNavigation { get; set; }
 
-    [InverseProperty("idFarmaciaNavigation")]
-    public virtual ICollection<medicamento> medicamentos { get; set; } = new List<medicamento>();
+    public virtual ICollection<Medicamento> Medicamentos { get; set; } = new List<Medicamento>();
 
-    [InverseProperty("idFarmaciaNavigation")]
-    public virtual ICollection<ticket> tickets { get; set; } = new List<ticket>();
+    public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 }

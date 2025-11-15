@@ -1,38 +1,49 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
+using Hospital.Api.Middleware;
+using Hospital.Api.Services;
+using Hospital.Api.Persistence;         // Asegúrate que aquí vive HospitalContext
 using Microsoft.EntityFrameworkCore;
-using Hospital.Api.Persistence; // <-- donde quedó tu HospitalContext
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Controllers (API)
+// Controllers + FluentValidation
 builder.Services.AddControllers();
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<Hospital.Api.Validators.CreateCitaDtoValidator>();
 
-// CORS para el front de React (Vite usa 5173)
+// CORS para el front (Vite: 5173)
 builder.Services.AddCors(opt =>
 {
-    opt.AddPolicy("frontend", p =>
-        p.WithOrigins("http://localhost:5173")
-         .AllowAnyHeader()
-         .AllowAnyMethod());
+    opt.AddPolicy("frontend", p => p
+        .WithOrigins("http://localhost:5173")
+        .AllowAnyHeader()
+        .AllowAnyMethod());
 });
 
-// DbContext apuntando al connection string de appsettings.json
+// DbContext (usa la cadena "SqlServer" del appsettings.json)
 builder.Services.AddDbContext<HospitalContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
 
-// Swagger (útil en dev para probar los endpoints)
+// Services
+builder.Services.AddScoped<CitasService>();
+
+// Swagger (útil en dev)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.UseCors("frontend");
-
+// Middleware
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.MapControllers();
+app.UseCors("frontend");
+// app.UseHttpsRedirection(); // opcional si corres con HTTPS
+app.UseMiddleware<SqlExceptionMiddleware>();
 
+app.MapControllers();
 app.Run();

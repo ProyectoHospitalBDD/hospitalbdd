@@ -1,26 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hospital.Api.Persistence.Models;
 
-[Table("especialidad")]
-[Index("nombreEsp", Name = "UQ_espNombre", IsUnique = true)]
-public partial class especialidad
+public partial class Especialidad
 {
-    [Key]
-    public int idEspecialidad { get; set; }
+    public int IdEspecialidad { get; set; }
 
-    [StringLength(100)]
-    public string nombreEsp { get; set; } = null!;
+    public string NombreEsp { get; set; } = null!;
 
-    public int anosEstu { get; set; }
+    public int AnosEstu { get; set; }
 
-    [Column(TypeName = "money")]
-    public decimal costo { get; set; }
+    public decimal Costo { get; set; }
 
-    [InverseProperty("idEspecialidadNavigation")]
-    public virtual ICollection<doctor> doctors { get; set; } = new List<doctor>();
+    public virtual ICollection<Doctor> Doctors { get; set; } = new List<Doctor>();
 }

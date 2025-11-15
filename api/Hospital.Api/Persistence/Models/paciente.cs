@@ -1,27 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hospital.Api.Persistence.Models;
 
-[Table("paciente")]
-public partial class paciente
+public partial class Paciente
 {
-    [Key]
-    public int idUsuario { get; set; }
+    public int IdUsuario { get; set; }
 
-    [InverseProperty("idPacienteNavigation")]
-    public virtual ICollection<citum> cita { get; set; } = new List<citum>();
+    public virtual ICollection<Citum> Cita { get; set; } = new List<Citum>();
 
-    [InverseProperty("idPacienteNavigation")]
-    public virtual historialMedico? historialMedico { get; set; }
+    public virtual HistorialMedico? HistorialMedico { get; set; }
 
-    [ForeignKey("idUsuario")]
-    [InverseProperty("paciente")]
-    public virtual usuarioSistema idUsuarioNavigation { get; set; } = null!;
+    public virtual UsuarioSistema IdUsuarioNavigation { get; set; } = null!;
 
-    [InverseProperty("idPacienteNavigation")]
-    public virtual ICollection<pacienteAlergiaPadecimiento> pacienteAlergiaPadecimientos { get; set; } = new List<pacienteAlergiaPadecimiento>();
+    public virtual ICollection<PacienteAlergiaPadecimiento> PacienteAlergiaPadecimientos { get; set; } = new List<PacienteAlergiaPadecimiento>();
 }

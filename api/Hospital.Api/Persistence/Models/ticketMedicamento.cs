@@ -1,31 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hospital.Api.Persistence.Models;
 
-[PrimaryKey("idTicket", "idMedicamento")]
-[Table("ticketMedicamento")]
-public partial class ticketMedicamento
+public partial class TicketMedicamento
 {
-    [Key]
-    public int idTicket { get; set; }
+    public int IdTicket { get; set; }
 
-    [Key]
-    public int idMedicamento { get; set; }
+    public int IdMedicamento { get; set; }
 
-    public int cantidad { get; set; }
+    public int Cantidad { get; set; }
 
-    [Column(TypeName = "money")]
-    public decimal precioUnitario { get; set; }
+    public decimal PrecioUnitario { get; set; }
 
-    [ForeignKey("idMedicamento")]
-    [InverseProperty("ticketMedicamentos")]
-    public virtual medicamento idMedicamentoNavigation { get; set; } = null!;
+    public virtual Medicamento IdMedicamentoNavigation { get; set; } = null!;
 
-    [ForeignKey("idTicket")]
-    [InverseProperty("ticketMedicamentos")]
-    public virtual ticket idTicketNavigation { get; set; } = null!;
+    public virtual Ticket IdTicketNavigation { get; set; } = null!;
 }

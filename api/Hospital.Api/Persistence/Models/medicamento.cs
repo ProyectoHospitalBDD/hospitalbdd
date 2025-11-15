@@ -1,42 +1,29 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hospital.Api.Persistence.Models;
 
-[Table("medicamento")]
-public partial class medicamento
+public partial class Medicamento
 {
-    [Key]
-    public int idMedicamento { get; set; }
+    public int IdMedicamento { get; set; }
 
-    [StringLength(256)]
-    public string descripcion { get; set; } = null!;
+    public string Descripcion { get; set; } = null!;
 
-    [StringLength(50)]
-    public string tipo { get; set; } = null!;
+    public string Tipo { get; set; } = null!;
 
-    [StringLength(50)]
-    public string capacidad { get; set; } = null!;
+    public string Capacidad { get; set; } = null!;
 
-    [Column(TypeName = "money")]
-    public decimal precio { get; set; }
+    public decimal Precio { get; set; }
 
-    public int stock { get; set; }
+    public int Stock { get; set; }
 
-    public DateOnly caducidad { get; set; }
+    public DateOnly Caducidad { get; set; }
 
-    public int? idFarmacia { get; set; }
+    public int? IdFarmacia { get; set; }
 
-    [ForeignKey("idFarmacia")]
-    [InverseProperty("medicamentos")]
-    public virtual farmacium? idFarmaciaNavigation { get; set; }
+    public virtual Farmacium? IdFarmaciaNavigation { get; set; }
 
-    [InverseProperty("idMedicamentoNavigation")]
-    public virtual ICollection<recetaMedicamento> recetaMedicamentos { get; set; } = new List<recetaMedicamento>();
+    public virtual ICollection<RecetaMedicamento> RecetaMedicamentos { get; set; } = new List<RecetaMedicamento>();
 
-    [InverseProperty("idMedicamentoNavigation")]
-    public virtual ICollection<ticketMedicamento> ticketMedicamentos { get; set; } = new List<ticketMedicamento>();
+    public virtual ICollection<TicketMedicamento> TicketMedicamentos { get; set; } = new List<TicketMedicamento>();
 }

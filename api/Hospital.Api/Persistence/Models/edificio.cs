@@ -1,25 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hospital.Api.Persistence.Models;
 
-[Table("edificio")]
-public partial class edificio
+public partial class Edificio
 {
-    [Key]
-    public int idEdificio { get; set; }
+    public int IdEdificio { get; set; }
 
-    public int numPisos { get; set; }
+    public int NumPisos { get; set; }
 
-    [Column(TypeName = "decimal(10, 2)")]
-    public decimal superficie { get; set; }
+    public decimal Superficie { get; set; }
 
-    [InverseProperty("idEdificioNavigation")]
-    public virtual ICollection<consultorio> consultorios { get; set; } = new List<consultorio>();
+    public virtual ICollection<Consultorio> Consultorios { get; set; } = new List<Consultorio>();
 
-    [InverseProperty("idEdificioNavigation")]
-    public virtual ICollection<farmacium> farmacia { get; set; } = new List<farmacium>();
+    public virtual ICollection<Farmacium> Farmacia { get; set; } = new List<Farmacium>();
 }

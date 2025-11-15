@@ -1,32 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hospital.Api.Persistence.Models;
 
-[Table("pago")]
-public partial class pago
+public partial class Pago
 {
-    [Key]
-    public int idPago { get; set; }
+    public int IdPago { get; set; }
 
-    public int idCita { get; set; }
+    public int IdCita { get; set; }
 
-    [StringLength(15)]
-    public string estatusPago { get; set; } = null!;
+    public string EstatusPago { get; set; } = null!;
 
-    [Column(TypeName = "money")]
-    public decimal monto { get; set; }
+    public decimal Monto { get; set; }
 
-    public DateOnly? fechaPago { get; set; }
+    public DateOnly? FechaPago { get; set; }
 
-    public TimeOnly? horaPago { get; set; }
+    public TimeOnly? HoraPago { get; set; }
 
-    public DateTime venceEn { get; set; }
+    public DateTime VenceEn { get; set; }
 
-    [ForeignKey("idCita")]
-    [InverseProperty("pagos")]
-    public virtual citum idCitaNavigation { get; set; } = null!;
+    public decimal? MontoDevuelto { get; set; }
+
+    public virtual Citum IdCitaNavigation { get; set; } = null!;
 }

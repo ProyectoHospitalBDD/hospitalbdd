@@ -1,30 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hospital.Api.Persistence.Models;
 
-[Table("historialMedico")]
-[Index("idPaciente", Name = "UQ_historialIdPaciente", IsUnique = true)]
-public partial class historialMedico
+public partial class HistorialMedico
 {
-    [Key]
-    public int idHistorialMedico { get; set; }
+    public int IdHistorialMedico { get; set; }
 
-    public int idPaciente { get; set; }
+    public int IdPaciente { get; set; }
 
-    [StringLength(3)]
-    public string tipoSangre { get; set; } = null!;
+    public string TipoSangre { get; set; } = null!;
 
-    [Column(TypeName = "decimal(6, 2)")]
-    public decimal? pesoKg { get; set; }
+    public decimal? PesoKg { get; set; }
 
-    [Column(TypeName = "decimal(4, 2)")]
-    public decimal? estaturaM { get; set; }
+    public decimal? EstaturaM { get; set; }
 
-    [ForeignKey("idPaciente")]
-    [InverseProperty("historialMedico")]
-    public virtual paciente idPacienteNavigation { get; set; } = null!;
+    public virtual Paciente IdPacienteNavigation { get; set; } = null!;
 }

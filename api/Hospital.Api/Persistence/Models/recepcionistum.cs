@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hospital.Api.Persistence.Models;
 
-public partial class recepcionistum
+public partial class Recepcionistum
 {
-    [Key]
-    public int idUsuario { get; set; }
+    public int IdUsuario { get; set; }
 
-    public bool esAdmin { get; set; }
+    public bool EsAdmin { get; set; }
 
-    [ForeignKey("idUsuario")]
-    [InverseProperty("recepcionistum")]
-    public virtual empleado idUsuarioNavigation { get; set; } = null!;
+    public virtual Empleado IdUsuarioNavigation { get; set; } = null!;
 }
