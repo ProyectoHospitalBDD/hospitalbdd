@@ -1,5 +1,6 @@
 USE hospitalBD;
--- Vencer citas no pagadas (8h)
+GO
+
 CREATE OR ALTER PROCEDURE dbo.sp_Admin_VencerCitas
 AS
 BEGIN
@@ -11,22 +12,40 @@ BEGIN
   BEGIN TRY
     BEGIN TRAN;
 
-    ;WITH V AS(
-      SELECT c.idCita
-      FROM dbo.cita c
-      JOIN dbo.pago p ON p.idCita = c.idCita
-      WHERE c.estatusCita = N'AgendadaPendPago'
-        AND p.estatusPago = N'Pendiente'
-        AND p.venceEn < @ahora
-    )
-    UPDATE p SET estatusPago = N'Cancelado'
-    FROM dbo.pago p JOIN V ON V.idCita = p.idCita;
+    -- 1) Guardamos las citas afectadas en una tabla variable
+    DECLARE @V TABLE (idCita INT PRIMARY KEY);
 
-    UPDATE c SET estatusCita = N'CanceladaFaltaPago'
-    FROM dbo.cita c JOIN V ON V.idCita = c.idCita;
+    INSERT INTO @V(idCita)
+    SELECT c.idCita
+    FROM dbo.cita c
+    JOIN dbo.pago p ON p.idCita = c.idCita
+    WHERE c.estatusCita = N'AgendadaPendPago'
+      AND p.estatusPago = N'Pendiente'
+      AND p.venceEn < @ahora;
 
+    -- Si no hay nada que vencer, salimos
+    IF NOT EXISTS (SELECT 1 FROM @V)
+    BEGIN
+      COMMIT;
+      RETURN;
+    END
+
+    -- 2) Pago pasa a Cancelado
+    UPDATE p
+      SET estatusPago = N'Cancelado'
+    FROM dbo.pago p
+    JOIN @V v ON v.idCita = p.idCita;
+
+    -- 3) Cita pasa a CanceladaFaltaPago
+    UPDATE c
+      SET estatusCita = N'CanceladaFaltaPago'
+    FROM dbo.cita c
+    JOIN @V v ON v.idCita = c.idCita;
+
+    -- 4) Bitácora
     INSERT dbo.bitacoraEstatusCita(idCita, estatusCita)
-    SELECT idCita, N'CanceladaFaltaPago' FROM V;
+    SELECT v.idCita, N'CanceladaFaltaPago'
+    FROM @V v;
 
     COMMIT;
   END TRY
