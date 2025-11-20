@@ -1,41 +1,27 @@
 // src/App.jsx
-import { Routes, Route, Navigate, Link } from "react-router-dom";
-import AgendarCitaPage from "./pages/Citas/AgendarCitaPage.tsx";
-import "./App.css";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Layout from "./layout/Layout";
+import HomePage from "./pages/HomePage";
+import AgendarCitaPage from "./pages/Citas/AgendarCitaPage";
+import LoginPage from "./pages/Auth/LoginPage";
 
 function App() {
   return (
-    <div className="app">
-      {/* Barra superior */}
-      <header className="app-header">
-        <div className="app-header-inner">
-          <h1 className="app-title">Hospital ESCOM</h1>
+    <BrowserRouter>
+      <Routes>
+        {/* Login SIN layout */}
+        <Route path="/login" element={<LoginPage />} />
 
-          <nav className="app-nav">
-            <Link to="/citas/agendar" className="app-nav-link">
-              Agendar cita
-            </Link>
-            {/* luego aquí podrás agregar más links */}
-          </nav>
-        </div>
-      </header>
-
-      {/* Contenido principal */}
-      <main className="app-main">
-        <Routes>
-          {/* redirige / a /citas/agendar */}
-          <Route
-            path="/"
-            element={<Navigate to="/citas/agendar" replace />}
-          />
-
+        {/* Todo lo demás usa el Layout */}
+        <Route element={<Layout />}>
+          <Route path="/" element={<HomePage />} />
           <Route path="/citas/agendar" element={<AgendarCitaPage />} />
 
-          {/* ruta por si alguien escribe algo raro */}
-          <Route path="*" element={<p>Página no encontrada</p>} />
-        </Routes>
-      </main>
-    </div>
+          {/* cualquier ruta rara => redirige a Home */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
 
