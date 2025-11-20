@@ -1,86 +1,76 @@
+// src/pages/Auth/LoginPage.tsx
 import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login } from "../../api/authApi";
-import "./LoginPage.css"; 
+import { login as loginApi } from "../../api/authApi";
+import { useAuth } from "../../lib/auth/AuthContext";
+import "./LoginPage.css"; // si tienes estilos
 
 export function LoginPage() {
   const [correo, setCorreo] = useState("");
   const [password, setPassword] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
-
-    if (!correo || !password) {
-      setError("Debes ingresar correo y contraseña.");
-      return;
-    }
+    setLoading(true);
 
     try {
-      setLoading(true);
-
-      const user = await login({ correo, password });
-
-      // por ahora, solo guardamos al usuario en localStorage
-      localStorage.setItem("user", JSON.stringify(user));
-
-      // y mandamos a la página principal o a agendar cita
-      navigate("/citas/agendar");
+      const user = await loginApi({ correo, password });
+      // guardamos en contexto + localStorage
+      login(user);
+      // mandamos a la pantalla principal
+      navigate("/home");
     } catch (err: any) {
-      const detail =
-        err?.response?.data?.detail ||
-        err?.response?.data?.errors?.Correo?.[0] ||
-        err?.response?.data?.errors?.Password?.[0];
-
-      if (detail) setError(detail);
-      else setError("Usuario o contraseña incorrectos.");
+      const msg =
+        err?.response?.data ??
+        err?.response?.data?.detail ??
+        "Usuario o contraseña incorrectos.";
+      setError(typeof msg === "string" ? msg : "Usuario o contraseña incorrectos.");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="agendar-page">
-      <div className="agendar-card">
-        <h2 className="agendar-title">Iniciar sesión</h2>
-        <p className="agendar-subtitle">
-          Ingresa tu correo y contraseña para continuar.
+    <div className="login-page">
+      <div className="login-card">
+        <h2>Iniciar sesión</h2>
+        <p className="login-subtitle">
+          Usa tu correo y contraseña registrados en el sistema.
         </p>
 
-        <form className="agendar-form" onSubmit={handleSubmit}>
-          <div className="agendar-field">
+        <form onSubmit={handleSubmit} className="login-form">
+          <div className="login-field">
             <label>Correo</label>
             <input
               type="email"
               value={correo}
               onChange={(e) => setCorreo(e.target.value)}
-              placeholder="tucorreo@ejemplo.com"
+              required
             />
           </div>
 
-          <div className="agendar-field">
+          <div className="login-field">
             <label>Contraseña</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="********"
+              required
             />
           </div>
 
-          <div className="agendar-actions">
-            <button className="agendar-btn" type="submit" disabled={loading}>
-              {loading ? "Ingresando..." : "Entrar"}
-            </button>
-          </div>
-        </form>
+          {error && <p className="login-error">{error}</p>}
 
-        {error && <p className="agendar-error">{error}</p>}
+          <button type="submit" className="login-btn" disabled={loading}>
+            {loading ? "Ingresando..." : "Ingresar"}
+          </button>
+        </form>
       </div>
     </div>
   );
