@@ -12,10 +12,12 @@ import {
   DoctorListaDto,
   HorarioDisponibleDto,
 } from "../../api/doctoresApi";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import "./AgendarCitaPage.css";
 
 export function AgendarCitaPage() {
-  // por ahora simulamos "login" 
+  // por ahora simulamos "login"
   const [pacienteId] = useState<number>(1);
 
   // datos cargados desde el backend
@@ -35,7 +37,10 @@ export function AgendarCitaPage() {
   const [resultado, setResultado] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  //Cargar especialidades al montar la página
+  // Fecha seleccionada en el DatePicker (tipo Date)
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+  // Cargar especialidades al montar la página
   useEffect(() => {
     listarEspecialidades()
       .then(setEspecialidades)
@@ -44,11 +49,16 @@ export function AgendarCitaPage() {
       );
   }, []);
 
-  //Cuando cambia la especialidad → cargar doctores
+  // Cuando cambia la especialidad -> cargar doctores
   useEffect(() => {
     if (!especialidadId) {
       setDoctores([]);
       setDoctorId("");
+      setFechas([]);
+      setHorarios([]);
+      setFechaSeleccionada("");
+      setHorarioSeleccionado("");
+      setSelectedDate(null);
       return;
     }
 
@@ -58,19 +68,21 @@ export function AgendarCitaPage() {
     setHorarios([]);
     setFechaSeleccionada("");
     setHorarioSeleccionado("");
+    setSelectedDate(null);
 
     listarDoctoresPorEspecialidad(Number(especialidadId))
       .then(setDoctores)
       .catch(() => setError("No se pudieron cargar los doctores."));
   }, [especialidadId]);
 
-  //Cuando cambia el doctor -> cargar fechas disponibles
+  // Cuando cambia el doctor -> cargar fechas disponibles
   useEffect(() => {
     if (!doctorId) {
       setFechas([]);
       setHorarios([]);
       setFechaSeleccionada("");
       setHorarioSeleccionado("");
+      setSelectedDate(null);
       return;
     }
 
@@ -78,6 +90,7 @@ export function AgendarCitaPage() {
     setHorarios([]);
     setFechaSeleccionada("");
     setHorarioSeleccionado("");
+    setSelectedDate(null);
 
     listarFechasDisponibles(Number(doctorId))
       .then(setFechas)
@@ -86,7 +99,7 @@ export function AgendarCitaPage() {
       );
   }, [doctorId]);
 
-  //Cuando cambia la fecha -> cargar horarios disponibles
+  // Cuando cambia la fecha -> cargar horarios disponibles
   useEffect(() => {
     if (!doctorId || !fechaSeleccionada) {
       setHorarios([]);
@@ -114,6 +127,20 @@ export function AgendarCitaPage() {
     const hf = `${pad(fin.getHours())}:${pad(fin.getMinutes())}`;
 
     return `${hi} - ${hf}`;
+  };
+
+  // helper: pasar arreglo de fechas ISO a Set("YYYY-MM-DD")
+  const fechasSet = new Set(
+    fechas.map((f) => f.substring(0, 10)) // si viene "2025-11-25T00:00:00"
+  );
+
+  // el calendario solo permitirá seleccionar días que estén en fechasSet
+  const isAvailableDate = (date: Date) => {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    const key = `${yyyy}-${mm}-${dd}`;
+    return fechasSet.has(key);
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -144,7 +171,7 @@ export function AgendarCitaPage() {
         pacienteId,
         doctorId: Number(doctorId),
         fechaInicioUtc: horarioSeleccionado, // viene del slot de 1h
-        duracionMin: 60,                     // todas de 1 hora
+        duracionMin: 60, // todas de 1 hora
       });
 
       setResultado(
@@ -212,18 +239,30 @@ export function AgendarCitaPage() {
 
           <div className="agendar-field">
             <label>Fecha</label>
-            <select
-              value={fechaSeleccionada}
-              onChange={(e) => setFechaSeleccionada(e.target.value)}
+            <DatePicker
+              selected={selectedDate}
+              onChange={(date) => {
+                setSelectedDate(date);
+
+                if (date) {
+                  const yyyy = date.getFullYear();
+                  const mm = String(date.getMonth() + 1).padStart(2, "0");
+                  const dd = String(date.getDate()).padStart(2, "0");
+                  const value = `${yyyy}-${mm}-${dd}`;
+                  setFechaSeleccionada(value);
+                } else {
+                  setFechaSeleccionada("");
+                }
+              }}
+              filterDate={isAvailableDate}
+              dateFormat="yyyy-MM-dd"
+              placeholderText={
+                !doctorId || fechas.length === 0
+                  ? "Selecciona primero un doctor"
+                  : "Selecciona una fecha"
+              }
               disabled={!doctorId || fechas.length === 0}
-            >
-              <option value="">Selecciona una fecha</option>
-              {fechas.map((f) => (
-                <option key={f} value={formatDate(f)}>
-                  {formatDate(f)}
-                </option>
-              ))}
-            </select>
+            />
           </div>
 
           <div className="agendar-field">
