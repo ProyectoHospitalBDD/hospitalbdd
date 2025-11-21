@@ -3,7 +3,11 @@ import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login as loginApi } from "../../api/authApi";
 import { useAuth } from "../../lib/auth/AuthContext";
+<<<<<<< HEAD
 import "./LoginPage.css"; 
+=======
+import "./LoginPage.css"; // si tienes estilos
+>>>>>>> d8fd54c01530f4db54935776ae95bc4138d25ca9
 
 export function LoginPage() {
   const [correo, setCorreo] = useState("");
