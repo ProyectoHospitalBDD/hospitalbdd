@@ -2,10 +2,37 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Hospital.Api.Middleware;
 using Hospital.Api.Services;
-using Hospital.Api.Persistence;         // Asegúrate que aquí vive HospitalContext
+using Hospital.Api.Services.Auth;
+using Hospital.Api.Persistence;      
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
+//configurar JWT
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+var keyBytes = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+builder.Services.AddAuthorization();
 
 // Controllers + FluentValidation
 builder.Services.AddControllers();
@@ -32,6 +59,9 @@ builder.Services.AddScoped<CitasService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+//Password
+builder.Services.AddSingleton<PasswordService>();
+
 var app = builder.Build();
 
 // Middleware
@@ -42,7 +72,12 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("frontend");
-// app.UseHttpsRedirection(); // opcional si corres con HTTPS
+
+app.UseRouting();
+
+app.UseAuthentication();   
+app.UseAuthorization();
+
 app.UseMiddleware<SqlExceptionMiddleware>();
 
 app.MapControllers();
