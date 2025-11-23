@@ -71,11 +71,7 @@ public partial class HospitalContext : DbContext
     public virtual DbSet<TicketServicio> TicketServicios { get; set; }
 
     public virtual DbSet<UsuarioSistema> UsuarioSistemas { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=LAPTOP-KT0RGNLU\\SQLEXPRESS;Database=hospitalBD;Trusted_Connection=True;TrustServerCertificate=True;");
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AlergiaPadecimiento>(entity =>
@@ -712,9 +708,6 @@ public partial class HospitalContext : DbContext
             entity.Property(e => e.ApPat)
                 .HasMaxLength(20)
                 .HasColumnName("apPat");
-            entity.Property(e => e.Contrasena)
-                .HasMaxLength(100)
-                .HasColumnName("contrasena");
             entity.Property(e => e.Curp)
                 .HasMaxLength(18)
                 .IsUnicode(false)

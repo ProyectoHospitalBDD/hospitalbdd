@@ -2,17 +2,45 @@ using FluentValidation;
 using FluentValidation.AspNetCore;
 using Hospital.Api.Middleware;
 using Hospital.Api.Services;
-using Hospital.Api.Persistence;         // Asegúrate que aquí vive HospitalContext
+using Hospital.Api.Services.Auth;
+using Hospital.Api.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;               
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Controllers + FluentValidation
+// ================= JWT =================
+var jwtSection = builder.Configuration.GetSection("Jwt");
+var keyBytes = Encoding.UTF8.GetBytes(jwtSection["Key"]!);
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateIssuerSigningKey = true,
+            ValidateLifetime = true,
+            ValidIssuer = jwtSection["Issuer"],
+            ValidAudience = jwtSection["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+            ClockSkew = TimeSpan.Zero
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+// ============ Controllers + FluentValidation ============
 builder.Services.AddControllers();
 builder.Services.AddFluentValidationAutoValidation();
 builder.Services.AddValidatorsFromAssemblyContaining<Hospital.Api.Validators.CreateCitaDtoValidator>();
 
-// CORS para el front (Vite: 5173)
+// ================== CORS (front Vite 5173) ==================
 builder.Services.AddCors(opt =>
 {
     opt.AddPolicy("frontend", p => p
@@ -21,29 +49,67 @@ builder.Services.AddCors(opt =>
         .AllowAnyMethod());
 });
 
-// DbContext (usa la cadena "SqlServer" del appsettings.json)
+// ================== DbContext ==================
 builder.Services.AddDbContext<HospitalContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer")));
 
-// Services
+// ================== Services ==================
 builder.Services.AddScoped<CitasService>();
+builder.Services.AddSingleton<PasswordService>();
+builder.Services.AddSingleton<TokenService>();
 
-// Swagger (útil en dev)
+// ================== Swagger ==================
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Hospital.Api",
+        Version = "v1"
+    });
+
+    //Esquema de seguridad JWT para que aparezca el botón Authorize
+    var securityScheme = new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Description = "Introduce el token JWT con el formato: Bearer {token}",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        Reference = new OpenApiReference
+        {
+            Type = ReferenceType.SecurityScheme,
+            Id = "Bearer"
+        }
+    };
+
+    c.AddSecurityDefinition("Bearer", securityScheme);
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { securityScheme, Array.Empty<string>() }
+    });
+});
 
 var app = builder.Build();
 
-// Middleware
+// ================== Middleware ==================
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseCors("frontend");
-// app.UseHttpsRedirection(); // opcional si corres con HTTPS
 app.UseMiddleware<SqlExceptionMiddleware>();
 
+app.UseRouting();
+
+app.UseCors("frontend");
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
+
 app.Run();

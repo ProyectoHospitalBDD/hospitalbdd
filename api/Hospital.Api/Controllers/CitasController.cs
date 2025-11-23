@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Hospital.Api.Dtos.Citas;
 using Hospital.Api.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Hospital.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class CitasController : ControllerBase
 {
     private readonly CitasService _svc;
