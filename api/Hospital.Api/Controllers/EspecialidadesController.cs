@@ -5,10 +5,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Hospital.Api.Persistence;
 using Hospital.Api.Dtos.Especialidades;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Hospital.Api.Controllers{
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class EspecialidadesController : ControllerBase{
         
         private readonly HospitalContext _db;

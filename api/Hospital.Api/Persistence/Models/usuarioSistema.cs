@@ -13,8 +13,6 @@ public partial class UsuarioSistema
 
     public string? ApMat { get; set; }
 
-    public string Contrasena { get; set; } = null!;
-
     public string TipoUsuario { get; set; } = null!;
 
     public string Curp { get; set; } = null!;
@@ -26,4 +24,8 @@ public partial class UsuarioSistema
     public virtual Contacto? IdContactoNavigation { get; set; }
 
     public virtual Paciente? Paciente { get; set; }
+
+    public byte[]? PasswordHash { get; set; }
+    public byte[]? PasswordSalt { get; set; }
+    public int? PasswordIteraciones { get; set; }
 }

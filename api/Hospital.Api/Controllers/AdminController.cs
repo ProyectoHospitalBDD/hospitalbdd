@@ -1,11 +1,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Hospital.Api.Persistence;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Hospital.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class AdminController : ControllerBase
 {
     private readonly HospitalContext _db;
