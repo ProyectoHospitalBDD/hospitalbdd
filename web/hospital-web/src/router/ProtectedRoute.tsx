@@ -1,14 +1,9 @@
-// src/router/ProtectedRoute.tsx
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useAuth } from "../lib/auth/AuthContext";
 
-export function ProtectedRoute() {
+export default function ProtectedRoute({ children }: { children: JSX.Element }) {
   const { user } = useAuth();
-  const location = useLocation();
 
-  if (!user) {
-    return <Navigate to="/login" replace state={{ from: location }} />;
-  }
-
-  return <Outlet />;
+  if (!user) return <Navigate to="/login" replace />;
+  return children;
 }

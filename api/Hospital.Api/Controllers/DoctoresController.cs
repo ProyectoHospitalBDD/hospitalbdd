@@ -7,12 +7,13 @@ using Hospital.Api.Persistence;
 using Hospital.Api.Dtos.Doctores;
 using Hospital.Api.Persistence.Models;
 using System.Globalization;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Hospital.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-
+    [Authorize]
     public class DoctoresController : ControllerBase
     {
         

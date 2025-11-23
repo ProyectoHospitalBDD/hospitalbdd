@@ -1,3 +1,4 @@
+// src/api/authApi.ts
 import { http } from "./httpClient";
 
 export interface LoginRequest {
@@ -9,6 +10,7 @@ export interface LoginResponse {
   idUsuario: number;
   nombreCompleto: string;
   rol: string;
+  token: string;
 }
 
 export async function login(data: LoginRequest) {
