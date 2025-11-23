@@ -1,22 +1,21 @@
-/* src/layout/Layout.css */
-
 .layout-root {
   min-height: 100vh;
-  background: #f3f4f6;
   display: flex;
   flex-direction: column;
+  background: #f3f4f6;
 }
 
+/* HEADER A TODO LO ANCHO */
 .layout-header {
-  background: #00c897; /* verde hospital */
+  width: 100%;
+  background: #00c897;
   color: white;
-  padding: 0.75rem 2rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
+/* Contenido interno */
 .layout-header-inner {
-  max-width: 1100px;
-  margin: 0 auto;
+  padding: 0.75rem 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -25,14 +24,9 @@
 .layout-logo {
   font-size: 1.4rem;
   font-weight: 700;
-  text-decoration: none;
-  color: white;
 }
 
-.layout-logo span {
-  font-weight: 800;
-}
-
+/* NAV */
 .layout-nav {
   display: flex;
   gap: 1rem;
@@ -41,14 +35,14 @@
 .layout-nav-link {
   color: white;
   text-decoration: none;
-  font-weight: 500;
-  padding: 0.25rem 0.75rem;
+  padding: 0.4rem 0.9rem;
   border-radius: 999px;
-  transition: background 0.15s ease, color 0.15s ease;
+  font-weight: 500;
+  transition: 0.2s;
 }
 
 .layout-nav-link:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .layout-nav-link.active {
@@ -56,9 +50,30 @@
   color: #00c897;
 }
 
+/* USER AREA */
+.layout-user {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.layout-logout-btn {
+  background: #111827;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* CONTENIDO */
 .layout-main {
   flex: 1;
   padding: 2rem 1rem;
+}
+
+.layout-left {
   display: flex;
-  justify-content: center;
+  align-items: center;
+  gap: 2rem; 
 }
