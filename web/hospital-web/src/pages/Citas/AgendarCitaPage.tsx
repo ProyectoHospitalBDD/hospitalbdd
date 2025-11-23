@@ -1,4 +1,5 @@
 // src/pages/Citas/AgendarCitaPage.tsx
+// src/pages/Citas/AgendarCitaPage.tsx
 import { FormEvent, useEffect, useState } from "react";
 import { crearCita } from "../../api/citasApi";
 import {
@@ -15,10 +16,25 @@ import {
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./AgendarCitaPage.css";
+import { useAuth } from "../../lib/auth/AuthContext";  
 
 export function AgendarCitaPage() {
-  // por ahora simulamos "login"
-  const [pacienteId] = useState<number>(1);
+  const { user } = useAuth(); // tomamos el usuario logueado
+
+  // si no hay usuario logueado, mostramos mensaje 
+  if (!user) {
+    return (
+      <div className="agendar-page">
+        <div className="agendar-card">
+          <h2>Agendar cita</h2>
+          <p>Debes iniciar sesión para agendar una cita.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // idUsuario del contexto = pacienteId
+  const pacienteId = user.idUsuario; // 
 
   // datos cargados desde el backend
   const [especialidades, setEspecialidades] = useState<EspecialidadDto[]>([]);
@@ -30,7 +46,7 @@ export function AgendarCitaPage() {
   const [especialidadId, setEspecialidadId] = useState<number | "">("");
   const [doctorId, setDoctorId] = useState<number | "">("");
   const [fechaSeleccionada, setFechaSeleccionada] = useState<string>("");
-  const [horarioSeleccionado, setHorarioSeleccionado] = useState<string>(""); // guardamos el inicio
+  const [horarioSeleccionado, setHorarioSeleccionado] = useState<string>("");
 
   // estado de UI
   const [loading, setLoading] = useState(false);
@@ -114,9 +130,6 @@ export function AgendarCitaPage() {
       );
   }, [doctorId, fechaSeleccionada]);
 
-  // helpers (estilo)
-  const formatDate = (iso: string) => iso.substring(0, 10); // yyyy-MM-dd
-
   const formatTimeRange = (slot: HorarioDisponibleDto) => {
     const inicio = new Date(slot.inicio);
     const fin = new Date(slot.fin);
@@ -129,12 +142,8 @@ export function AgendarCitaPage() {
     return `${hi} - ${hf}`;
   };
 
-  // helper: pasar arreglo de fechas ISO a Set("YYYY-MM-DD")
-  const fechasSet = new Set(
-    fechas.map((f) => f.substring(0, 10)) // si viene "2025-11-25T00:00:00"
-  );
+  const fechasSet = new Set(fechas.map((f) => f.substring(0, 10)));
 
-  // el calendario solo permitirá seleccionar días que estén en fechasSet
   const isAvailableDate = (date: Date) => {
     const yyyy = date.getFullYear();
     const mm = String(date.getMonth() + 1).padStart(2, "0");
@@ -168,10 +177,10 @@ export function AgendarCitaPage() {
     setLoading(true);
     try {
       const cita = await crearCita({
-        pacienteId,
+        pacienteId, // 
         doctorId: Number(doctorId),
-        fechaInicioUtc: horarioSeleccionado, // viene del slot de 1h
-        duracionMin: 60, // todas de 1 hora
+        fechaInicioUtc: horarioSeleccionado,
+        duracionMin: 60,
       });
 
       setResultado(
