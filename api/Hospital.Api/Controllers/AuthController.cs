@@ -67,7 +67,7 @@ public class AuthController : ControllerBase
             IdUsuario = usuario.IdUsuario,
             NombreCompleto = nombre,
             Rol = usuario.TipoUsuario,
-            Token = token
+            Token = token,
         };
 
         return Ok(response);

@@ -27,8 +27,8 @@ export function LoginPage() {
       navigate("/home");
     } catch (err: any) {
       const msg =
-        err?.response?.data ??
-        err?.response?.data?.detail ??
+        err?.response?.data?.detail ||
+        err?.response?.data?.message ||
         "Usuario o contraseña incorrectos.";
       setError(typeof msg === "string" ? msg : "Usuario o contraseña incorrectos.");
     } finally {

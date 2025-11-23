@@ -7,4 +7,7 @@ public class LoginResponseDto
     public string NombreCompleto { get; set; } = default!;
     public string Rol { get; set; } = default!;
     public string Token { get; set; } = default!;
+
+    public int? IdPaciente { get; set; }
+    public int? IdDoctor { get; set; }
 }
