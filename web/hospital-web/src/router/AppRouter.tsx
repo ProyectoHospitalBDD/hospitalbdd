@@ -4,26 +4,40 @@ import Layout from "../layout/Layout";
 import HomePage from "../pages/HomePage";
 import AgendarCitaPage from "../pages/Citas/AgendarCitaPage";
 import LoginPage from "../pages/Auth/LoginPage";
-import { ProtectedRoute } from "./ProtectedRoute";
+import PrivateRoute from "./PrivateRoute";
 
 export function AppRouter() {
   return (
     <Routes>
-      {/* redirigir raíz al login */}
-      <Route path="/" element={<Navigate to="/login" />} />
-
+      {/* Ruta de login (siempre pública) */}
       <Route path="/login" element={<LoginPage />} />
 
-      {/* Rutas protegidas */}
-      <Route element={<ProtectedRoute />}>
-        <Route element={<Layout />}>
-          <Route path="/home" element={<HomePage />} />
-          <Route path="/citas/agendar" element={<AgendarCitaPage />} />
-        </Route>
+      {/* Rutas que usan el layout */}
+      <Route element={<Layout />}>
+        {/* Home protegida */}
+        <Route
+          path="/home"
+          element={
+            <PrivateRoute>
+              <HomePage />
+            </PrivateRoute>
+          }
+        />
+
+        {/* Agendar cita protegida */}
+        <Route
+          path="/citas/agendar"
+          element={
+            <PrivateRoute>
+              <AgendarCitaPage />
+            </PrivateRoute>
+          }
+        />
       </Route>
 
-      {/* fallback */}
-      <Route path="*" element={<Navigate to="/login" />} />
+      {/* Redirecciones */}
+      <Route path="/" element={<Navigate to="/home" />} />
+      <Route path="*" element={<Navigate to="/home" />} />
     </Routes>
   );
 }
