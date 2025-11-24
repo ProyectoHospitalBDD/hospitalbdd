@@ -1,5 +1,5 @@
 // src/pages/Citas/AgendarCitaPage.tsx
-// src/pages/Citas/AgendarCitaPage.tsx
+
 import { FormEvent, useEffect, useState } from "react";
 import { crearCita } from "../../api/citasApi";
 import {
