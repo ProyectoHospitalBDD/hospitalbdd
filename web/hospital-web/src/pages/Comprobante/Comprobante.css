@@ -1,0 +1,78 @@
+.P{
+text-align: start;
+padding-left: 50px;
+}
+
+.P2{
+  text-align: end;
+  padding-right: 50px;
+}
+
+.Cuadro {
+  width: 550px;
+  height: 460px;
+  border-radius: 30px;
+  border-style: solid;
+  background: #e0e0e0;
+}
+
+.nose{
+  min-height: 100vh;
+  display: grid;
+  place-items: center;            /* centra en ambos ejes */
+  padding: 2rem;
+}
+
+.box-fila {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 16xp;
+}
+
+.centro{
+  text-align: center;
+  font-family: cursive;
+  padding: 30px;
+}
+
+.txt{
+  font-size: xx-large;
+}
+
+.app{
+  text-wrap-style: auto;
+  color: black;
+  min-height: 100vh;
+  font-family: cursive;
+}
+
+.btn {
+  text-decoration: none;
+  padding: 0.6rem 1.3rem;
+  border-radius: 999px;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.btn.primary {
+  background: #2563eb;
+  color: white;
+}
+
+.btn.primary:hover {
+  background: #1d4ed8;
+}
+
+.btn.secondary {
+  background: #e5e7eb;
+  color: #111827;
+}
+
+.btn.secondary:hover {
+  background: #d1d5db;
+}
+
+

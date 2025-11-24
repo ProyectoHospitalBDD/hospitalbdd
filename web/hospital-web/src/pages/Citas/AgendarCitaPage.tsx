@@ -1,4 +1,6 @@
 // src/pages/Citas/AgendarCitaPage.tsx
+// src/pages/Citas/AgendarCitaPage.tsx
+import { Link, useNavigate } from "react-router-dom";
 
 import { FormEvent, useEffect, useState } from "react";
 import { crearCita } from "../../api/citasApi";
@@ -20,6 +22,17 @@ import { useAuth } from "../../lib/auth/AuthContext";
 
 export function AgendarCitaPage() {
   const { user } = useAuth(); // tomamos el usuario logueado
+
+  const navigate = useNavigate();
+
+
+  {/*const navigate = useNavigate();
+     function handleClick () {
+      navigate('/comprobante/Comprobar', {state: {horarioSeleccionado, fechaSeleccionada
+        , especialidadId, doctorId
+      }})
+     }
+  */}
 
   // si no hay usuario logueado, mostramos mensaje 
   if (!user) {
@@ -50,7 +63,7 @@ export function AgendarCitaPage() {
 
   // estado de UI
   const [loading, setLoading] = useState(false);
-  const [resultado, setResultado] = useState<string | null>(null);
+  //const [resultado, setResultado] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Fecha seleccionada en el DatePicker (tipo Date)
@@ -152,10 +165,13 @@ export function AgendarCitaPage() {
     return fechasSet.has(key);
   };
 
+
+  //Creacion de cita en la base
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError(null);
-    setResultado(null);
+    {/*setResultado(null);*/}
 
     if (!especialidadId) {
       setError("Debes seleccionar una especialidad.");
@@ -183,10 +199,27 @@ export function AgendarCitaPage() {
         duracionMin: 60,
       });
 
-      setResultado(
-        `Cita #${cita.idCita} agendada. Estatus: ${cita.estatusCita}. ` +
-          `Inicio: ${cita.fechaHoraInicio}, fin: ${cita.fechaHoraFin}.`
-      );
+            {/*Mandar al comprobante cuando termine*/}
+      navigate("/comprobante/Comprobar", {
+      state: {
+          citaId: cita.idCita,
+          estatus: cita.estatusCita,
+    fechaInicio: cita.fechaHoraInicio,
+    fechaFin: cita.fechaHoraFin,
+    fechaSeleccionada,
+    horarioSeleccionado,
+    especialidadId,
+    doctorId,
+
+      },
+    });
+
+      {/*setResultado(
+      `Cita #${cita.idCita} agendada. Estatus: ${cita.estatusCita}. ` +
+      `Inicio: ${cita.fechaHoraInicio}, fin: ${cita.fechaHoraFin}.`
+      );*/}
+
+     
     } catch (err: any) {
       const detail =
         err?.response?.data?.detail ||
@@ -294,10 +327,13 @@ export function AgendarCitaPage() {
             <button className="agendar-btn" type="submit" disabled={loading}>
               {loading ? "Agendando..." : "Agendar cita"}
             </button>
+
+            {/*<button onClick={handleClick} className="agendar-btn">Comprobante</button>*/}
+
           </div>
         </form>
 
-        {resultado && <p className="agendar-result">{resultado}</p>}
+        {/*resultado && <p className="agendar-result">{resultado}</p>*/}
         {error && <p className="agendar-error">{error}</p>}
       </div>
     </div>
