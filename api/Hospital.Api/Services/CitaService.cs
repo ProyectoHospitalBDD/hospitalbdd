@@ -28,7 +28,7 @@ public class CitasService
             .AsNoTracking()
             .ToListAsync();  // <-- AQUÍ se ejecuta el SP
 
-        var row = rows.Single();  // <-- ahora sí, composición en memoria
+        var row = rows.Single();  
 
         return new CitaResponseDto(
             row.IdCita,
