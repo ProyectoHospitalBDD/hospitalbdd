@@ -1,4 +1,5 @@
 // src/layout/Layout.tsx
+import React, { FC, useState } from "react";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../lib/auth/AuthContext";
 import "./Layout.css";
@@ -12,31 +13,49 @@ export function Layout() {
     navigate("/login");
   };
 
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const toggleMenu = (): void => {
+    setIsOpen(!isOpen);
+  };
+
+
   return (
     <div className="layout-root">
       <header className="layout-header">
         <div className="layout-header-inner">
   
-          {/* IZQUIERDA: logo + menú */}
+          {/* IZQUIERDA: logo */}
           <div className="layout-left">
-            <div className="layout-logo">Hospital ESCOM</div>
-
-            <nav className="layout-nav">
-              <NavLink to="/home" className="layout-nav-link">
-                Inicio
-              </NavLink>
-              <NavLink to="/citas/agendar" className="layout-nav-link">
-                Agendar cita
-              </NavLink>
-            </nav>
+            <div className="layout-logo">PoliMed</div> 
           </div>
 
-          {/* DERECHA: usuario + botón */}
+          {/* DERECHA: usuario + menu */}
           <div className="layout-user">
             {user && <span className="layout-user-name">{user.nombreCompleto}</span>}
-            <button className="layout-logout-btn" onClick={handleLogout}>
-              Cerrar sesión
-            </button>
+            <div className="hamburger-menu">
+              <div className="hamburger-icon" onClick={toggleMenu}>
+                <div className="line"></div>
+                <div className="line"></div>
+                <div className="line"></div>
+              </div>
+            </div>
+
+             {isOpen && (
+              <div className="menu">
+                <ul>
+                  <nav>
+                    <NavLink to="/home" className="">
+                    <li>Inicio</li>
+                    </NavLink>
+                    <NavLink to="/citas/agendar" className="">
+                    <li>Agendar cita</li>
+                    </NavLink>
+                  </nav>
+                  <li onClick={handleLogout}>Cerrar sesion</li>
+                </ul>
+              </div>
+              )}
           </div>
 
         </div>
@@ -50,3 +69,5 @@ export function Layout() {
 }
 
 export default Layout;
+
+/*Aqui  quito cosas*/ 

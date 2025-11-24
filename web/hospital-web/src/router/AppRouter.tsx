@@ -5,6 +5,7 @@ import HomePage from "../pages/HomePage";
 import AgendarCitaPage from "../pages/Citas/AgendarCitaPage";
 import LoginPage from "../pages/Auth/LoginPage";
 import PrivateRoute from "./PrivateRoute";
+import Comprobante from "../pages/Comprobante/Comprobante";
 
 export function AppRouter() {
   return (
@@ -33,7 +34,22 @@ export function AppRouter() {
             </PrivateRoute>
           }
         />
+
+        {/*Comprobante protegido*/}
+        <Route
+          path="/comprobante/Comprobar"
+          element={
+            <PrivateRoute>
+              <Comprobante/>
+            </PrivateRoute>
+          }
+        />
+
       </Route>
+
+     
+
+      
 
       {/* Redirecciones */}
       <Route path="/" element={<Navigate to="/home" />} />
