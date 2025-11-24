@@ -1,12 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap');
+
 .layout-root {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background:  rgb(235, 236, 159);
-  font-family: cursive;
+  background:  rgb(212, 241, 212);
+  font-family: Nunito;
 }
 
-/* HEADER A TODO LO ANCHO */
+/* HEADER */
 .layout-header {
   width: 100%;
   background: #00c897;
@@ -16,7 +20,7 @@
 
 /* Contenido interno */
 .layout-header-inner {
-  padding: 0.75rem 2rem;
+  padding: 1.5rem 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -59,9 +63,9 @@
   justify-content: space-between;
   padding: 0 1rem;;
 }
-
+/* espacio entre nombre e ícono */
 .layout-user-name {
-  margin-right: 1rem;    /* espacio entre nombre e ícono */
+  margin-right: 1rem;    
   font-weight: bold;
 }
 
@@ -77,8 +81,12 @@
 
 /* CONTENIDO */
 .layout-main {
-  flex: 1;
-  padding: 2rem 1rem;
+  flex: 1;                    /* ocupa todo el alto restante debajo del header */
+  display: flex;              /* contenedor flex */
+  justify-content: center;    /* centra horizontalmente al hijo (la tarjeta) */
+  align-items: center;        /* centra verticalmente */
+  padding: 2rem;              
+  background: rgb(218, 241, 218);        
 }
 
 .layout-left {
@@ -94,7 +102,7 @@
 /*Menu de hamburguesa*/
 .hamburger-menu {
   position: absolute;
-  top: 20px;
+  top: 32px;
   right: 16px;
   display: inline-flex;
   align-items: center;
