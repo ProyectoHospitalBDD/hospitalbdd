@@ -1,11 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 .P{
 text-align: start;
+padding-top: 5px;
 padding-left: 50px;
+font-family: Poppins;
 }
 
 .P2{
   text-align: end;
   padding-right: 50px;
+  font-family: Poppins;
 }
 
 .Cuadro {
@@ -34,19 +39,20 @@ padding-left: 50px;
 
 .centro{
   text-align: center;
-  font-family: cursive;
-  padding: 30px;
+  font-family: Poppins;
+  padding: 25px;
 }
 
 .txt{
   font-size: xx-large;
+  font-family: Nunito;
 }
 
 .app{
   text-wrap-style: auto;
   color: black;
   min-height: 100vh;
-  font-family: cursive;
+  font-family: Nunito;
 }
 
 .btn {
