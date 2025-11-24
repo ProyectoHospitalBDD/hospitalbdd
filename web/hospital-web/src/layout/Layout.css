@@ -2,7 +2,8 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #f3f4f6;
+  background:  rgb(235, 236, 159);
+  font-family: cursive;
 }
 
 /* HEADER A TODO LO ANCHO */
@@ -19,6 +20,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+ 
 }
 
 .layout-logo {
@@ -54,8 +56,15 @@
 .layout-user {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  justify-content: space-between;
+  padding: 0 1rem;;
 }
+
+.layout-user-name {
+  margin-right: 1rem;    /* espacio entre nombre e ícono */
+  font-weight: bold;
+}
+
 
 .layout-logout-btn {
   background: #111827;
@@ -76,4 +85,67 @@
   display: flex;
   align-items: center;
   gap: 2rem; 
+}
+
+
+/*Pizza was here*/
+
+
+/*Menu de hamburguesa*/
+.hamburger-menu {
+  position: absolute;
+  top: 20px;
+  right: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 1em;                    /* sin separación entre ambos */
+  flex-direction: row-reverse;
+  z-index: 100;
+  
+}
+
+/*Icono del menu*/
+.hamburger-icon {
+  cursor: pointer;
+  width: 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 20px;
+}
+
+/*Lineas del menu*/
+.line {
+  background-color: #f9f9f9ff;
+  height: 3px;
+  border-radius: 2px;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+/*Menu desplejable*/
+.menu {
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+/*Menu desplejable sin simbolos*/
+.menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/*Elemento del menu*/
+.menu li {
+  margin: 10px 0;
+  cursor: pointer;
+  flex-direction: column;
+  color:black
 }

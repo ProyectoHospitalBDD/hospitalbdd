@@ -16,7 +16,7 @@ export default function HomePage() {
           Agendar una cita
         </Link>
         <Link to="/login" className="home-btn secondary">
-          Iniciar sesión
+          Cerrar sesión
         </Link>
       </div>
     </div>
