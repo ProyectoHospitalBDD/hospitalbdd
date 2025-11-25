@@ -1,4 +1,5 @@
 USE hospitalBD;
+GO
 -- ¿Traslape con otra cita del doctor?
 CREATE OR ALTER FUNCTION dbo.fnCitaSeTraslapa
 (

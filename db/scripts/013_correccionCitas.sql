@@ -1,5 +1,5 @@
-use hospitalBD
-
+use hospitalBD;
+GO
 --Correccion Pagar Cita
 
 CREATE OR ALTER PROCEDURE dbo.sp_Cita_Pagar

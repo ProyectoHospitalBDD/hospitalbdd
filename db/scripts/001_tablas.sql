@@ -1,7 +1,7 @@
 /*CREATE DATABASE hospitalBD
-
-USE hospitalBD
 */
+USE hospitalBD
+
 
 CREATE TABLE dbo.contacto (
 	idContacto	INT PRIMARY KEY IDENTITY (1,1),

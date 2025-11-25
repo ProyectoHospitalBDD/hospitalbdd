@@ -1,4 +1,5 @@
 USE hospitalBD;
+GO
 -- Crear cita
 CREATE OR ALTER PROCEDURE dbo.sp_Cita_Crear
   @PacienteId  INT,
@@ -44,6 +45,18 @@ BEGIN
         AND c.estatusCita IN (N'AgendadaPendPago', N'PagadaPendAtender')
     )
       THROW 51004, 'PacientePendienteConMismoDoctor', 1;
+
+      IF EXISTS(
+      SELECT 1
+      FROM dbo.cita c WITH (UPDLOCK, HOLDLOCK)
+      WHERE c.idPaciente = @PacienteId
+        -- Importante: No filtramos por DoctorId aquí, buscamos en general
+        AND c.estatusCita IN (N'AgendadaPendPago', N'PagadaPendAtender') 
+        -- Lógica de traslape de tiempo
+        AND c.fechaHoraFin > @FechaInicio 
+        AND c.fechaHoraInicio < @FechaFin
+    )
+      THROW 51007, 'PacienteOcupadoEnOtroConsultorio', 1;
 
     IF dbo.fnCitaSeTraslapa(@DoctorId, @FechaInicio, @FechaFin) = 1
       THROW 51003, 'DoctorOcupado', 1;
