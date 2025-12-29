@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;               
 using System.Text;
+using Hospital.Api.Jobs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,6 +58,13 @@ builder.Services.AddDbContext<HospitalContext>(options =>
 builder.Services.AddScoped<CitasService>();
 builder.Services.AddSingleton<PasswordService>();
 builder.Services.AddSingleton<TokenService>();
+
+builder.Services.Configure<VencerCitasJobOptions>(
+    builder.Configuration.GetSection("Jobs:VencerCitas"));
+
+builder.Services.AddHostedService<VencerCitasHostedService>();
+
+
 
 // ================== Swagger ==================
 builder.Services.AddEndpointsApiExplorer();

@@ -25,6 +25,7 @@ public class CitasController : ControllerBase
     }
 
     [HttpPost("{id:int}/cancelar/paciente")]
+    [Authorize(Roles = "Paciente")]
     public async Task<IActionResult> CancelarPaciente([FromRoute] int id)
     {
         await _svc.CancelarPacienteAsync(id);
@@ -32,6 +33,7 @@ public class CitasController : ControllerBase
     }
 
     [HttpPost("{id:int}/cancelar/doctor")]
+    [Authorize(Roles = "Doctor")]
     public async Task<IActionResult> CancelarDoctor([FromRoute] int id)
     {
         await _svc.CancelarDoctorAsync(id);

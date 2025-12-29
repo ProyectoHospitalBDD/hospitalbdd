@@ -6,6 +6,7 @@ import AgendarCitaPage from "../pages/Citas/AgendarCitaPage";
 import LoginPage from "../pages/Auth/LoginPage";
 import PrivateRoute from "./PrivateRoute";
 import Comprobante from "../pages/Comprobante/Comprobante";
+import ProfilePage from "../pages/Profile/ProfilePage";
 
 export function AppRouter() {
   return (
@@ -44,6 +45,11 @@ export function AppRouter() {
             </PrivateRoute>
           }
         />
+
+        <Route 
+          path="/perfil" 
+            element={<ProfilePage />} />
+
 
       </Route>
 
