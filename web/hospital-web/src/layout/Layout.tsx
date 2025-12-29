@@ -48,6 +48,9 @@ export function Layout() {
                     <NavLink to="/home" className="">
                     <li>Inicio</li>
                     </NavLink>
+                    <NavLink to="/perfil" className="">
+                    <li>Mi perfil</li>
+                    </NavLink>
                     <NavLink to="/citas/agendar" className="">
                     <li>Agendar cita</li>
                     </NavLink>
@@ -70,4 +73,3 @@ export function Layout() {
 
 export default Layout;
 
-/*Aqui  quito cosas*/ 

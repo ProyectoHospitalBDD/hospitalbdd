@@ -1,0 +1,231 @@
+/* ====== Layout general ====== */
+.perfil-page {
+  min-height: calc(100vh - 72px); /* ajusta si tu header mide otra cosa */
+  padding: 32px 16px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.perfil-card {
+  width: 100%;
+  max-width: 980px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  padding: 22px 22px 18px;
+}
+
+/* ====== Header ====== */
+.perfil-title {
+  margin: 0 0 12px;
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a; /* slate-900 */
+}
+
+.perfil-subtitle {
+  margin: 0 0 18px;
+  color: #475569; /* slate-600 */
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* ====== Tabs ====== */
+.perfil-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.perfil-tab {
+  appearance: none;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: #ffffff;
+  color: #0f172a;
+  padding: 9px 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: transform 0.06s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.perfil-tab:hover {
+  transform: translateY(-1px);
+  border-color: rgba(0, 0, 0, 0.22);
+  background: rgba(2, 132, 199, 0.06); /* azul suave */
+}
+
+.perfil-tab:active {
+  transform: translateY(0);
+}
+
+.perfil-tab--active {
+  background: #0ea5e9; /* sky-500 */
+  border-color: #0ea5e9;
+  color: #ffffff;
+}
+
+/* ====== Secciones ====== */
+.perfil-section {
+  padding: 10px 0 4px;
+}
+
+.perfil-section-title {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+/* ====== Datos personales ====== */
+.perfil-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.perfil-field {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(248, 250, 252, 0.8);
+  border-radius: 14px;
+  padding: 12px 12px;
+}
+
+.perfil-field-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  color: #64748b; /* slate-500 */
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.perfil-field-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  word-break: break-word;
+}
+
+/* ====== Tabla (citas) ====== */
+.perfil-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.perfil-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 860px; /* para que no se rompa feo en pantallas chicas */
+  background: #ffffff;
+}
+
+.perfil-table thead th {
+  text-align: left;
+  padding: 12px 12px;
+  font-size: 12px;
+  color: #334155;
+  background: rgba(15, 23, 42, 0.04);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  white-space: nowrap;
+}
+
+.perfil-table tbody td {
+  padding: 12px 12px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  color: #0f172a;
+  font-weight: 600;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.perfil-table tbody tr:hover {
+  background: rgba(2, 132, 199, 0.06);
+}
+
+/* ====== Chips de estatus ====== */
+.perfil-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  background: rgba(0, 0, 0, 0.03);
+  color: #0f172a;
+}
+
+.perfil-chip--ok {
+  background: rgba(34, 197, 94, 0.12);
+  border-color: rgba(34, 197, 94, 0.30);
+  color: #14532d;
+}
+
+.perfil-chip--warn {
+  background: rgba(245, 158, 11, 0.14);
+  border-color: rgba(245, 158, 11, 0.35);
+  color: #7c2d12;
+}
+
+.perfil-chip--bad {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.30);
+  color: #7f1d1d;
+}
+
+/* ====== Botones ====== */
+.perfil-btn {
+  appearance: none;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: #ffffff;
+  color: #0f172a;
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.06s ease;
+}
+
+.perfil-btn:hover {
+  background: rgba(2, 132, 199, 0.08);
+  border-color: rgba(2, 132, 199, 0.35);
+  transform: translateY(-1px);
+}
+
+.perfil-btn--danger {
+  background: rgba(239, 68, 68, 0.10);
+  border-color: rgba(239, 68, 68, 0.30);
+  color: #7f1d1d;
+}
+
+.perfil-btn--danger:hover {
+  background: rgba(239, 68, 68, 0.16);
+  border-color: rgba(239, 68, 68, 0.45);
+}
+
+/* ====== Responsive ====== */
+@media (max-width: 720px) {
+  .perfil-card {
+    padding: 18px 14px 14px;
+    border-radius: 16px;
+  }
+
+  .perfil-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .perfil-title {
+    font-size: 20px;
+  }
+}

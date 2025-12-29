@@ -22,11 +22,11 @@ public class CitasService
     // ejecutamos SP y traemos el resultado como lista
         var rows = await _db.Set<_CitaSpRow>()
             .FromSqlRaw(
-                "EXEC dbo.sp_Cita_Crear @PacienteId,@DoctorId,@FechaInicio,@DuracionMin",
+                "EXEC dbo.sp_Cita_Crear @PacienteId,@DoctorId,@FechaInicio,@DuracionMin",// <-- AQUÍ se ejecuta el SP
                 p1, p2, p3, p4
             )
             .AsNoTracking()
-            .ToListAsync();  // <-- AQUÍ se ejecuta el SP
+            .ToListAsync();  
 
         var row = rows.Single();  
 
