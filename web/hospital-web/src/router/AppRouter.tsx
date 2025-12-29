@@ -7,6 +7,7 @@ import LoginPage from "../pages/Auth/LoginPage";
 import PrivateRoute from "./PrivateRoute";
 import Comprobante from "../pages/Comprobante/Comprobante";
 import ProfilePage from "../pages/Profile/ProfilePage";
+import DoctorPerfilPage from "../pages/Doctor/DoctorPerfilPage";
 
 export function AppRouter() {
   return (
@@ -49,6 +50,10 @@ export function AppRouter() {
         <Route 
           path="/perfil" 
             element={<ProfilePage />} />
+
+        <Route 
+          path="/doctor/perfil" 
+            element={<DoctorPerfilPage />} />
 
 
       </Route>
