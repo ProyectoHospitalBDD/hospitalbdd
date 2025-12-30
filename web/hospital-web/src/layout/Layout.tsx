@@ -28,8 +28,11 @@ export function Layout() {
 
     if (user.rol === "Doctor") navigate("/doctor/perfil");
     else if (user.rol === "Paciente") navigate("/perfil");
-    else navigate("/home"); // fallback por si luego agregas roles
+    else navigate("/home");
   };
+
+  const esDoctor = user?.rol === "Doctor";
+  const esPaciente = user?.rol === "Paciente";
 
   return (
     <div className="layout-root">
@@ -37,6 +40,31 @@ export function Layout() {
         <div className="layout-header-inner">
           <div className="layout-left">
             <div className="layout-logo">PoliMed</div>
+
+            {/* Tabs SOLO para Doctor */}
+            {esDoctor && (
+              <nav className="layout-tabs">
+                <NavLink
+                  to="/doctor/citas"
+                  onClick={closeMenu}
+                  className={({ isActive }) =>
+                    `layout-tab ${isActive ? "layout-tab--active" : ""}`
+                  }
+                >
+                  Mis citas
+                </NavLink>
+
+                <NavLink
+                  to="/doctor/atender"
+                  onClick={closeMenu}
+                  className={({ isActive }) =>
+                    `layout-tab ${isActive ? "layout-tab--active" : ""}`
+                  }
+                >
+                  Atender cita
+                </NavLink>
+              </nav>
+            )}
           </div>
 
           <div className="layout-user">
@@ -62,13 +90,28 @@ export function Layout() {
                       Mi perfil
                     </li>
 
-                    <NavLink to="/citas/agendar" onClick={closeMenu}>
-                      <li>Agendar cita</li>
-                    </NavLink>
+                    {/* Paciente */}
+                    {esPaciente && (
+                      <NavLink to="/citas/agendar" onClick={closeMenu}>
+                        <li>Agendar cita</li>
+                      </NavLink>
+                    )}
+
+                    {/* Doctor */}
+                    {esDoctor && (
+                      <>
+                        <NavLink to="/doctor/citas" onClick={closeMenu}>
+                          <li>Mis citas</li>
+                        </NavLink>
+                        <NavLink to="/doctor/atender" onClick={closeMenu}>
+                          <li>Atender cita</li>
+                        </NavLink>
+                      </>
+                    )}
                   </nav>
 
                   <li onClick={handleLogout} style={{ cursor: "pointer" }}>
-                    Cerrar sesion
+                    Cerrar sesión
                   </li>
                 </ul>
               </div>
