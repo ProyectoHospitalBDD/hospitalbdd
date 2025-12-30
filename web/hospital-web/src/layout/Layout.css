@@ -157,3 +157,30 @@
   flex-direction: column;
   color:black
 }
+
+.layout-tabs {
+  display: flex;
+  gap: 10px;
+  margin-left: 18px;
+  align-items: center;
+}
+
+.layout-tab {
+  color: rgba(255, 255, 255, 0.92);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.layout-tab:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.layout-tab--active {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.45);
+}
