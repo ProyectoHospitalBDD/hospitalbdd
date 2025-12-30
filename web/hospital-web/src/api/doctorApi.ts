@@ -41,3 +41,15 @@ export async function getMiHorarioDoctor(): Promise<HorarioDoctor[]> {
   const { data } = await api.get("/api/doctores/me/horario");
   return data;
 }
+
+export type CitaDoctor = {
+  idCita: number;
+  fecha: string; // yyyy-mm-dd
+  hora: string;  // HH:mm
+  estatus: string;
+};
+
+export async function getMisCitasDoctor(params: { desde: string; hasta: string }): Promise<CitaDoctor[]> {
+  const { data } = await api.get("/api/doctores/me/citas", { params });
+  return data;
+}

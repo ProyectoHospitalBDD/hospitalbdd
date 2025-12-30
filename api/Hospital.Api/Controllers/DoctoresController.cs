@@ -23,6 +23,37 @@ namespace Hospital.Api.Controllers
             _db = db;
         }
 
+        [HttpGet("me/citas")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> GetMisCitasDoctor([FromQuery] DateTime desde, [FromQuery] DateTime hasta)
+        {
+            var idUsuario = UserClaims.GetIdUsuario(User);
+
+            var d0 = desde.Date;
+            var d1 = hasta.Date.AddDays(1); // exclusivo
+
+            var rows = await _db.Cita
+                .AsNoTracking()
+                .Where(c =>
+                    c.IdDoctor == idUsuario &&
+                    c.FechaHoraInicio >= d0 &&
+                    c.FechaHoraInicio < d1
+                )
+                .Select(c => new
+                {
+                    idCita = c.IdCita,
+                    fecha = c.FechaHoraInicio.ToString("yyyy-MM-dd"),
+                    hora = c.FechaHoraInicio.ToString("HH:mm"),
+                    estatus = c.EstatusCita
+                })
+                .ToListAsync();
+
+            return Ok(rows);
+        }
+
+
+
+
         [HttpGet("me/horario")]
         [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> GetMiHorario()
