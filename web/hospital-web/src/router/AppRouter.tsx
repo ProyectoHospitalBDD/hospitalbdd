@@ -8,8 +8,8 @@ import PrivateRoute from "./PrivateRoute";
 import Comprobante from "../pages/Comprobante/Comprobante";
 import ProfilePage from "../pages/Profile/ProfilePage";
 import DoctorPerfilPage from "../pages/Doctor/DoctorPerfilPage";
-import DoctorMisCitasPage from "../pages/Doctor/DoctorMisCitasPage";
-import DoctorAtenderCitaPage from "../pages/Doctor/DoctorAtenderCitaPage";
+import DoctorMisCitasPage from "../pages/Doctor/Citas/DoctorMisCitasPage";
+import DoctorAtenderCitaPage from "../pages/Doctor/Citas/DoctorAtenderCitaPage";
 
 export function AppRouter() {
   return (
