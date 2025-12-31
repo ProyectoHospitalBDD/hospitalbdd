@@ -23,6 +23,150 @@ namespace Hospital.Api.Controllers
             _db = db;
         }
 
+
+        [HttpGet("me/citas")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> GetMisCitasDoctor([FromQuery] DateTime desde, [FromQuery] DateTime hasta)
+        {
+            var idUsuario = UserClaims.GetIdUsuario(User);
+
+            var d0 = desde.Date;
+            var d1 = hasta.Date.AddDays(1); // exclusivo
+
+            var rows = await _db.Cita
+                .AsNoTracking()
+                .Where(c =>
+                    c.IdDoctor == idUsuario &&
+                    c.FechaHoraInicio >= d0 &&
+                    c.FechaHoraInicio < d1
+                )
+                .Select(c => new
+                {
+                    idCita = c.IdCita,
+                    fecha = c.FechaHoraInicio.ToString("yyyy-MM-dd"),
+                    horaInicio = c.FechaHoraInicio.ToString("HH:mm"),
+                    horaFin = c.FechaHoraFin.ToString("HH:mm"),
+                    estatus = c.EstatusCita,
+
+                    idPaciente = c.IdPaciente,
+
+                    paciente = c.IdPacienteNavigation != null
+                        && c.IdPacienteNavigation.IdUsuarioNavigation != null
+                            ? (
+                                c.IdPacienteNavigation.IdUsuarioNavigation.Nombre + " " +
+                                c.IdPacienteNavigation.IdUsuarioNavigation.ApPat + " " +
+                                (c.IdPacienteNavigation.IdUsuarioNavigation.ApMat ?? "")
+                            ).Trim()
+                            : "—",
+                })
+                .ToListAsync();
+
+            return Ok(rows);
+        }
+
+
+
+
+        [HttpGet("me/horario")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> GetMiHorario()
+        {
+            var idUsuario = UserClaims.GetIdUsuario(User);
+
+            // Trae el horario del doctor logueado
+            var rows = await _db.HorarioEmpleados
+                .AsNoTracking()
+                .Where(h => h.IdUsuario == idUsuario)
+                .Select(h => new
+                {
+                    h.DiaSemana,
+                    h.HoraInicio,
+                    h.HoraFin
+                })
+                .ToListAsync();
+
+            // Formateo en memoria 
+            var data = rows
+            .Select(x => new
+            {
+                diaSemana = x.DiaSemana,
+                horaInicio = x.HoraInicio.ToString("HH:mm"),
+                horaFin = x.HoraFin.ToString("HH:mm")
+            })
+            .OrderBy(x => DiaOrden(x.diaSemana))
+            .ToList();
+
+            return Ok(data);
+        }
+
+        
+        private static int DiaOrden(string? dia)
+        {
+            if (string.IsNullOrWhiteSpace(dia)) return 999;
+
+            var d = dia.Trim().ToLowerInvariant()
+                .Replace("á", "a")
+                .Replace("é", "e")
+                .Replace("í", "i")
+                .Replace("ó", "o")
+                .Replace("ú", "u");
+
+            return d switch
+            {
+                "lunes" => 1,
+                "martes" => 2,
+                "miercoles" => 3,
+                "miércoles" => 3,
+                "jueves" => 4,
+                "viernes" => 5,
+                "sabado" => 6,
+                "sábado" => 6,
+                "domingo" => 7,
+                _ => 999
+            };
+        }
+
+
+
+        // ==================================================
+        // GET perfil del doctor logueado
+        // ==================================================
+        [HttpGet("me")]
+        [Authorize(Roles = "Doctor")] 
+        public async Task<IActionResult> GetMe()
+        {
+            var idUsuario = UserClaims.GetIdUsuario(User);
+
+            var data = await _db.Doctors
+                .AsNoTracking()
+                .Where(d => d.IdUsuario == idUsuario)
+                .Select(d => new
+                {
+                    idUsuario = d.IdUsuario,
+
+                    // Doctor -> Empleado -> UsuarioSistema
+                    nombreCompleto = (
+                        d.IdUsuarioNavigation.IdUsuarioNavigation.Nombre + " " +
+                        d.IdUsuarioNavigation.IdUsuarioNavigation.ApPat + " " +
+                        (d.IdUsuarioNavigation.IdUsuarioNavigation.ApMat ?? "")
+                    ).Trim(),
+
+                    curp = d.IdUsuarioNavigation.IdUsuarioNavigation.Curp,
+
+                    estatusEmpleado = d.IdUsuarioNavigation.Estatus,
+                    salario = d.IdUsuarioNavigation.Salario,
+
+                    cedula = d.Cedula,
+                    especialidad = d.IdEspecialidadNavigation.NombreEsp,
+                    consultorio = d.IdConsultorioNavigation.Numero
+                })
+                .FirstOrDefaultAsync();
+
+            if (data is null) return NotFound();
+            return Ok(data);
+        }
+
+
         // ---------------------------
         // Normalización del día
         // ---------------------------

@@ -1,14 +1,21 @@
-// src/router/AppRouter.tsx
 import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "../layout/Layout";
-import HomePage from "../pages/HomePage";
+// import HomePage from "../pages/HomePage"; // Ya no se usa HomePage separado porque está en el Layout
 import AgendarCitaPage from "../pages/Citas/AgendarCitaPage";
 import LoginPage from "../pages/Auth/LoginPage";
 import PrivateRoute from "./PrivateRoute";
 import Comprobante from "../pages/Comprobante/Comprobante";
+
+// TUS COMPONENTES (Farmacia/Tienda)
 import CobroTicket from "../pages/Farmacia/CobroTicket";
 import Inventario from "../pages/Inventario/Productos";
 import Tienda from "../pages/Tienda/Tienda";
+
+// COMPONENTES DE TU COMPAÑERO (Doctor/Perfil)
+import ProfilePage from "../pages/Profile/ProfilePage";
+import DoctorPerfilPage from "../pages/Doctor/DoctorPerfilPage";
+import DoctorMisCitasPage from "../pages/Doctor/Citas/DoctorMisCitasPage";
+import DoctorAtenderCitaPage from "../pages/Doctor/Citas/DoctorAtenderCitaPage";
 
 export function AppRouter() {
   return (
@@ -18,17 +25,20 @@ export function AppRouter() {
 
       {/* Rutas que usan el layout */}
       <Route element={<Layout />}>
-        {/* Home protegida */}
+        
+        {/* Home protegida (Ahora el contenido lo maneja el Layout, aquí ponemos un componente vacío o dummy si Layout maneja todo, 
+            pero para mantener la estructura de PrivateRoute, podemos dejar una ruta vacía que renderice null o el Layout mismo) */}
         <Route
           path="/home"
           element={
             <PrivateRoute>
-              <HomePage />
+              {/* El Layout detecta /home y muestra el Hero. Aquí no necesitamos renderizar nada extra */}
+              <></> 
             </PrivateRoute>
           }
         />
 
-        {/* Agendar cita protegida */}
+        {/* --- RUTAS DE PACIENTE / TIENDA --- */}
         <Route
           path="/citas/agendar"
           element={
@@ -37,8 +47,16 @@ export function AppRouter() {
             </PrivateRoute>
           }
         />
+        
+        <Route
+            path="/tienda"
+            element={
+                <PrivateRoute>
+                    <Tienda />
+                </PrivateRoute>
+            }
+        />
 
-        {/*Comprobante protegido*/}
         <Route
           path="/comprobante/Comprobar"
           element={
@@ -48,15 +66,59 @@ export function AppRouter() {
           }
         />
 
-         <Route path="farmacia" element={<CobroTicket />} />
-         <Route path="inventario" element={<Inventario/>} />
-         <Route path="/tienda" element={<Tienda />} />
+        {/* --- RUTAS DE FARMACIA / INVENTARIO --- */}
+        <Route 
+            path="farmacia" 
+            element={
+                <PrivateRoute>
+                    <CobroTicket />
+                </PrivateRoute>
+            } 
+        />
+        <Route 
+            path="inventario" 
+            element={
+                <PrivateRoute>
+                    <Inventario/>
+                </PrivateRoute>
+            } 
+        />
+
+        {/* --- RUTAS DE DOCTOR / PERFIL (De tu compañero) --- */}
+        <Route 
+            path="/perfil" 
+            element={
+                <PrivateRoute>
+                    <ProfilePage />
+                </PrivateRoute>
+            } 
+        />
+        <Route 
+            path="/doctor/perfil" 
+            element={
+                <PrivateRoute>
+                    <DoctorPerfilPage />
+                </PrivateRoute>
+            } 
+        />
+        <Route 
+            path="/doctor/citas" 
+            element={
+                <PrivateRoute>
+                    <DoctorMisCitasPage />
+                </PrivateRoute>
+            } 
+        />
+        <Route 
+            path="/doctor/atender" 
+            element={
+                <PrivateRoute>
+                    <DoctorAtenderCitaPage />
+                </PrivateRoute>
+            } 
+        />
 
       </Route>
-
-
-
-     
 
       {/* Redirecciones */}
       <Route path="/" element={<Navigate to="/home" />} />

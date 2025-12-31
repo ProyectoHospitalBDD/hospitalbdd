@@ -16,7 +16,7 @@
   background: #00c897;
   color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  z-index: 1000; /* Asegura que el header esté arriba */
+  z-index: 1000;
   position: relative;
 }
 
@@ -33,11 +33,46 @@
   font-family: 'Poppins', sans-serif;
 }
 
+/* --- TABS (Aporte de tu compañero) --- */
+.layout-left {
+  display: flex;
+  align-items: center;
+  gap: 2rem; 
+}
+
+.layout-tabs {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.layout-tab {
+  color: rgba(255, 255, 255, 0.92);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  transition: background 0.15s ease, transform 0.15s ease;
+  font-size: 0.9rem;
+}
+
+.layout-tab:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.layout-tab--active {
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+
 /* USER AREA */
 .layout-user {
   display: flex;
   align-items: center;
   gap: 1rem;
+  position: relative;
 }
 
 .layout-user-name {
@@ -49,7 +84,7 @@
   flex: 1;
   display: flex;
   justify-content: center;
-  align-items: center; /* Centrado vertical del contenido */
+  align-items: center;
   padding: 2rem;
   background: rgb(218, 241, 218);
   position: relative;
@@ -63,14 +98,13 @@
     justify-content: space-between;
     max-width: 1100px;
     width: 100%;
-    background: rgba(255, 255, 255, 0.6); /* Fondo semi-transparente para leer mejor */
+    background: rgba(255, 255, 255, 0.7); 
     padding: 3rem;
     border-radius: 20px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.05);
     gap: 4rem;
 }
 
-/* Texto Izquierda */
 .home-text {
     flex: 1;
     text-align: left;
@@ -91,7 +125,6 @@
     margin-bottom: 2rem;
 }
 
-/* Botones CTA (Call To Action) */
 .home-cta-buttons {
     display: flex;
     gap: 15px;
@@ -123,7 +156,6 @@
     transform: translateY(-3px);
 }
 
-/* Logo Derecha */
 .home-logo-visual {
     flex: 1;
     display: flex;
@@ -132,41 +164,30 @@
 
 .home-logo-visual img {
     max-width: 100%;
-    width: 350px; /* Ajusta el tamaño del logo aquí */
+    width: 350px;
     height: auto;
     filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
 }
 
-/* Responsivo para Home */
 @media (max-width: 900px) {
     .home-welcome-section {
-        flex-direction: column-reverse; /* Logo arriba, texto abajo en móvil */
+        flex-direction: column-reverse;
         text-align: center;
         padding: 2rem;
         gap: 2rem;
     }
-
-    .home-text {
-        text-align: center;
-    }
-
-    .home-cta-buttons {
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-
-    .home-logo-visual img {
-        width: 200px;
-    }
+    .home-text { text-align: center; }
+    .home-cta-buttons { justify-content: center; flex-wrap: wrap; }
+    .home-logo-visual img { width: 200px; }
 }
 
 /* --- MENU HAMBURGUESA --- */
 .hamburger-menu {
-  position: relative; /* Ajuste para que se quede dentro del header */
+  position: relative;
   display: inline-flex;
   align-items: center;
   cursor: pointer;
-  z-index: 1100; /* Mayor que todo */
+  z-index: 1100;
 }
 
 .hamburger-icon {
@@ -195,7 +216,7 @@
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
   padding: 15px;
   border-radius: 12px;
-  z-index: 1200; /* Asegura estar sobre todo */
+  z-index: 1200;
   min-width: 200px;
 }
 
@@ -217,9 +238,10 @@
   color: #333;
   transition: background 0.2s;
   font-weight: 500;
+  cursor: pointer;
 }
 
 .menu li:hover {
-  background-color: #f0fdf4; /* Verde muy suave */
+  background-color: #f0fdf4;
   color: #00c897;
 }
