@@ -1,9 +1,27 @@
 // pages/Doctor/DoctorMisCitasPage.tsx
 import { useEffect, useMemo, useState } from "react";
 import "./DoctorMisCitasPage.css";
-import { getMisCitasDoctor, type CitaDoctor } from "../../../api/doctorApi";
+import {
+  getMisCitasDoctor,
+  type CitaDoctor,
+  solicitarCancelacionCita,
+} from "../../../api/doctorApi";
 
 type DiaKey = string; // yyyy-mm-dd
+
+function puedeSolicitarCancelacion(estatus: string) {
+  return estatus === "AgendadaPendPago" || estatus === "PagadaPendAtender";
+}
+
+function pillByStatus(estatus: string) {
+  const e = (estatus ?? "").toLowerCase();
+
+  if (e.includes("pend") || e.includes("solicit")) return "panel-pill panel-pill--warn panel-pill--status";
+  if (e.includes("atendida")) return "panel-pill panel-pill--ok panel-pill--status";
+  if (e.includes("cancel") || e.includes("noacud") || e.includes("no acud")) return "panel-pill panel-pill--bad panel-pill--status";
+
+  return "panel-pill panel-pill--neutral panel-pill--status";
+}
 
 function ymd(d: Date) {
   const y = d.getFullYear();
@@ -27,16 +45,9 @@ function addMonths(d: Date, delta: number) {
 // Prioridad de estatus (mayor = domina el color del día)
 function scoreEstatus(estatus: string) {
   const e = (estatus ?? "").toLowerCase();
-
-  // pendientes (amarillo) domina
-  if (e.includes("pend")) return 3;
-
-  // atendida (verde)
+  if (e.includes("pend") || e.includes("solicit")) return 3;
   if (e.includes("atendida")) return 2;
-
-  // cancelaciones/no acudió (rojo)
   if (e.includes("cancel") || e.includes("noacud") || e.includes("no acud")) return 1;
-
   return 0;
 }
 
@@ -48,6 +59,7 @@ function diaClass(maxScore: number) {
 }
 
 export default function DoctorMisCitasPage() {
+  const [cancelandoId, setCancelandoId] = useState<number | null>(null);
   const [mes, setMes] = useState<Date>(() => startOfMonth(new Date()));
   const [citas, setCitas] = useState<CitaDoctor[]>([]);
   const [loading, setLoading] = useState(false);
@@ -56,37 +68,44 @@ export default function DoctorMisCitasPage() {
   const desde = useMemo(() => ymd(startOfMonth(mes)), [mes]);
   const hasta = useMemo(() => ymd(endOfMonth(mes)), [mes]);
 
+  async function recargarMes() {
+    const data = await getMisCitasDoctor({ desde, hasta });
+    setCitas(data);
+  }
+
   useEffect(() => {
     (async () => {
       setLoading(true);
       try {
-        const data = await getMisCitasDoctor({ desde, hasta });
-        setCitas(data);
+        await recargarMes();
         setSeleccion(null);
       } finally {
         setLoading(false);
       }
     })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [desde, hasta]);
 
   // Agrupar citas por día
   const porDia = useMemo(() => {
     const map = new Map<DiaKey, CitaDoctor[]>();
+
     for (const c of citas) {
       const key = c.fecha;
       const arr = map.get(key) ?? [];
       arr.push(c);
       map.set(key, arr);
     }
-    // ordenar por hora
+
     for (const [k, arr] of map.entries()) {
-      arr.sort((a, b) => a.hora.localeCompare(b.hora));
+      arr.sort((a, b) => a.horaInicio.localeCompare(b.horaInicio));
       map.set(k, arr);
     }
+
     return map;
   }, [citas]);
 
-  // “color” por día basado en max score
+  // Score por día
   const scorePorDia = useMemo(() => {
     const map = new Map<DiaKey, number>();
     for (const [k, arr] of porDia.entries()) {
@@ -100,8 +119,6 @@ export default function DoctorMisCitasPage() {
   const gridDias = useMemo(() => {
     const first = startOfMonth(mes);
     const last = endOfMonth(mes);
-
-    // Lunes=0..Domingo=6 (más “mexicano escolar”)
     const dayOfWeek = (d: Date) => (d.getDay() + 6) % 7;
 
     const start = new Date(first);
@@ -121,7 +138,7 @@ export default function DoctorMisCitasPage() {
     return mes.toLocaleDateString("es-MX", { month: "long", year: "numeric" });
   }, [mes]);
 
-  const citasSeleccion = seleccion ? (porDia.get(seleccion) ?? []) : [];
+  const citasSeleccion = seleccion ? porDia.get(seleccion) ?? [] : [];
 
   return (
     <div className="doc-cal-page">
@@ -129,15 +146,17 @@ export default function DoctorMisCitasPage() {
         <div className="doc-cal-head">
           <div>
             <h2 className="doc-cal-title">Mis citas</h2>
-            <p className="doc-cal-subtitle">
-              Calendario mensual con estado por día. Nota: Aun falta mejorar cosas del estilo pero ya funca         
-            </p>
+            <p className="doc-cal-subtitle">Calendario mensual con estado por día.</p>
           </div>
 
           <div className="doc-cal-nav">
-            <button className="doc-btn" onClick={() => setMes(addMonths(mes, -1))}>◀</button>
+            <button className="doc-btn" onClick={() => setMes(addMonths(mes, -1))} type="button">
+              ◀
+            </button>
             <div className="doc-cal-month">{tituloMes}</div>
-            <button className="doc-btn" onClick={() => setMes(addMonths(mes, 1))}>▶</button>
+            <button className="doc-btn" onClick={() => setMes(addMonths(mes, 1))} type="button">
+              ▶
+            </button>
           </div>
         </div>
 
@@ -157,7 +176,6 @@ export default function DoctorMisCitasPage() {
             const inMonth = d.getMonth() === mes.getMonth();
             const score = scorePorDia.get(key) ?? 0;
             const count = porDia.get(key)?.length ?? 0;
-
             const selected = seleccion === key;
 
             return (
@@ -185,9 +203,7 @@ export default function DoctorMisCitasPage() {
         </div>
 
         <div className="doc-cal-panel">
-          <h3 className="panel-title">
-            {seleccion ? `Citas del ${seleccion}` : "Selecciona un día"}
-          </h3>
+          <h3 className="panel-title">{seleccion ? `Citas del ${seleccion}` : "Selecciona un día"}</h3>
 
           {seleccion && citasSeleccion.length === 0 && (
             <p className="panel-empty">No hay citas ese día.</p>
@@ -197,11 +213,40 @@ export default function DoctorMisCitasPage() {
             <ul className="panel-list">
               {citasSeleccion.map((c) => (
                 <li key={c.idCita} className="panel-item">
-                  <span className="panel-hour">{c.hora}</span>
-                  <span className="panel-id">Folio {c.idCita}</span>
-                  <span className={`panel-chip ${diaClass(scoreEstatus(c.estatus))}`}>
-                    {c.estatus}
-                  </span>
+                  {/* izquierda: info paciente */}
+                  <div className="panel-main">
+                    <div className="panel-name">{c.paciente ?? "—"}</div>
+                    <div className="panel-sub">
+                      Folio {c.idCita} · {c.horaInicio}{c.horaFin ? `–${c.horaFin}` : ""}
+                    </div>
+
+                    {/* estatus pegado abajo de los datos */}
+                    <div className="panel-status-row">
+                      <span className={pillByStatus(c.estatus)}>{c.estatus}</span>
+                    </div>
+                  </div>
+
+                  {/* derecha: acciones */}
+                  <div className="panel-actions">
+                    {puedeSolicitarCancelacion(c.estatus) && (
+                      <button
+                        className="panel-pill panel-pill--warn"
+                        disabled={cancelandoId === c.idCita}
+                        onClick={async () => {
+                          setCancelandoId(c.idCita);
+                          try {
+                            await solicitarCancelacionCita(c.idCita);
+                            await recargarMes();
+                          } finally {
+                            setCancelandoId(null);
+                          }
+                        }}
+                        type="button"
+                      >
+                        {cancelandoId === c.idCita ? "Solicitando…" : "Solicitar cancelación"}
+                      </button>
+                    )}
+                  </div>
                 </li>
               ))}
             </ul>

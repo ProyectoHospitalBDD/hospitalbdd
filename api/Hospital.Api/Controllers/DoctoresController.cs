@@ -23,6 +23,7 @@ namespace Hospital.Api.Controllers
             _db = db;
         }
 
+
         [HttpGet("me/citas")]
         [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> GetMisCitasDoctor([FromQuery] DateTime desde, [FromQuery] DateTime hasta)
@@ -43,8 +44,20 @@ namespace Hospital.Api.Controllers
                 {
                     idCita = c.IdCita,
                     fecha = c.FechaHoraInicio.ToString("yyyy-MM-dd"),
-                    hora = c.FechaHoraInicio.ToString("HH:mm"),
-                    estatus = c.EstatusCita
+                    horaInicio = c.FechaHoraInicio.ToString("HH:mm"),
+                    horaFin = c.FechaHoraFin.ToString("HH:mm"),
+                    estatus = c.EstatusCita,
+
+                    idPaciente = c.IdPaciente,
+
+                    paciente = c.IdPacienteNavigation != null
+                        && c.IdPacienteNavigation.IdUsuarioNavigation != null
+                            ? (
+                                c.IdPacienteNavigation.IdUsuarioNavigation.Nombre + " " +
+                                c.IdPacienteNavigation.IdUsuarioNavigation.ApPat + " " +
+                                (c.IdPacienteNavigation.IdUsuarioNavigation.ApMat ?? "")
+                            ).Trim()
+                            : "—",
                 })
                 .ToListAsync();
 

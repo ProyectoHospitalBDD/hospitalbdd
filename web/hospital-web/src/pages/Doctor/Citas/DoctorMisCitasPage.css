@@ -1,16 +1,23 @@
+/* =========================
+   Layout general
+========================= */
 .doc-cal-page {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 20px;
+  min-width: 1100px;
 }
 
 .doc-cal-card {
-  background: white;
+  background: #fff;
   border-radius: 18px;
   padding: 22px;
-  box-shadow: 0 12px 28px rgba(0,0,0,0.08);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
 }
 
+/* =========================
+   Header
+========================= */
 .doc-cal-head {
   display: flex;
   justify-content: space-between;
@@ -61,6 +68,9 @@
   color: #475569;
 }
 
+/* =========================
+   Calendario (grid)
+========================= */
 .cal-grid {
   margin-top: 16px;
   display: grid;
@@ -83,15 +93,15 @@
   background: #ffffff;
   border-radius: 14px;
   padding: 10px;
-  min-height: 76px;
+  min-height: 100px;
   cursor: pointer;
   text-align: left;
-  transition: transform .12s ease, box-shadow .12s ease;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
 .cal-day:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 18px rgba(0,0,0,0.07);
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.07);
 }
 
 .cal-day--muted {
@@ -99,9 +109,9 @@
 }
 
 .cal-day--selected {
-  outline: 2px solid #2563eb;
+  outline: 2px solid #5a25eb;
   outline-offset: 2px;
-  box-shadow: 0 0 0 2px rgba(37,99,235,0.15);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
 }
 
 .cal-day-num {
@@ -114,29 +124,30 @@
   bottom: 10px;
   right: 10px;
   background: #0f172a;
-  color: white;
+  color: #fff;
   font-size: 12px;
   font-weight: 800;
   padding: 3px 8px;
   border-radius: 999px;
 }
 
-/* colores por estatus */
+/* Colores por estatus (día) */
 .cal-day--warn {
   background: #ffedd5;
   border-color: #fb923c;
 }
-
 .cal-day--ok {
   background: #dcfce7;
   border-color: #22c55e;
 }
-
 .cal-day--bad {
   background: #fee2e2;
   border-color: #ef4444;
 }
 
+/* =========================
+   Leyenda
+========================= */
 .doc-cal-legend {
   margin-top: 14px;
   display: flex;
@@ -146,12 +157,26 @@
   font-weight: 600;
 }
 
-.legend-item { display: inline-flex; gap: 8px; align-items: center; }
-.dot { width: 10px; height: 10px; border-radius: 999px; display: inline-block; }
-.dot--warn { background: #fb923c; }
-.dot--ok { background: #22c55e; }
-.dot--bad { background: #ef4444; }
+.legend-item {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
 
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.dot--warn { background: #fb923c; }
+.dot--ok   { background: #22c55e; }
+.dot--bad  { background: #ef4444; }
+
+/* =========================
+   Panel inferior (citas del día)
+========================= */
 .doc-cal-panel {
   margin-top: 18px;
   border-top: 1px solid #e2e8f0;
@@ -175,49 +200,122 @@
   gap: 10px;
 }
 
+/* Tarjeta de cita */
 .panel-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
+  gap: 14px;
+  padding: 14px 16px;
   border: 1px solid #e2e8f0;
   border-radius: 12px;
-  background: #ffffff;
+  background: #fff;
 }
 
-.panel-hour {
+/* Info izquierda  */
+.panel-main {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.panel-name {
+  font-size: 16px;
   font-weight: 800;
-  min-width: 62px;
+  color: #0f172a;
+  line-height: 1.15;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.panel-id {
-  color: #334155;
+.panel-sub {
+  font-size: 14px;
+  color: #475569;
   font-weight: 700;
 }
 
-.panel-chip {
+/* Acciones derecha */
+.panel-actions {
   margin-left: auto;
-  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Estatus tipo "botón", estilo consistente con Solicitar cancelación */
+.panel-chip {
+  font-size: 13px;
   font-weight: 800;
-  padding: 6px 10px;
+  padding: 8px 14px;
   border-radius: 999px;
   border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
 }
 
-/* Texto legible en chips del panel */
+/* Estatus (chip) con texto legible */
 .panel-chip.cal-day--warn {
-  color: #9a3412; /* ámbar oscuro */
+  background: #ffedd5;
+  border-color: #fb923c;
+  color: #9a3412;
 }
-
 .panel-chip.cal-day--ok {
-  color: #065f46; /* verde oscuro */
+  background: #dcfce7;
+  border-color: #22c55e;
+  color: #065f46;
 }
-
 .panel-chip.cal-day--bad {
-  color: #7f1d1d; /* rojo oscuro */
+  background: #fee2e2;
+  border-color: #ef4444;
+  color: #7f1d1d;
+}
+
+/* Botón solicitar cancelación */
+.panel-btn {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.panel-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.panel-btn--warn {
+  background: #ffedd5;
+  border-color: #fb923c;
+  color: #9a3412;
+}
+
+.panel-btn--warn:hover {
+  background: #fed7aa;
+}
+
+/* Base común para "píldoras" (estatus y botón) */
+.panel-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 8px 14px;     
+  font-weight: 800;
+  font-size: 13px;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  line-height: 1;
 }
 
 
-.panel-chip.cal-day--warn { background: #fff7ed; border-color: #fdba74; }
-.panel-chip.cal-day--ok { background: #ecfdf5; border-color: #86efac; }
-.panel-chip.cal-day--bad { background: #fef2f2; border-color: #fca5a5; }
+.panel-pill--warn { background: #ffedd5; border-color: #fb923c; color: #9a3412; }
+.panel-pill--ok   { background: #dcfce7; border-color: #22c55e; color: #166534; }
+.panel-pill--bad  { background: #ffe4e6; border-color: #ef4444; color: #9f1239; }
+
+
+.panel-pill--status { cursor: default; }

@@ -32,11 +32,37 @@ public class CitasController : ControllerBase
         return NoContent();
     }
 
-    [HttpPost("{id:int}/cancelar/doctor")]
+    // ==================================================
+    // Doctor → solicitar cancelación
+    // ==================================================
+    [HttpPost("{id:int}/cancelacion/solicitar")]
     [Authorize(Roles = "Doctor")]
-    public async Task<IActionResult> CancelarDoctor([FromRoute] int id)
+    public async Task<IActionResult> SolicitarCancelacionDoctor(int id)
     {
-        await _svc.CancelarDoctorAsync(id);
+        var idDoctor = UserClaims.GetIdUsuario(User);
+        await _svc.SolicitarCancelacionDoctorAsync(id, idDoctor);
+        return NoContent();
+    }
+
+    // ==================================================
+    // Recepcionista → confirmar cancelación
+    // ==================================================
+    [HttpPost("{id:int}/cancelacion/confirmar")]
+    [Authorize(Roles = "Recepcionista")]
+    public async Task<IActionResult> ConfirmarCancelacionDoctor(int id)
+    {
+        await _svc.ConfirmarCancelacionDoctorAsync(id);
+        return NoContent();
+    }
+
+    // ==================================================
+    // Recepcionista → rechazar cancelación
+    // ==================================================
+    [HttpPost("{id:int}/cancelacion/rechazar")]
+    [Authorize(Roles = "Recepcionista")]
+    public async Task<IActionResult> RechazarCancelacionDoctor(int id)
+    {
+        await _svc.RechazarCancelacionDoctorAsync(id);
         return NoContent();
     }
 }
