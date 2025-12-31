@@ -199,3 +199,22 @@ BEGIN
   END CATCH
 END
 GO
+
+--Expirar Cita 
+
+CREATE OR ALTER PROCEDURE dbo.sp_Debug_ExpirarPagosPendientes1
+AS
+BEGIN
+  SET NOCOUNT ON;
+
+  UPDATE p
+  SET venceEn = DATEADD(MINUTE, -10, SYSUTCDATETIME())  -- 10 min en el pasado
+  FROM dbo.pago p
+  JOIN dbo.cita c ON c.idCita = p.idCita
+  WHERE p.estatusPago = N'Pendiente'
+    AND c.estatusCita = N'AgendadaPendPago';
+END
+GO
+
+SELECT * FROM bitacoraEstatusCita
+

@@ -1,0 +1,218 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Contenedor Principal */
+.cobro-app {
+  min-height: 100vh;
+  font-family: 'Nunito', sans-serif;
+  color: #333;
+  padding: 20px;
+  background-color: transparent; /* Hereda del layout */
+}
+
+.cobro-header-container {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.cobro-titulo {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 5px;
+}
+
+.cobro-subtitulo {
+  font-family: 'Nunito', sans-serif;
+  color: #7f8c8d;
+  font-size: 1.1rem;
+}
+
+/* Grid de Tarjetas */
+.cobro-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); /* Responsivo */
+  gap: 25px;
+  justify-content: center;
+}
+
+/* Tarjeta Individual (Estilo basado en tu .Cuadro pero moderno) */
+.cobro-card {
+  background-color: #fff; /* Fondo blanco para contraste */
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+  border: 1px solid #e0e0e0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.cobro-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+/* Borde de color según estatus */
+.cobro-card.pendiente {
+  border-left: 6px solid #f1c40f; /* Amarillo para pendiente */
+}
+
+.cobro-card.pagado {
+  border-left: 6px solid #27ae60; /* Verde para pagado */
+  opacity: 0.85; /* Un poco más apagado visualmente */
+  background-color: #fafafa;
+}
+
+/* Header de la Tarjeta */
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 10px;
+}
+
+.folio {
+  font-size: 0.85rem;
+  color: #95a5a6;
+  font-weight: 700;
+  display: block;
+}
+
+.paciente-nombre {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.3rem;
+  margin: 5px 0;
+  color: #2c3e50;
+}
+
+.fecha-ticket {
+  font-size: 0.85rem;
+  color: #7f8c8d;
+}
+
+/* Badges de Estatus */
+.badge {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.badge-yellow {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.badge-green {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+/* Cuerpo de la Tarjeta */
+.card-body {
+  margin-bottom: 20px;
+  flex-grow: 1;
+}
+
+.seccion-titulo {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #95a5a6;
+  margin-bottom: 10px;
+}
+
+.conceptos-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.concepto-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dashed #eee;
+  font-size: 0.95rem;
+}
+
+.concepto-item:last-child {
+  border-bottom: none;
+}
+
+.concepto-item .precio {
+  font-weight: 600;
+  color: #34495e;
+}
+
+/* Footer y Totales */
+.card-footer {
+  background-color: #f8f9fa; /* Gris muy claro para el footer */
+  margin: -20px; /* Expande para llenar el padding del padre */
+  margin-top: 10px;
+  padding: 20px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.total-row span:first-child {
+  font-size: 1.1rem;
+  color: #2c3e50;
+}
+
+.monto-total {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2980b9; /* Azul fuerte */
+}
+
+/* Botones */
+.btn-cobrar {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+}
+
+.btn-cobrar:hover {
+  background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(37, 99, 235, 0.3);
+}
+
+.btn-reimprimir {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #bdc3c7;
+  border-radius: 12px;
+  background-color: white;
+  color: #7f8c8d;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-reimprimir:hover {
+  background-color: #ecf0f1;
+  color: #34495e;
+}

@@ -6,6 +6,9 @@ import AgendarCitaPage from "../pages/Citas/AgendarCitaPage";
 import LoginPage from "../pages/Auth/LoginPage";
 import PrivateRoute from "./PrivateRoute";
 import Comprobante from "../pages/Comprobante/Comprobante";
+import CobroTicket from "../pages/Farmacia/CobroTicket";
+import Inventario from "../pages/Inventario/Productos";
+import Tienda from "../pages/Tienda/Tienda";
 
 export function AppRouter() {
   return (
@@ -45,11 +48,15 @@ export function AppRouter() {
           }
         />
 
+         <Route path="farmacia" element={<CobroTicket />} />
+         <Route path="inventario" element={<Inventario/>} />
+         <Route path="/tienda" element={<Tienda />} />
+
       </Route>
 
-     
 
-      
+
+     
 
       {/* Redirecciones */}
       <Route path="/" element={<Navigate to="/home" />} />

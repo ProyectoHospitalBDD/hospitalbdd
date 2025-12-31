@@ -6,8 +6,8 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background:  rgb(212, 241, 212);
-  font-family: Nunito;
+  background: rgb(212, 241, 212);
+  font-family: 'Nunito', sans-serif;
 }
 
 /* HEADER */
@@ -16,144 +16,210 @@
   background: #00c897;
   color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000; /* Asegura que el header esté arriba */
+  position: relative;
 }
 
-/* Contenido interno */
 .layout-header-inner {
-  padding: 1.5rem 2rem;
+  padding: 1rem 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
- 
 }
 
 .layout-logo {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 700;
-}
-
-/* NAV */
-.layout-nav {
-  display: flex;
-  gap: 1rem;
-}
-
-.layout-nav-link {
-  color: white;
-  text-decoration: none;
-  padding: 0.4rem 0.9rem;
-  border-radius: 999px;
-  font-weight: 500;
-  transition: 0.2s;
-}
-
-.layout-nav-link:hover {
-  background: rgba(255, 255, 255, 0.25);
-}
-
-.layout-nav-link.active {
-  background: white;
-  color: #00c897;
+  font-family: 'Poppins', sans-serif;
 }
 
 /* USER AREA */
 .layout-user {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 1rem;;
+  gap: 1rem;
 }
-/* espacio entre nombre e ícono */
+
 .layout-user-name {
-  margin-right: 1rem;    
   font-weight: bold;
 }
 
-
-.layout-logout-btn {
-  background: #111827;
-  color: white;
-  border: none;
-  padding: 0.4rem 0.8rem;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-/* CONTENIDO */
+/* CONTENIDO PRINCIPAL */
 .layout-main {
-  flex: 1;                    /* ocupa todo el alto restante debajo del header */
-  display: flex;              /* contenedor flex */
-  justify-content: center;    /* centra horizontalmente al hijo (la tarjeta) */
-  align-items: center;        /* centra verticalmente */
-  padding: 2rem;              
-  background: rgb(218, 241, 218);        
-}
-
-.layout-left {
+  flex: 1;
   display: flex;
-  align-items: center;
-  gap: 2rem; 
+  justify-content: center;
+  align-items: center; /* Centrado vertical del contenido */
+  padding: 2rem;
+  background: rgb(218, 241, 218);
+  position: relative;
 }
 
+/* --- SECCIÓN DE BIENVENIDA (HOME) --- */
+.home-welcome-section {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1100px;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.6); /* Fondo semi-transparente para leer mejor */
+    padding: 3rem;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    gap: 4rem;
+}
 
-/*Pizza was here*/
+/* Texto Izquierda */
+.home-text {
+    flex: 1;
+    text-align: left;
+}
 
+.home-text h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.5rem;
+    color: #2d3436;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+}
 
-/*Menu de hamburguesa*/
+.home-text p {
+    font-size: 1.1rem;
+    color: #636e72;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+/* Botones CTA (Call To Action) */
+.home-cta-buttons {
+    display: flex;
+    gap: 15px;
+}
+
+.cta-btn {
+    padding: 12px 24px;
+    border-radius: 50px;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-size: 1rem;
+}
+
+.cta-btn.primary {
+    background: #00c897;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0, 200, 151, 0.3);
+}
+
+.cta-btn.secondary {
+    background: white;
+    color: #00c897;
+    border: 2px solid #00c897;
+}
+
+.cta-btn:hover {
+    transform: translateY(-3px);
+}
+
+/* Logo Derecha */
+.home-logo-visual {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.home-logo-visual img {
+    max-width: 100%;
+    width: 350px; /* Ajusta el tamaño del logo aquí */
+    height: auto;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+}
+
+/* Responsivo para Home */
+@media (max-width: 900px) {
+    .home-welcome-section {
+        flex-direction: column-reverse; /* Logo arriba, texto abajo en móvil */
+        text-align: center;
+        padding: 2rem;
+        gap: 2rem;
+    }
+
+    .home-text {
+        text-align: center;
+    }
+
+    .home-cta-buttons {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .home-logo-visual img {
+        width: 200px;
+    }
+}
+
+/* --- MENU HAMBURGUESA --- */
 .hamburger-menu {
-  position: absolute;
-  top: 32px;
-  right: 16px;
+  position: relative; /* Ajuste para que se quede dentro del header */
   display: inline-flex;
   align-items: center;
-  gap: 1em;                    /* sin separación entre ambos */
-  flex-direction: row-reverse;
-  z-index: 100;
-  
+  cursor: pointer;
+  z-index: 1100; /* Mayor que todo */
 }
 
-/*Icono del menu*/
 .hamburger-icon {
-  cursor: pointer;
   width: 30px;
+  height: 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  height: 20px;
 }
 
-/*Lineas del menu*/
 .line {
-  background-color: #f9f9f9ff;
+  background-color: white;
   height: 3px;
   border-radius: 2px;
   width: 100%;
   transition: all 0.3s ease;
 }
 
-/*Menu desplejable*/
+/* Menu Desplegable */
 .menu {
   position: absolute;
-  top: 40px;
+  top: 50px;
   right: 0;
-  background-color: #fff;
+  background-color: white;
   border: 1px solid #ddd;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  padding: 10px;
-  border-radius: 5px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  padding: 15px;
+  border-radius: 12px;
+  z-index: 1200; /* Asegura estar sobre todo */
+  min-width: 200px;
 }
 
-/*Menu desplejable sin simbolos*/
 .menu ul {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-/*Elemento del menu*/
+.menu a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
 .menu li {
-  margin: 10px 0;
-  cursor: pointer;
-  flex-direction: column;
-  color:black
+  padding: 10px;
+  border-radius: 8px;
+  color: #333;
+  transition: background 0.2s;
+  font-weight: 500;
+}
+
+.menu li:hover {
+  background-color: #f0fdf4; /* Verde muy suave */
+  color: #00c897;
 }
