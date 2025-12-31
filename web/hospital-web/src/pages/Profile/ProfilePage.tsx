@@ -108,6 +108,38 @@ export default function PerfilPage() {
     }
   };
 
+  function prioridadEstatus(estatus: string) {
+  // menor = primero
+  switch (estatus) {
+    case "PagadaPendAtender":   return 0; // pendiente por atender
+    case "AgendadaPendPago":    return 1; // pendiente de pago
+    default:                    return 2; // todo lo demás
+  }
+}
+
+// convierte (fecha "YYYY-MM-DD" + hora "HH:mm") a timestamp
+function tsCita(c: CitaPaciente) {
+  // si viene "2026-01-07" y "09:00", esto produce un Date válido local
+  const isoLocal = `${c.fecha}T${c.hora}:00`;
+  const t = new Date(isoLocal).getTime();
+  return Number.isFinite(t) ? t : Number.MAX_SAFE_INTEGER;
+}
+
+const citasOrdenadas = useMemo(() => {
+  const arr = [...citas];
+
+  arr.sort((a, b) => {
+    const pa = prioridadEstatus(a.estatus);
+    const pb = prioridadEstatus(b.estatus);
+    if (pa !== pb) return pa - pb;
+
+    // dentro de la misma categoría: más cercana primero
+    return tsCita(a) - tsCita(b);
+  });
+
+    return arr;
+  }, [citas]);
+
 
   return (
     <div className="perfil-page">
@@ -225,7 +257,7 @@ export default function PerfilPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {citas.map((c) => (
+                  {citasOrdenadas.map((c) => (
                     <tr key={c.folioCita}>
                       <td>{c.folioCita}</td>
                       <td>{c.fecha}</td>
