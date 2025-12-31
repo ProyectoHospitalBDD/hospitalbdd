@@ -91,3 +91,7 @@ export async function cancelarCita(folioCita: number): Promise<void> {
     normalizeError(e);
   }
 }
+
+export async function pagarCita(id: number) {
+  await api.post(`/api/citas/${id}/pagar`);
+}

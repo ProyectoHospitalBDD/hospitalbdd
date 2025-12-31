@@ -6,6 +6,7 @@ import {
   getMisCitas,
   getMiHistorialMedico,
   cancelarCita,
+  pagarCita,
   type PerfilPaciente,
   type CitaPaciente,
   type HistorialMedicoPaciente,
@@ -35,6 +36,8 @@ export default function PerfilPage() {
   const [estatus, setEstatus] = useState<string>("");
   const [desde, setDesde] = useState<string>(""); // YYYY-MM-DD
   const [hasta, setHasta] = useState<string>("");
+
+  const [pagandoId, setPagandoId] = useState<number | null>(null);
 
   // 1) Perfil + historial médico: solo al montar
   useEffect(() => {
@@ -80,6 +83,31 @@ export default function PerfilPage() {
       setCargandoCitas(false);
     }
   };
+
+  const onPagar = async (folioCita: number) => {
+  console.log("CLICK pagar", folioCita);
+  setPagandoId(folioCita);
+    try {
+      console.log("antes pagarCita()");
+      await pagarCita(folioCita);
+      console.log("después pagarCita()");
+
+      setCargandoCitas(true);
+      try {
+        const c = await getMisCitas({ desde: desde || undefined, hasta: hasta || undefined, estatus: estatus || undefined });
+        setCitas(c);
+        console.log("recargadas", c.length);
+      } finally {
+        setCargandoCitas(false);
+      }
+    } catch (err) {
+      console.error("ERROR pagando:", err);
+      alert("Falló el pago (mira consola/network)");
+    } finally {
+      setPagandoId(null);
+    }
+  };
+
 
   return (
     <div className="perfil-page">
@@ -192,7 +220,8 @@ export default function PerfilPage() {
                     <th>Especialidad</th>
                     <th>Consultorio</th>
                     <th>Estatus</th>
-                    <th></th>
+                    <th></th> {/* Cancelar */}
+                    <th></th> {/* Pagar */}
                   </tr>
                 </thead>
                 <tbody>
@@ -216,12 +245,25 @@ export default function PerfilPage() {
                           <span style={{ opacity: 0.6 }}>—</span>
                         )}
                       </td>
+                      <td>
+                        {c.estatus === "AgendadaPendPago" ? (
+                          <button
+                            className="perfil-btn perfil-btn--primary"
+                            disabled={pagandoId === c.folioCita}
+                            onClick={() => onPagar(c.folioCita)}
+                          >
+                            {pagandoId === c.folioCita ? "Pagando…" : "Pagar"}
+                          </button>
+                        ) : (
+                          <span style={{ opacity: 0.6 }}>—</span>
+                        )}
+                      </td>
                     </tr>
                   ))}
 
                   {!cargandoCitas && citas.length === 0 && (
                     <tr>
-                      <td colSpan={8} style={{ padding: 16, color: "#475569" }}>
+                      <td colSpan={9} style={{ padding: 16, color: "#475569" }}>
                         No hay citas con esos filtros.
                       </td>
                     </tr>
