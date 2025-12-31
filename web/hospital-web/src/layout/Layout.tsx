@@ -4,7 +4,7 @@ import { useAuth } from "../lib/auth/AuthContext";
 import "./Layout.css";
 
 // Ruta del logo (asegúrate de que esté en public/imagenes/)
-const LOGO_URL = "/imagenes/Logo_PoliMed.png";
+const LOGO_URL = "../public/imagenes/Logo_PoliMed.png";
 
 export function Layout() {
   const { user, logout } = useAuth();
@@ -155,13 +155,13 @@ export function Layout() {
       </header>
 
       <main className="layout-main">
-        {/* HERO SECTION (Tu aporte) */}
+        {/* HERO SECTION */}
         {isHome ? (
             <div className="home-welcome-section">
                 <div className="home-text">
                     <h1>Hospital de Especialidades <span style={{color: '#00c897'}}>PoliMed</span></h1>
                     <p>
-                        El Hospital de Especialidades PoliMed es una institución profesional dedicada a la salud de todos nuestros clientes con tecnologías de punta, respaldada por nuestro equipo de ingenieros, y una prueba de ello es esta plataforma web.
+                        Hospital PoliMed somos una institución dedicada al diagnóstico y seguimiento integral de diversos padecimientos. Contamos con más de 15 especialidades médicas y un equipo de más de 50 doctores altamente capacitados, además de servicio de farmacia y aplicación de tratamientos, estamos comprometidos con brindar atención de calidad y confianza a nuestros pacientes.
                     </p>
                     
                     {(!role || esPaciente) && (
