@@ -9,7 +9,7 @@
 
 .perfil-card {
   width: 100%;
-  max-width: 980px;
+  max-width: 1250px;
   background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 18px;
@@ -125,7 +125,7 @@
 .perfil-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 860px; /* para que no se rompa feo en pantallas chicas */
+  min-width: 1100px; 
   background: #ffffff;
 }
 
@@ -228,4 +228,14 @@
   .perfil-title {
     font-size: 20px;
   }
+}
+
+.perfil-btn--primary{
+  background: #dbfef2;
+  border: 1px solid #60fa81;
+  color: #05af46;
+}
+
+.perfil-btn--primary:hover{
+  background: #bffec2;
 }
