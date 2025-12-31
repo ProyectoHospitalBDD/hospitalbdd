@@ -53,8 +53,32 @@ public class CitasService
             "EXEC dbo.sp_Cita_Cancelar_Paciente @idCita",
             new SqlParameter("@idCita", idCita));
 
-    public Task CancelarDoctorAsync(int idCita) =>
+    
+    // -------------------------
+    // Doctor: SOLICITAR cancelación
+    // -------------------------
+    public Task SolicitarCancelacionDoctorAsync(int idCita, int idDoctor) =>
         _db.Database.ExecuteSqlRawAsync(
-            "EXEC dbo.sp_Cita_Cancelar_Doctor @idCita",
-            new SqlParameter("@idCita", idCita));
+            "EXEC dbo.sp_Cita_Cancelar_Doctor @idCita = @idCita, @idDoctor = @idDoctor",
+            new SqlParameter("@idCita", idCita),
+            new SqlParameter("@idDoctor", idDoctor)
+        );
+
+    // -------------------------
+    // Recepción: CONFIRMAR
+    // -------------------------
+    public Task ConfirmarCancelacionDoctorAsync(int idCita) =>
+        _db.Database.ExecuteSqlRawAsync(
+            "EXEC dbo.sp_Cita_Confirmar_Cancelacion_Doctor @idCita",
+            new SqlParameter("@idCita", idCita)
+        );
+
+    // -------------------------
+    // Recepción: RECHAZAR
+    // -------------------------
+    public Task RechazarCancelacionDoctorAsync(int idCita) =>
+        _db.Database.ExecuteSqlRawAsync(
+            "EXEC dbo.sp_Cita_Rechazar_Cancelacion_Doctor @idCita",
+            new SqlParameter("@idCita", idCita)
+        );
 }
