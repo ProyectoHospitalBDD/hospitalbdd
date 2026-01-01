@@ -65,4 +65,45 @@ public class CitasController : ControllerBase
         await _svc.RechazarCancelacionDoctorAsync(id);
         return NoContent();
     }
+
+    // ==================================================
+    // Recepcionista → ver pendientes de cancelación doctor
+    // ==================================================
+    [HttpGet("cancelacion/pendientes")]
+    [Authorize(Roles = "Recepcionista")]
+    public async Task<ActionResult<List<CancelacionPendienteDto>>> PendientesCancelacionDoctor()
+    {
+        var data = await _svc.GetPendientesCancelacionDoctorAsync();
+        return Ok(data);
+    }
+
+    // Recepcionista → cancelar cita (manual)
+    [HttpPost("{id:int}/cancelar/recepcion")]
+    [Authorize(Roles = "Recepcionista")]
+    public async Task<IActionResult> CancelarPorRecepcion([FromRoute] int id)
+    {
+        await _svc.CancelarPacienteAsync(id); 
+        return NoContent();
+    }
+
+    // ==================================================
+    // Recepcionista → buscar citas (para cancelar)
+    // ==================================================
+    [HttpGet("recepcion/buscar")]
+    [Authorize(Roles = "Recepcionista")]
+    public async Task<ActionResult<List<CitaRecepRowDto>>> BuscarCitasRecepcion(
+        [FromQuery] string? texto,
+        [FromQuery] DateTime? desdeUtc,
+        [FromQuery] DateTime? hastaUtc,
+        [FromQuery] string? estatus
+    )
+    {
+        var res = await _svc.BuscarCitasRecepcionAsync(texto, desdeUtc, hastaUtc, estatus);
+        return Ok(res);
+    }
+
+
+
+
+
 }

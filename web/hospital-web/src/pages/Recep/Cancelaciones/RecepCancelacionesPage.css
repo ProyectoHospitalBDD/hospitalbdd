@@ -1,0 +1,415 @@
+/* Layout general */
+.recep-cancelaciones{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 28px 24px 40px;
+}
+
+/* Header */
+.recep-cancelaciones__header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap:12px;
+  margin-bottom: 10px;
+}
+
+.recep-cancelaciones__header h1{
+  margin: 0;
+  font-size: 34px;
+  letter-spacing: -0.5px;
+}
+
+.recep-cancelaciones__header p{
+  margin: 6px 0 0;
+  opacity: 0.8;
+}
+
+/* Cards */
+.recep-cancelaciones__card{
+  background:#fff;
+  border-radius:16px;
+  padding:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.08);
+  margin-top:16px;
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
+.recep-cancelaciones__card h2{
+  margin: 0 0 10px;
+  font-size: 18px;
+}
+
+.recep-cancelaciones__card p{
+  margin: 0;
+  opacity: 0.85;
+}
+
+/* Error */
+.recep-cancelaciones__error{
+  margin-top:12px;
+  padding:12px 14px;
+  border-radius:12px;
+  background:#ffe9e9;
+  border: 1px solid rgba(255, 77, 77, 0.35);
+  color: #7a1111;
+}
+
+/* Tabla */
+.recep-cancelaciones__tableWrap{
+  overflow:auto;
+  margin-top: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+.recep-cancelaciones__table{
+  width:100%;
+  border-collapse:separate; /* para bordes limpios */
+  border-spacing:0;
+  background: #fff;
+}
+
+.recep-cancelaciones__table thead th{
+  position: sticky; /* se queda arriba al scrollear */
+  top: 0;
+  z-index: 1;
+  background: #f7f8fa;
+  border-bottom: 1px solid rgba(0,0,0,0.10);
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
+  opacity: 0.85;
+}
+
+.recep-cancelaciones__table th,
+.recep-cancelaciones__table td{
+  text-align:left;
+  padding:12px 12px;
+  border-bottom:1px solid rgba(0,0,0,0.06);
+  white-space:nowrap;
+}
+
+.recep-cancelaciones__table tbody tr:hover{
+  background: rgba(0,0,0,0.025);
+}
+
+.recep-cancelaciones__table tbody tr:last-child td{
+  border-bottom: none;
+}
+
+/* Columnitas: que no todo compita */
+.recep-cancelaciones__table td:nth-child(1){
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+.recep-cancelaciones__table td:nth-child(5){
+  font-weight: 700;
+}
+
+/* Acciones */
+.recep-cancelaciones__actions{
+  display:flex;
+  justify-content: flex-end;
+  gap:10px;
+}
+
+/* Botones */
+.btn{
+  border:none;
+  border-radius:12px;
+  padding:9px 12px;
+  cursor:pointer;
+  font-weight: 700;
+  font-size: 13px;
+  transition: transform 120ms ease, opacity 120ms ease, box-shadow 120ms ease;
+}
+
+.btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.12);
+}
+
+.btn:active{
+  transform: translateY(0px);
+  box-shadow: none;
+}
+
+.btn:disabled{
+  opacity:0.6;
+  cursor:not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Variantes */
+.btn-ok{
+  background:#2e6cff;
+  color:white;
+}
+
+.btn-bad{
+  background:#ff4d4d;
+  color:white;
+}
+
+.btn-ghost{
+  background:#f0f2f5;
+  color:#111;
+  border: 1px solid rgba(0,0,0,0.10);
+}
+
+/* Botón refrescar*/
+.btn-ghost:hover{
+  background:#e8ebf0;
+}
+
+/* --- Fix de colores (evita texto blanco heredado) --- */
+.recep-cancelaciones{
+  color: #111;               /* fuerza texto oscuro */
+}
+
+.recep-cancelaciones h1,
+.recep-cancelaciones h2,
+.recep-cancelaciones p,
+.recep-cancelaciones th,
+.recep-cancelaciones td{
+  color: #111;
+}
+
+.recep-cancelaciones__muted{
+  margin-top: 6px;
+  color: rgba(0,0,0,0.65) !important;
+  font-size: 13px;
+}
+
+/* Header de card (título + botón a la derecha) */
+.recep-cancelaciones__cardHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.recep-cancelaciones__header h1{
+  color:#111 !important;
+}
+
+.recep-cancelaciones__header p{
+  color: rgba(0,0,0,0.7) !important;
+}
+
+/* Encabezado de tabla  */
+.recep-cancelaciones__table thead th{
+  color: rgba(0,0,0,0.75) !important;
+}
+
+/* --- HERO (título + contador bonito) --- */
+.recep-cancelaciones__hero{
+  background: rgba(255,255,255,0.70);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 18px;
+  padding: 18px 18px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+  margin: 14px auto 18px;
+}
+
+.recep-cancelaciones__heroTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+}
+
+.recep-cancelaciones__hero h1{
+  margin: 0;
+  font-size: 34px;
+  letter-spacing: -0.6px;
+  line-height: 1.1;
+}
+
+.recep-cancelaciones__heroSub{
+  margin: 8px 0 0;
+  color: rgba(0,0,0,0.65);
+  font-size: 14px;
+}
+
+/* Pill contador */
+.recep-cancelaciones__pill{
+  display:inline-flex;
+  align-items:center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(46,108,255,0.12);
+  border: 1px solid rgba(46,108,255,0.20);
+  color: rgba(0,0,0,0.78);
+  font-weight: 700;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.recep-cancelaciones__pill b{
+  color: #2e6cff;
+  font-weight: 900;
+}
+
+/* Ajuste de spacing general (para que no quede tan arriba) */
+.recep-cancelaciones{
+  padding-top: 22px;
+   max-width: 1320px;
+}
+
+/* =========================
+   FORCE TEXT COLOR (nuclear)
+   ========================= */
+.recep-cancelaciones,
+.recep-cancelaciones *{
+  color: #111 !important;
+}
+
+/* Excepciones: botones con texto blanco */
+.recep-cancelaciones .btn-ok,
+.recep-cancelaciones .btn-bad{
+  color: #fff !important;
+}
+
+
+.recep-cancelaciones .recep-cancelaciones__muted,
+.recep-cancelaciones .recep-cancelaciones__heroSub{
+  color: rgba(0,0,0,0.65) !important;
+}
+
+/* Thead gris */
+.recep-cancelaciones .recep-cancelaciones__table thead th{
+  color: rgba(0,0,0,0.75) !important;
+}
+
+/* Pill: texto y número azul */
+.recep-cancelaciones .recep-cancelaciones__pill{
+  color: rgba(0,0,0,0.78) !important;
+}
+.recep-cancelaciones .recep-cancelaciones__pill b{
+  color: #2e6cff !important;
+}
+
+.recep-cancelaciones__hero,
+.recep-cancelaciones__hero *{
+  color:#111 !important;
+}
+
+.recep-cancelaciones__hero .btn-ok,
+.recep-cancelaciones__hero .btn-bad{
+  color:#fff !important;
+}
+
+.recep-cancelaciones__cancelBox{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+
+.recep-cancelaciones__ok{
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(46, 204, 113, 0.12);
+  border: 1px solid rgba(46, 204, 113, 0.25);
+}
+
+.recep-cancelaciones__filters{
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: minmax(260px, 1.2fr) minmax(220px, 1fr) minmax(220px, 1fr) minmax(220px, 1fr) 120px;
+  gap: 10px;
+  align-items: end;
+}
+
+.recep-cancelaciones__field{
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+}
+
+.recep-cancelaciones__field label{
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(0,0,0,0.65);
+}
+
+.recep-cancelaciones__input{
+  width: 100%;
+  min-width: 220px;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.14);
+  padding: 10px 12px;
+  outline: none;
+  background: #fff;
+  font-weight: 600;
+}
+
+.recep-cancelaciones__input:focus{
+  border-color: rgba(46,108,255,0.55);
+  box-shadow: 0 0 0 4px rgba(46,108,255,0.14);
+}
+
+@media (max-width: 1200px){
+  .recep-cancelaciones__filters{
+    grid-template-columns: 1fr 1fr;
+  }
+  .recep-cancelaciones__filters .btn{
+    width: 100%;
+  }
+}
+
+
+/* =========================
+   DateTime-local: arreglar icono del calendario 
+   ========================= */
+.recep-cancelaciones input[type="datetime-local"]{
+  color-scheme: light;
+  padding-right: 44px;          /* deja espacio para el icono */
+  position: relative;
+}
+
+/* El icono real del picker (WebKit) */
+.recep-cancelaciones input[type="datetime-local"]::-webkit-calendar-picker-indicator{
+  opacity: 1 !important;
+  display: block;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* Asegura que el área clickeable sea evidente */
+.recep-cancelaciones input[type="datetime-local"]::-webkit-calendar-picker-indicator:hover{
+  opacity: 0.85 !important;
+}
+
+/* Evita que el texto “tape” el indicador */
+.recep-cancelaciones input[type="datetime-local"]::-webkit-datetime-edit{
+  padding-right: 6px;
+}
+
+.recep-cancelaciones__tag{
+  display:inline-flex;
+  align-items:center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 12px;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: rgba(0,0,0,0.04);
+  color: rgba(0,0,0,0.70) !important;
+  white-space: nowrap;
+}
+
+.recep-cancelaciones__tag--disabled{
+  opacity: 0.95;
+}
