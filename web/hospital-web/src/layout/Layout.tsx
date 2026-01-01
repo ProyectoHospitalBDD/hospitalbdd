@@ -33,6 +33,8 @@ export function Layout() {
 
   const esDoctor = user?.rol === "Doctor";
   const esPaciente = user?.rol === "Paciente";
+  const esRecepcionista = user?.rol === "Recepcionista"
+
 
   return (
     <div className="layout-root">
@@ -62,6 +64,21 @@ export function Layout() {
                   }
                 >
                   Atender cita
+                </NavLink>
+              </nav>
+            )}
+
+            {/* Tabs SOLO para Recepcionista */}
+            {esRecepcionista && (
+              <nav className="layout-tabs">
+                <NavLink
+                  to="/recep/cancelaciones"
+                  onClick={closeMenu}
+                  className={({ isActive }) =>
+                    `layout-tab ${isActive ? "layout-tab--active" : ""}`
+                  }
+                >
+                  Cancelaciones
                 </NavLink>
               </nav>
             )}

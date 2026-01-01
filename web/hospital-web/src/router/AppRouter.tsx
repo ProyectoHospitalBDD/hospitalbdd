@@ -10,6 +10,7 @@ import ProfilePage from "../pages/Profile/ProfilePage";
 import DoctorPerfilPage from "../pages/Doctor/DoctorPerfilPage";
 import DoctorMisCitasPage from "../pages/Doctor/Citas/DoctorMisCitasPage";
 import DoctorAtenderCitaPage from "../pages/Doctor/Citas/DoctorAtenderCitaPage";
+import RecepCancelacionesPage from "../pages/Recep/Cancelaciones/RecepCancelacionesPage";
 
 export function AppRouter() {
   return (
@@ -53,7 +54,7 @@ export function AppRouter() {
         <Route path="/doctor/perfil" element={<DoctorPerfilPage />} />
         <Route path="/doctor/citas" element={<DoctorMisCitasPage />} />
         <Route path="/doctor/atender" element={<DoctorAtenderCitaPage />} />
-
+        <Route path="/recep/cancelaciones" element={<RecepCancelacionesPage />} />
 
 
       </Route>
