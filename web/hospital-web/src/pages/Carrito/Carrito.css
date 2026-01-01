@@ -1,0 +1,85 @@
+.carrito-page {
+    padding: 20px;
+    font-family: 'Nunito', sans-serif;
+    min-height: 100vh;
+    background: #f4f6f8;
+}
+
+.carrito-page.empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.carrito-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 20px auto;
+}
+
+@media (max-width: 768px) {
+    .carrito-container { grid-template-columns: 1fr; }
+}
+
+/* Items */
+.carrito-item {
+    background: white;
+    padding: 15px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.cart-img {
+    width: 60px;
+    height: 60px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+.cart-img img { max-width: 100%; max-height: 100%; }
+
+.cart-info { flex: 1; }
+.cart-info h3 { margin: 0; font-size: 1rem; color: #333; }
+.cart-price { color: #27ae60; font-weight: bold; margin: 5px 0 0; }
+
+.cart-controls {
+    display: flex;
+    align-items: center;
+    background: #f0f0f0;
+    border-radius: 20px;
+    padding: 2px;
+}
+.cart-controls button {
+    width: 30px; height: 30px; border:none; background:transparent; cursor:pointer; font-weight:bold;
+}
+.cart-controls span { padding: 0 10px; font-weight: 600; }
+
+.cart-subtotal { font-weight: bold; color: #333; min-width: 80px; text-align: right; }
+.cart-remove { background: none; border: none; color: #e74c3c; font-weight: bold; cursor: pointer; font-size: 1.2rem; margin-left: 10px; }
+
+/* Resumen */
+.carrito-summary {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    height: fit-content;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+.summary-row { display: flex; justify-content: space-between; margin-bottom: 10px; color: #555; }
+.summary-row.total { font-size: 1.2rem; font-weight: bold; color: #2c3e50; border-top: 1px dashed #ddd; padding-top: 15px; margin-top: 15px; }
+
+.btn-checkout {
+    background: linear-gradient(135deg, #27ae60, #219150);
+    margin-top: 20px;
+}
