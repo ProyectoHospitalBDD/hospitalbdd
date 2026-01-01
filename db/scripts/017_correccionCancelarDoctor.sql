@@ -41,7 +41,7 @@ BEGIN
     SET NOCOUNT ON;
     SET XACT_ABORT ON;
 
-    DECLARE @estatus NVARCHAR(25), @doctorCita INT;
+    DECLARE @estatus NVARCHAR(40), @doctorCita INT;
 
     SELECT 
         @estatus = estatusCita,
@@ -52,7 +52,7 @@ BEGIN
     IF @estatus IS NULL
        THROW 51031, 'CitaNoExiste', 1;
 
-    -- VALIDACIÓN: la cita debe ser de ese doctor
+    -- VALIDACIï¿½N: la cita debe ser de ese doctor
     IF @doctorCita <> @idDoctor
        THROW 51035, 'NoAutorizadoDoctorNoEsDuenioDeLaCita', 1;
 
@@ -60,7 +60,7 @@ BEGIN
     IF @estatus = N'CancelacionSolicitadaDoctor'
        THROW 51032, 'YaSolicitada', 1;
 
-    -- Solo se puede SOLICITAR cancelación si estaba en estos estados
+    -- Solo se puede SOLICITAR cancelaciï¿½n si estaba en estos estados
     IF @estatus NOT IN (N'AgendadaPendPago', N'PagadaPendAtender')
        THROW 51030, 'NoCancelable', 1;
 
@@ -73,7 +73,7 @@ BEGIN
         WHERE idCita = @idCita;
 
         UPDATE b
-          SET b.politica = N'Solicitud de cancelación por doctor'
+          SET b.politica = N'Solicitud de cancelacion por doctor'
         FROM (
             SELECT TOP (1) *
             FROM dbo.bitacoraEstatusCita
@@ -104,7 +104,7 @@ BEGIN
     SET NOCOUNT ON;
     SET XACT_ABORT ON;
 
-    DECLARE @estatus NVARCHAR(25), @monto MONEY;
+    DECLARE @estatus NVARCHAR(40), @monto MONEY;
     SELECT @estatus = estatusCita, @monto = costo
     FROM dbo.cita
     WHERE idCita = @idCita;
@@ -115,47 +115,41 @@ BEGIN
     IF @estatus <> N'CancelacionSolicitadaDoctor'
        THROW 51033, 'NoHaySolicitudCancelacion', 1;
 
-    -- estatus previo (antes de la solicitud)
-    DECLARE @estatusPrevio NVARCHAR(25);
+    -- Detectar si ya existe pago pagado 
+    DECLARE @yaPago BIT = 0;
 
-    ;WITH movs AS (
-      SELECT
-        b.estatusCita,
-        b.fechaMov,
-        b.idBitacora,
-        ROW_NUMBER() OVER (
-          ORDER BY b.fechaMov DESC, b.idBitacora DESC
-        ) AS rn
-      FROM dbo.bitacoraEstatusCita b
-      WHERE b.idCita = @idCita
+    IF EXISTS (
+        SELECT 1
+        FROM dbo.pago p
+        WHERE p.idCita = @idCita
+          AND p.estatusPago IN (N'Pagado') 
     )
-    SELECT @estatusPrevio = estatusCita
-    FROM movs
-    WHERE rn = 2;
+    BEGIN
+        SET @yaPago = 1;
+    END
 
-    IF @estatusPrevio IS NULL
-       THROW 51034, 'NoSePuedeDeterminarEstatusPrevio', 1;
-
-    DECLARE @devuelto MONEY = CASE
-        WHEN @estatusPrevio = N'PagadaPendAtender' THEN @monto
-        ELSE 0
-    END;
+    DECLARE @devuelto MONEY = CASE WHEN @yaPago = 1 THEN @monto ELSE 0 END;
 
     BEGIN TRY
         BEGIN TRAN;
 
-        -- pago: si estaba pendiente o pagado, se cancela; devolución depende del estatus previo
+        -- cancelar pagos y registrar devoluciÃ³n (si aplica)
         UPDATE dbo.pago
           SET estatusPago   = N'Cancelado',
               montoDevuelto = @devuelto
         WHERE idCita = @idCita;
 
+        -- cancelar cita
         UPDATE dbo.cita
           SET estatusCita = N'CanceladaDoctor'
         WHERE idCita = @idCita;
 
+        -- etiqueta bitÃ¡cora (fila que generÃ³ el trigger)
         UPDATE b
-          SET b.politica = CASE WHEN @devuelto > 0 THEN N'100% aprobado por recepción' ELSE N'Cancelación aprobada (sin pago)' END,
+          SET b.politica = CASE
+                              WHEN @devuelto > 0 THEN N'100% aprobado por recepcion'
+                              ELSE N'Aprobado por recepcion (sin pago)'
+                           END,
               b.montoDevuelto = @devuelto
         FROM (
             SELECT TOP (1) *
@@ -187,7 +181,7 @@ BEGIN
     SET NOCOUNT ON;
     SET XACT_ABORT ON;
 
-    DECLARE @estatusActual NVARCHAR(25);
+    DECLARE @estatusActual NVARCHAR(40);
     SELECT @estatusActual = estatusCita
     FROM dbo.cita
     WHERE idCita = @idCita;
@@ -214,7 +208,7 @@ BEGIN
     )
     SELECT @estatusPrevio = estatusCita
     FROM movs
-    WHERE rn = 2;  -- el anterior al más reciente
+    WHERE rn = 2;  -- el anterior al mï¿½s reciente
 
     IF @estatusPrevio IS NULL
        THROW 51034, 'NoSePuedeDeterminarEstatusPrevio', 1;
@@ -226,9 +220,9 @@ BEGIN
         SET estatusCita = @estatusPrevio
       WHERE idCita = @idCita;
 
-      -- Etiqueta la fila nueva en bitácora (la que dejó el trigger al “revertir”)
+      -- Etiqueta la fila nueva en bitï¿½cora (la que dejï¿½ el trigger al ï¿½revertirï¿½)
       UPDATE b
-        SET b.politica = N'Rechazado por recepción (se revierte solicitud)'
+        SET b.politica = N'Rechazado por recepcion (se revierte solicitud)'
       FROM (
         SELECT TOP (1) *
         FROM dbo.bitacoraEstatusCita

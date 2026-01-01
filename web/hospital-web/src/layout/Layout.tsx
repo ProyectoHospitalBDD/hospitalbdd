@@ -36,11 +36,15 @@ export function Layout() {
 
   const userRole = user?.rol;
   const role = userRole ? String(userRole).toLowerCase() : "";
+
   const esDoctor = role.includes("doctor");
   const esPaciente = role.includes("paciente");
-
+  const esRecepcionista = user?.rol === "Recepcionista"
   // Determinamos si estamos en la página de inicio
   const isHome = location.pathname === "/home" || location.pathname === "/";
+  
+
+
 
   return (
     <div className="layout-root">
@@ -67,6 +71,21 @@ export function Layout() {
                   className={({ isActive }) => `layout-tab ${isActive ? "layout-tab--active" : ""}`}
                 >
                   Atender cita
+                </NavLink>
+              </nav>
+            )}
+
+            {/* Tabs SOLO para Recepcionista */}
+            {esRecepcionista && (
+              <nav className="layout-tabs">
+                <NavLink
+                  to="/recep/cancelaciones"
+                  onClick={closeMenu}
+                  className={({ isActive }) =>
+                    `layout-tab ${isActive ? "layout-tab--active" : ""}`
+                  }
+                >
+                  Cancelaciones
                 </NavLink>
               </nav>
             )}
