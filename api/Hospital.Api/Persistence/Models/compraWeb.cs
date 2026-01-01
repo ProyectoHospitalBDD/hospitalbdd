@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Hospital.Api.Persistence.Models; 
 
 namespace Hospital.Api.Models
 {
@@ -18,8 +19,8 @@ namespace Hospital.Api.Models
         public DateTime FechaCompra { get; set; } = DateTime.Now;
         public decimal TotalGeneral { get; set; }
         public string Estatus { get; set; } = "Carrito";
-
-        // Relación con los detalles
+        [ForeignKey("IdPaciente")]
+        public virtual Paciente? IdPacienteNavigation { get; set; }
         public List<DetalleCompraWeb> Detalles { get; set; } = new();
     }
 
@@ -39,7 +40,6 @@ namespace Hospital.Api.Models
         public int Cantidad { get; set; }
         public decimal PrecioUnitario { get; set; }
         
-        // Columna calculada en BD, pero podemos mapearla o ignorarla en la inserción
         [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         public decimal Importe { get; private set; }
     }

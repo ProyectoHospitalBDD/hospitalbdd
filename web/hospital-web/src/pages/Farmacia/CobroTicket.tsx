@@ -1,143 +1,242 @@
 import React, { useState, useEffect } from "react";
+// Asegúrate de que la ruta a tu API sea correcta según tu estructura
+import { getHistorialCaja, CobroItemDto } from "../../api/caja";
 import "./CobroTicket.css";
 
-// Definimos la estructura de un Ticket pendiente
-interface ConceptoCobro {
-  descripcion: string;
-  monto: number;
+// --- ÍCONOS SVG NATIVOS (Para no depender de librerías externas) ---
+const PrinterIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>;
+const UserIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>;
+const ChevronRightIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>;
+const ArrowLeftIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
+
+// Interfaz para agrupar por paciente
+interface PacienteResumen {
+    nombre: string;
+    total: number;
+    movimientos: CobroItemDto[];
 }
 
-interface TicketPaciente {
-  id: number;
-  pacienteNombre: string;
-  fecha: string;
-  conceptos: ConceptoCobro[]; // Lista de lo que se va a cobrar (Consulta, Medicinas, etc.)
-  estatus: "Pendiente" | "Pagado";
-}
+export default function CobroTicket() {
+  const [items, setItems] = useState<CobroItemDto[]>([]);
+  const [loading, setLoading] = useState(false);
+  
+  // Estado para la navegación (Vista General o Detalle Paciente)
+  const [pacienteSeleccionado, setPacienteSeleccionado] = useState<PacienteResumen | null>(null);
 
-// --- DATOS MOCK (Simulación de la Base de Datos) ---
-const MOCK_TICKETS: TicketPaciente[] = [
-  {
-    id: 101,
-    pacienteNombre: "Juan Pérez",
-    fecha: "2023-10-27",
-    estatus: "Pendiente",
-    conceptos: [
-      { descripcion: "Consulta General", monto: 500 },
-      { descripcion: "Paracetamol 500mg (Caja)", monto: 50 },
-      { descripcion: "Amoxicilina 500mg", monto: 120 },
-    ],
-  },
-  {
-    id: 102,
-    pacienteNombre: "María Rodríguez",
-    fecha: "2023-10-27",
-    estatus: "Pendiente",
-    conceptos: [
-      { descripcion: "Consulta Especialidad (Dermatología)", monto: 800 },
-    ],
-  },
-  {
-    id: 103,
-    pacienteNombre: "Carlos López",
-    fecha: "2023-10-27",
-    estatus: "Pagado",
-    conceptos: [
-      { descripcion: "Curación herida menor", monto: 300 },
-      { descripcion: "Gasas y Material", monto: 150 },
-    ],
-  },
-];
+  // Filtros
+  const today = new Date().toISOString().split('T')[0];
+  const [fecha, setFecha] = useState(today);
 
-export function CobroTicket() {
-  const [tickets, setTickets] = useState<TicketPaciente[]>([]);
-
-  // Cargar datos (simulado)
   useEffect(() => {
-    setTickets(MOCK_TICKETS);
-  }, []);
+    cargarDatos();
+    setPacienteSeleccionado(null); // Reset al cambiar fecha
+  }, [fecha]);
 
-  // Función para calcular el total de un ticket específico
-  const calcularTotal = (conceptos: ConceptoCobro[]) => {
-    return conceptos.reduce((acc, item) => acc + item.monto, 0);
+  const cargarDatos = async () => {
+    setLoading(true);
+    try {
+      const datos = await getHistorialCaja(fecha, fecha);
+      setItems(datos);
+    } catch (error) {
+      console.error("Error al cargar caja:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Función simulada para imprimir
-  const handleImprimirTicket = (id: number, nombre: string) => {
-    // Aquí iría la lógica de generación de PDF real (jsPDF, etc.)
-    alert(`🖨️ Generando PDF para el paciente: ${nombre} (Ticket #${id})`);
+  // 1. Agrupar movimientos por Paciente
+  const pacientesAgrupados = React.useMemo(() => {
+    const grupos: Record<string, PacienteResumen> = {};
+    
+    items.forEach(item => {
+        if (!grupos[item.paciente]) {
+            grupos[item.paciente] = { nombre: item.paciente, total: 0, movimientos: [] };
+        }
+        grupos[item.paciente].movimientos.push(item);
+        if (item.esPagado) {
+            grupos[item.paciente].total += item.montoTotal;
+        }
+    });
+
+    return Object.values(grupos).sort((a, b) => b.total - a.total); // Ordenar por quien pagó más
+  }, [items]);
+
+  const totalDia = items
+    .filter(i => i.esPagado)
+    .reduce((acc, curr) => acc + curr.montoTotal, 0);
+
+
+  // --- GENERAR TICKET FINAL (PDF) ---
+  const imprimirTicketFinal = (paciente: PacienteResumen) => {
+    const fechaImpresion = new Date().toLocaleString('es-MX');
+    
+    let filasHtml = '';
+    paciente.movimientos.forEach(mov => {
+        if(mov.esPagado) {
+            filasHtml += `
+                <tr>
+                    <td>${mov.origen} #${mov.idReferencia}</td>
+                    <td>${mov.concepto}</td>
+                    <td class="text-right">$${mov.montoTotal.toFixed(2)}</td>
+                </tr>
+            `;
+        }
+    });
+
+    const html = `
+      <html>
+        <head>
+          <title>Ticket Final - ${paciente.nombre}</title>
+          <style>
+            body { font-family: 'Courier New', monospace; margin: 20px; color: #333; max-width: 350px; }
+            .center { text-align: center; }
+            h2 { margin: 5px 0; text-transform: uppercase; font-size: 1.1rem; color: #27ae60; }
+            p { margin: 2px 0; font-size: 0.85rem; }
+            hr { border: 0.5px dashed #ccc; margin: 10px 0; }
+            table { width: 100%; font-size: 0.85rem; border-collapse: collapse; margin-top: 10px; }
+            td { padding: 4px 0; vertical-align: top; }
+            .text-right { text-align: right; }
+            .total-section { margin-top: 15px; font-size: 1.1rem; font-weight: bold; text-align: right; border-top: 1px solid #000; padding-top: 5px; }
+            .footer { margin-top: 20px; font-size: 0.75rem; text-align: center; color: #666; }
+            @media print { .no-print { display: none; } }
+          </style>
+        </head>
+        <body>
+          <div class="center">
+            <h2>Hospital PoliMed</h2>
+            <p>Comprobante de Pago Consolidado</p>
+            <p>Blvd. Salud #123, Ciudad</p>
+          </div>
+          <hr/>
+          <p><strong>Fecha:</strong> ${fechaImpresion}</p>
+          <p><strong>Paciente:</strong> ${paciente.nombre}</p>
+          <hr/>
+          
+          <table>
+            <tbody>
+                ${filasHtml}
+            </tbody>
+          </table>
+          
+          <div class="total-section">
+            Total Pagado: $${paciente.total.toFixed(2)}
+          </div>
+          
+          <hr/>
+          <div class="footer">
+            <p>¡Gracias por su preferencia!</p>
+            <p>Conserve este ticket para futuras aclaraciones.</p>
+          </div>
+          <script>window.onload = () => window.print();</script>
+        </body>
+      </html>
+    `;
+
+    const win = window.open('', '_blank', 'width=400,height=600');
+    if (win) { win.document.write(html); win.document.close(); }
   };
 
   return (
     <div className="cobro-app">
       <div className="cobro-header-container">
-        <h2 className="cobro-titulo">Caja y Farmacia</h2>
-        <p className="cobro-subtitulo">Gestión de cobros pendientes del día</p>
+        <h2 className="cobro-titulo">Caja General</h2>
+        <p className="cobro-subtitulo">Control de Ingresos por Paciente</p>
       </div>
 
-      <div className="cobro-grid">
-        {tickets.map((ticket) => {
-          const totalTicket = calcularTotal(ticket.conceptos);
-          const esPendiente = ticket.estatus === "Pendiente";
-
-          return (
-            <div key={ticket.id} className={`cobro-card ${esPendiente ? "pendiente" : "pagado"}`}>
-              {/* Encabezado de la Tarjeta */}
-              <div className="card-header">
-                <div>
-                  <span className="folio">Folio: #{ticket.id}</span>
-                  <h3 className="paciente-nombre">{ticket.pacienteNombre}</h3>
-                  <span className="fecha-ticket">{ticket.fecha}</span>
-                </div>
-                <div className={`badge ${esPendiente ? "badge-yellow" : "badge-green"}`}>
-                  {ticket.estatus}
-                </div>
-              </div>
-
-              {/* Lista de Conceptos */}
-              <div className="card-body">
-                <p className="seccion-titulo">Detalles del cobro:</p>
-                <ul className="conceptos-lista">
-                  {ticket.conceptos.map((item, index) => (
-                    <li key={index} className="concepto-item">
-                      <span>{item.descripcion}</span>
-                      <span className="precio">${item.monto.toFixed(2)}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Total y Acciones */}
-              <div className="card-footer">
-                <div className="total-row">
-                  <span>Total a Pagar:</span>
-                  <span className="monto-total">${totalTicket.toFixed(2)}</span>
-                </div>
-
-                <div className="acciones-row">
-                  {esPendiente ? (
-                    <button 
-                      className="btn-cobrar"
-                      onClick={() => handleImprimirTicket(ticket.id, ticket.pacienteNombre)}
-                    >
-                      💰 Cobrar e Imprimir Ticket
-                    </button>
-                  ) : (
-                    <button 
-                      className="btn-reimprimir"
-                      onClick={() => handleImprimirTicket(ticket.id, ticket.pacienteNombre)}
-                    >
-                      📄 Reimprimir Comprobante
-                    </button>
-                  )}
-                </div>
-              </div>
+      {/* Barra Superior (Fecha y Total General) */}
+      <div className="filtros-container">
+        <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
+            {pacienteSeleccionado && (
+                <button onClick={() => setPacienteSeleccionado(null)} className="btn-back">
+                    <ArrowLeftIcon /> Volver
+                </button>
+            )}
+            
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <label style={{fontWeight: 'bold', fontSize:'0.8rem', color:'#666'}}>Fecha:</label>
+                <input 
+                    type="date" 
+                    value={fecha} 
+                    onChange={(e) => setFecha(e.target.value)} 
+                    className="fecha-input"
+                />
             </div>
-          );
-        })}
+        </div>
+
+        <div className="total-general-box">
+            <span>Venta Total del Día</span>
+            <strong>${totalDia.toLocaleString('es-MX', { minimumFractionDigits: 2 })}</strong>
+        </div>
       </div>
+
+      {loading ? (
+        <div className="loading-state"><div className="loader"></div> Cargando...</div>
+      ) : (
+        <>
+            {/* VISTA 1: LISTA DE PACIENTES */}
+            {!pacienteSeleccionado && (
+                <div className="pacientes-list">
+                    {pacientesAgrupados.length === 0 && (
+                        <div className="empty-state">No hay movimientos para esta fecha.</div>
+                    )}
+
+                    {pacientesAgrupados.map((p, idx) => (
+                        <div key={idx} className="paciente-card" onClick={() => setPacienteSeleccionado(p)}>
+                            <div className="paciente-icon">
+                                <UserIcon />
+                            </div>
+                            <div className="paciente-info">
+                                <h3>{p.nombre}</h3>
+                                <p>{p.movimientos.length} movimientos registrados</p>
+                            </div>
+                            <div className="paciente-total">
+                                ${p.total.toLocaleString('es-MX', { minimumFractionDigits: 2 })}
+                            </div>
+                            <div className="paciente-arrow">
+                                <ChevronRightIcon />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+
+            {/* VISTA 2: DETALLE DEL PACIENTE SELECCIONADO */}
+            {pacienteSeleccionado && (
+                <div className="detalle-paciente-container">
+                    <div className="detalle-header">
+                        <h3>Movimientos de: <span style={{color:'#2c3e50'}}>{pacienteSeleccionado.nombre}</span></h3>
+                        <button className="btn-cobrar" onClick={() => imprimirTicketFinal(pacienteSeleccionado)}>
+                            <div style={{marginRight:8, display:'flex'}}><PrinterIcon /></div> Imprimir Ticket Final
+                        </button>
+                    </div>
+
+                    <div className="cobro-grid">
+                        {pacienteSeleccionado.movimientos.map((item) => (
+                            <div key={`${item.origen}-${item.idReferencia}`} className={`cobro-card ${!item.esPagado ? "pendiente" : "pagado"}`}>
+                                <div className="card-header">
+                                    <div>
+                                        <span className="folio">#{item.idReferencia} • {item.origen.toUpperCase()}</span>
+                                        <span className="fecha-ticket">
+                                            {new Date(item.fecha).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                        </span>
+                                    </div>
+                                    <div className={`badge ${!item.esPagado ? "badge-yellow" : "badge-green"}`}>
+                                        {item.estatus}
+                                    </div>
+                                </div>
+                                <div className="card-body">
+                                    <p style={{fontSize:'1rem', fontWeight:500}}>{item.concepto}</p>
+                                </div>
+                                <div className="card-footer">
+                                    <span className="monto-total">${item.montoTotal.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </>
+      )}
     </div>
   );
 }
-
-export default CobroTicket;
