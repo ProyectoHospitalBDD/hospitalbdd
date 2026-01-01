@@ -50,6 +50,10 @@ public partial class HospitalContext : DbContext
 
     public virtual DbSet<PacienteAlergiaPadecimiento> PacienteAlergiaPadecimientos { get; set; }
 
+    public virtual DbSet<Hospital.Api.Models.CompraWeb> CompraWebs { get; set; }
+    
+    public virtual DbSet<Hospital.Api.Models.DetalleCompraWeb> DetalleCompraWebs { get; set; }
+
     public virtual DbSet<Pago> Pagos { get; set; }
 
     public virtual DbSet<PagoTicket> PagoTickets { get; set; }
@@ -71,6 +75,7 @@ public partial class HospitalContext : DbContext
     public virtual DbSet<TicketServicio> TicketServicios { get; set; }
 
     public virtual DbSet<UsuarioSistema> UsuarioSistemas { get; set; }
+
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -725,6 +730,30 @@ public partial class HospitalContext : DbContext
                 .HasForeignKey(d => d.IdContacto)
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_usuarioContacto");
+        });
+
+        modelBuilder.Entity<Hospital.Api.Models.CompraWeb>(entity =>
+        {
+            entity.HasKey(e => e.IdCompra);
+            entity.ToTable("compraWeb");
+            entity.Property(e => e.TotalGeneral).HasColumnType("decimal(10, 2)");
+        });
+
+        modelBuilder.Entity<Hospital.Api.Models.DetalleCompraWeb>(entity =>
+        {
+            entity.HasKey(e => e.IdDetalleWeb);
+            entity.ToTable("detalleCompraWeb");
+            
+            entity.Property(e => e.PrecioUnitario).HasColumnType("decimal(10, 2)");
+            
+            // Importante: Decirle a EF que 'Importe' es calculado por la BD
+            entity.Property(e => e.Importe)
+                  .HasComputedColumnSql("([cantidad] * [precioUnitario])", stored: false);
+
+            entity.HasOne(d => d.Compra)
+                  .WithMany(p => p.Detalles)
+                  .HasForeignKey(d => d.IdCompra)
+                  .OnDelete(DeleteBehavior.Cascade); // Si borras compra, se borran detalles
         });
 
         OnModelCreatingPartial(modelBuilder);
