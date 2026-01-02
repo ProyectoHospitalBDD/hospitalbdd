@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-// Asegúrate de que la ruta a tu API sea correcta según tu estructura
 import { getHistorialCaja, CobroItemDto } from "../../api/caja";
 import "./CobroTicket.css";
 
