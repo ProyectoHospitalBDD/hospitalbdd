@@ -26,11 +26,16 @@ export function LoginPage() {
       // mandamos a la pantalla principal
       navigate("/home");
     } catch (err: any) {
+      const data = err?.response?.data;
+
       const msg =
-        err?.response?.data?.detail ||
-        err?.response?.data?.message ||
+        (typeof data === "string" && data) ||
+        data?.message ||
+        data?.detail ||
+        err?.message ||
         "Usuario o contraseña incorrectos.";
-      setError(typeof msg === "string" ? msg : "Usuario o contraseña incorrectos.");
+
+      setError(String(msg));
     } finally {
       setLoading(false);
     }
