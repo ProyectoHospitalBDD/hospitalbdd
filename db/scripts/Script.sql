@@ -9,52 +9,52 @@ DECLARE @idEdificio2 INT = SCOPE_IDENTITY();
 -----------------------------------------------------------------------------------
 -----------------------Especialidad------------------------------------------------
 INSERT INTO dbo.especialidad (nombreEsp, anosEstu, costo) 
-VALUES (N'Cardiología', 12, 1500);
+VALUES (N'Cardiologï¿½a', 12, 1500);
 DECLARE @idEspecialidad1 INT = SCOPE_IDENTITY();
 INSERT INTO dbo.especialidad (nombreEsp, anosEstu, costo) 
-VALUES (N'Dermatología', 10, 1200);
+VALUES (N'Dermatologï¿½a', 10, 1200);
 DECLARE @idEspecialidad2 INT = SCOPE_IDENTITY();
 INSERT INTO dbo.especialidad (nombreEsp, anosEstu, costo) 
-VALUES (N'Ginecología', 10, 950);
+VALUES (N'Ginecologï¿½a', 10, 950);
 DECLARE @idEspecialidad3 INT = SCOPE_IDENTITY();
 INSERT INTO dbo.especialidad (nombreEsp, anosEstu, costo) 
-VALUES (N'Médico General', 6, 250);
+VALUES (N'Mï¿½dico General', 6, 250);
 DECLARE @idEspecialidad4 INT = SCOPE_IDENTITY();
 INSERT INTO dbo.especialidad (nombreEsp, anosEstu, costo) 
-VALUES (N'Nefrología', 8, 1300);
+VALUES (N'Nefrologï¿½a', 8, 1300);
 DECLARE @idEspecialidad5 INT = SCOPE_IDENTITY();
 INSERT INTO dbo.especialidad (nombreEsp, anosEstu, costo) 
-VALUES (N'Nutriología', 5, 800);
+VALUES (N'Nutriologï¿½a', 5, 800);
 DECLARE @idEspecialidad6 INT = SCOPE_IDENTITY();
 INSERT INTO dbo.especialidad (nombreEsp, anosEstu, costo) 
-VALUES (N'Oftanmología', 12, 1000);
+VALUES (N'Oftanmologï¿½a', 12, 1000);
 DECLARE @idEspecialidad7 INT = SCOPE_IDENTITY();
 INSERT INTO dbo.especialidad (nombreEsp, anosEstu, costo) 
-VALUES (N'Oncología', 14, 1700);
+VALUES (N'Oncologï¿½a', 14, 1700);
 DECLARE @idEspecialidad8 INT = SCOPE_IDENTITY();
 INSERT INTO dbo.especialidad (nombreEsp, anosEstu, costo) 
 VALUES (N'Ortopedia', 10, 1250);
 DECLARE @idEspecialidad9 INT = SCOPE_IDENTITY();
 INSERT INTO dbo.especialidad (nombreEsp, anosEstu, costo) 
-VALUES (N'Pediatría', 11, 1350);
+VALUES (N'Pediatrï¿½a', 11, 1350);
 DECLARE @idEspecialidad10 INT = SCOPE_IDENTITY();
 INSERT INTO dbo.especialidad (nombreEsp, anosEstu, costo) 
-VALUES (N'Proctología', 13, 1150);
+VALUES (N'Proctologï¿½a', 13, 1150);
 DECLARE @idEspecialidad11 INT = SCOPE_IDENTITY();
 INSERT INTO dbo.especialidad (nombreEsp, anosEstu, costo) 
-VALUES (N'Psiclogía', 5, 700);
+VALUES (N'Psiclogï¿½a', 5, 700);
 DECLARE @idEspecialidad12 INT = SCOPE_IDENTITY();
 INSERT INTO dbo.especialidad (nombreEsp, anosEstu, costo) 
 VALUES (N'Fisioterapia', 4, 900);
 DECLARE @idEspecialidad13 INT = SCOPE_IDENTITY();
 INSERT INTO dbo.especialidad (nombreEsp, anosEstu, costo) 
-VALUES (N'Podología', 4, 500);
+VALUES (N'Podologï¿½a', 4, 500);
 DECLARE @idEspecialidad14 INT = SCOPE_IDENTITY();
 INSERT INTO dbo.especialidad (nombreEsp, anosEstu, costo) 
 VALUES (N'Ortodoncia', 9, 850);
 DECLARE @idEspecialidad15 INT = SCOPE_IDENTITY();
 INSERT INTO dbo.especialidad (nombreEsp, anosEstu, costo) 
-VALUES (N'Odontología', 7, 750);
+VALUES (N'Odontologï¿½a', 7, 750);
 DECLARE @idEspecialidad16 INT = SCOPE_IDENTITY();
 INSERT INTO dbo.especialidad (nombreEsp, anosEstu, costo) 
 VALUES (N'Obstetricia', 14, 1100);
@@ -127,11 +127,11 @@ DECLARE @idFarmaceutico2 INT = (SELECT TOP 1 idUsuario FROM dbo.farmaceutico ORD
 -----------------------------------------------------------------------------------
 -----------------------Medicamento-------------------------------------------------
 INSERT INTO dbo.medicamento (descripcion, tipo, capacidad, precio, stock, caducidad, idFarmacia)
-VALUES (N'Paracetamol 500mg', N'Analgésico', N'Caja 20 tabletas', 25.00, 100, '2026-12-31', @idFarmacia1);
+VALUES (N'Paracetamol 500mg', N'Analgï¿½sico', N'Caja 20 tabletas', 25.00, 100, '2026-12-31', @idFarmacia1);
 DECLARE @idMedicamento1 INT = SCOPE_IDENTITY();
 
 INSERT INTO dbo.medicamento (descripcion, tipo, capacidad, precio, stock, caducidad, idFarmacia)
-VALUES (N'Amoxicilina 500mg', N'Antibiótico', N'Caja 12 cápsulas', 85.50, 50, '2025-10-15', @idFarmacia1);
+VALUES (N'Amoxicilina 500mg', N'Antibiï¿½tico', N'Caja 12 cï¿½psulas', 85.50, 50, '2025-10-15', @idFarmacia1);
 DECLARE @idMedicamento2 INT = SCOPE_IDENTITY();
 
 INSERT INTO dbo.medicamento (descripcion, tipo, capacidad, precio, stock, caducidad, idFarmacia)
@@ -139,31 +139,31 @@ VALUES (N'Ibuprofeno 400mg', N'Antiinflamatorio', N'Caja 10 tabletas', 35.00, 80
 DECLARE @idMedicamento3 INT = SCOPE_IDENTITY();
 
 INSERT INTO dbo.medicamento (descripcion, tipo, capacidad, precio, stock, caducidad, idFarmacia)
-VALUES (N'Metformina 850mg', N'Antidiabético', N'Frasco 30 tabletas', 120.00, 40, '2025-08-01', @idFarmacia1);
+VALUES (N'Metformina 850mg', N'Antidiabï¿½tico', N'Frasco 30 tabletas', 120.00, 40, '2025-08-01', @idFarmacia1);
 DECLARE @idMedicamento4 INT = SCOPE_IDENTITY();
 
 INSERT INTO dbo.medicamento (descripcion, tipo, capacidad, precio, stock, caducidad, idFarmacia)
-VALUES (N'Losartán 50mg', N'Antihipertensivo', N'Caja 30 grageas', 150.00, 60, '2027-01-10', @idFarmacia1);
+VALUES (N'Losartï¿½n 50mg', N'Antihipertensivo', N'Caja 30 grageas', 150.00, 60, '2027-01-10', @idFarmacia1);
 DECLARE @idMedicamento5 INT = SCOPE_IDENTITY();
 
 INSERT INTO dbo.medicamento (descripcion, tipo, capacidad, precio, stock, caducidad, idFarmacia)
-VALUES (N'Antiflu-Des', N'Antigripal', N'Caja 24 cápsulas', 95.00, 200, '2026-11-30', @idFarmacia2);
+VALUES (N'Antiflu-Des', N'Antigripal', N'Caja 24 cï¿½psulas', 95.00, 200, '2026-11-30', @idFarmacia2);
 DECLARE @idMedicamento6 INT = SCOPE_IDENTITY();
 
 INSERT INTO dbo.medicamento (descripcion, tipo, capacidad, precio, stock, caducidad, idFarmacia)
-VALUES (N'Complejo B', N'Vitamínico', N'Frasco 60 tabletas', 180.00, 30, '2025-09-25', @idFarmacia2);
+VALUES (N'Complejo B', N'Vitamï¿½nico', N'Frasco 60 tabletas', 180.00, 30, '2025-09-25', @idFarmacia2);
 DECLARE @idMedicamento7 INT = SCOPE_IDENTITY();
 
 INSERT INTO dbo.medicamento (descripcion, tipo, capacidad, precio, stock, caducidad, idFarmacia)
-VALUES (N'Omeprazol 20mg', N'Antiácido', N'Frasco 14 cápsulas', 45.00, 90, '2026-03-15', @idFarmacia2);
+VALUES (N'Omeprazol 20mg', N'Antiï¿½cido', N'Frasco 14 cï¿½psulas', 45.00, 90, '2026-03-15', @idFarmacia2);
 DECLARE @idMedicamento8 INT = SCOPE_IDENTITY();
 
 INSERT INTO dbo.medicamento (descripcion, tipo, capacidad, precio, stock, caducidad, idFarmacia)
-VALUES (N'Loratadina 10mg', N'Antihistamínico', N'Caja 10 tabletas', 30.00, 75, '2027-06-05', @idFarmacia2);
+VALUES (N'Loratadina 10mg', N'Antihistamï¿½nico', N'Caja 10 tabletas', 30.00, 75, '2027-06-05', @idFarmacia2);
 DECLARE @idMedicamento9 INT = SCOPE_IDENTITY();
 
 INSERT INTO dbo.medicamento (descripcion, tipo, capacidad, precio, stock, caducidad, idFarmacia)
-VALUES (N'Alcohol Etílico', N'Antiséptico', N'Botella 500ml', 28.00, 50, '2028-01-01', @idFarmacia2);
+VALUES (N'Alcohol Etï¿½lico', N'Antisï¿½ptico', N'Botella 500ml', 28.00, 50, '2028-01-01', @idFarmacia2);
 DECLARE @idMedicamento10 INT = SCOPE_IDENTITY();
 -----------------------------------------------------------------------------------
 -----------------------Ticket------------------------------------------------------
@@ -260,19 +260,19 @@ DECLARE @idEnfermera2 INT = (SELECT TOP 1 idUsuario FROM dbo.enfermera ORDER BY 
 -----------------------------------------------------------------------------------
 -----------------------Servicio----------------------------------------------------
 INSERT INTO dbo.servicio (descripcion, tipo, precio, stock, idEnfermera)
-VALUES (N'Inyección Intramuscular', N'Aplicación', 50.00, NULL, @idEnfermera1);
+VALUES (N'Inyecciï¿½n Intramuscular', N'Aplicaciï¿½n', 50.00, NULL, @idEnfermera1);
 DECLARE @idServicio1 INT = SCOPE_IDENTITY();
 
 INSERT INTO dbo.servicio (descripcion, tipo, precio, stock, idEnfermera)
-VALUES (N'Curación de Herida Menor', N'Curación', 250.00, 50, @idEnfermera1);
+VALUES (N'Curaciï¿½n de Herida Menor', N'Curaciï¿½n', 250.00, 50, @idEnfermera1);
 DECLARE @idServicio2 INT = SCOPE_IDENTITY();
 
 INSERT INTO dbo.servicio (descripcion, tipo, precio, stock, idEnfermera)
-VALUES (N'Toma de Presión Arterial', N'Monitoreo', 30.00, NULL, @idEnfermera1);
+VALUES (N'Toma de Presiï¿½n Arterial', N'Monitoreo', 30.00, NULL, @idEnfermera1);
 DECLARE @idServicio3 INT = SCOPE_IDENTITY();
 
 INSERT INTO dbo.servicio (descripcion, tipo, precio, stock, idEnfermera)
-VALUES (N'Nebulización (Sesión 20 min)', N'Tratamiento', 150.00, NULL, @idEnfermera1);
+VALUES (N'Nebulizaciï¿½n (Sesiï¿½n 20 min)', N'Tratamiento', 150.00, NULL, @idEnfermera1);
 DECLARE @idServicio4 INT = SCOPE_IDENTITY();
 
 INSERT INTO dbo.servicio (descripcion, tipo, precio, stock, idEnfermera)
@@ -280,7 +280,7 @@ VALUES (N'Retiro de Puntos/Suturas', N'Procedimiento', 200.00, 20, @idEnfermera1
 DECLARE @idServicio5 INT = SCOPE_IDENTITY();
 
 INSERT INTO dbo.servicio (descripcion, tipo, precio, stock, idEnfermera)
-VALUES (N'Colocación de Venoclisis (Suero)', N'Procedimiento', 350.00, 30, @idEnfermera2);
+VALUES (N'Colocaciï¿½n de Venoclisis (Suero)', N'Procedimiento', 350.00, 30, @idEnfermera2);
 DECLARE @idServicio6 INT = SCOPE_IDENTITY();
 
 INSERT INTO dbo.servicio (descripcion, tipo, precio, stock, idEnfermera)
@@ -288,7 +288,7 @@ VALUES (N'Prueba de Glucosa Capilar', N'Laboratorio', 80.00, 100, @idEnfermera2)
 DECLARE @idServicio7 INT = SCOPE_IDENTITY();
 
 INSERT INTO dbo.servicio (descripcion, tipo, precio, stock, idEnfermera)
-VALUES (N'Lavado Ótico (Oído)', N'Curación', 300.00, 15, @idEnfermera2);
+VALUES (N'Lavado ï¿½tico (Oï¿½do)', N'Curaciï¿½n', 300.00, 15, @idEnfermera2);
 DECLARE @idServicio8 INT = SCOPE_IDENTITY();
 
 INSERT INTO dbo.servicio (descripcion, tipo, precio, stock, idEnfermera)
@@ -296,7 +296,7 @@ VALUES (N'Electrocardiograma Simple', N'Estudio', 600.00, NULL, @idEnfermera2);
 DECLARE @idServicio9 INT = SCOPE_IDENTITY();
 
 INSERT INTO dbo.servicio (descripcion, tipo, precio, stock, idEnfermera)
-VALUES (N'Aplicación de Vacuna Tétanos', N'Vacunación', 120.00, 10, @idEnfermera2);
+VALUES (N'Aplicaciï¿½n de Vacuna Tï¿½tanos', N'Vacunaciï¿½n', 120.00, 10, @idEnfermera2);
 DECLARE @idServicio10 INT = SCOPE_IDENTITY();
 -----------------------ticketServicio----------------------------------------------
 INSERT INTO dbo.ticketServicio(idTicket, idServicio, cantidad, precioUnitario)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Hospital.Api.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
+using Hospital.Api.Dtos.Empleados;
 
 namespace Hospital.Api.Persistence;
 
@@ -755,6 +756,8 @@ public partial class HospitalContext : DbContext
                   .HasForeignKey(d => d.IdCompra)
                   .OnDelete(DeleteBehavior.Cascade); // Si borras compra, se borran detalles
         });
+
+        modelBuilder.Entity<_EmpleadoCrearSpRow>().HasNoKey();
 
         OnModelCreatingPartial(modelBuilder);
     }

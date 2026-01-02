@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../lib/auth/AuthContext";
-import "./Layout.css";
+import "./Layout.css";  
 
 // Ruta del logo (asegúrate de que esté en public/imagenes/)
 const LOGO_URL = "../public/imagenes/Logo_PoliMed.png";
@@ -85,7 +85,17 @@ export function Layout() {
                     `layout-tab ${isActive ? "layout-tab--active" : ""}`
                   }
                 >
-                  Cancelaciones
+                  Administrar citas
+                </NavLink>
+
+                <NavLink
+                  to="/recep/empleados"
+                  onClick={closeMenu}
+                  className={({ isActive }) =>
+                    `layout-tab ${isActive ? "layout-tab--active" : ""}`
+                  }
+                >
+                  Administrar empleados
                 </NavLink>
               </nav>
             )}
