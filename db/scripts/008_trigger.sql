@@ -1,4 +1,5 @@
 USE hospitalBD;
+Go
 -- Bitácora automática de cambios de estatus
 CREATE OR ALTER TRIGGER dbo.tr_CitaLogEstatus
 ON dbo.cita

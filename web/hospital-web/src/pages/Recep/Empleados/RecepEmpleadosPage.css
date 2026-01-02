@@ -1,0 +1,321 @@
+.recep-empleados{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+  color:#111;
+}
+
+.recep-empleados__hero{
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+}
+
+.recep-empleados__hero h1{ margin:0; font-size:34px; }
+.recep-empleados__hero p{ margin:8px 0 0; color: rgba(0,0,0,0.65); }
+
+.recep-empleados__card{
+  margin-top: 16px;
+  background:#fff;
+  border-radius:16px;
+  padding:18px;
+  border: 1px solid rgba(0,0,0,0.06);
+  box-shadow:0 10px 30px rgba(0,0,0,0.08);
+}
+
+.recep-empleados__grid{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.field{ display:flex; flex-direction:column; gap:6px; }
+.field label{ font-size:12px; font-weight:800; color: rgba(0,0,0,0.65); }
+
+.field input, .field select{
+  border-radius:12px;
+  border:1px solid rgba(0,0,0,0.14);
+  padding:10px 12px;
+  outline:none;
+  background:#fff;
+  font-weight:600;
+}
+
+.field input:focus, .field select:focus{
+  border-color: rgba(46,108,255,0.55);
+  box-shadow: 0 0 0 4px rgba(46,108,255,0.14);
+}
+
+.recep-empleados__actions{
+  margin-top: 16px;
+  display:flex;
+  justify-content:flex-end;
+}
+
+.recep-empleados__error{
+  margin-top:12px;
+  padding:12px 14px;
+  border-radius:12px;
+  background:#ffe9e9;
+  border: 1px solid rgba(255, 77, 77, 0.35);
+  color: #7a1111;
+}
+
+.recep-empleados__ok{
+  margin-top:12px;
+  padding:12px 14px;
+  border-radius:12px;
+  background: rgba(46, 204, 113, 0.12);
+  border: 1px solid rgba(46, 204, 113, 0.25);
+}
+
+@media (max-width: 980px){
+  .recep-empleados__grid{ grid-template-columns: 1fr; }
+}
+/* =========================
+   RECEP EMPLEADOS - UI
+   ========================= */
+
+.recep-empleados{
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 26px 24px 46px;
+  color: #111;
+}
+
+/* “Nuclear” pero solo en esta página para evitar texto blanco heredado */
+.recep-empleados,
+.recep-empleados *{
+  color: #111;
+}
+
+/* HERO */
+.recep-empleados__hero{
+  background: rgba(255,255,255,0.75);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 18px;
+  padding: 18px 18px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+  margin: 14px auto 16px;
+}
+
+.recep-empleados__hero h1{
+  margin: 0;
+  font-size: 34px;
+  letter-spacing: -0.6px;
+  line-height: 1.1;
+}
+
+.recep-empleados__hero p{
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: rgba(0,0,0,0.65);
+}
+
+/* Cards */
+.recep-empleados__card{
+  background:#fff;
+  border-radius:16px;
+  padding:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
+/* Mensajes */
+.recep-empleados__error{
+  margin: 10px 0 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #ffe9e9;
+  border: 1px solid rgba(255, 77, 77, 0.35);
+  color: #7a1111;
+}
+
+.recep-empleados__ok{
+  margin: 10px 0 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(46, 204, 113, 0.12);
+  border: 1px solid rgba(46, 204, 113, 0.25);
+  color: #0b3b22;
+}
+
+/* Grid */
+.recep-empleados__grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 14px;
+  align-items: end;
+}
+
+/* Fields */
+.field{
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+}
+
+.field label{
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(0,0,0,0.65);
+  letter-spacing: 0.2px;
+  text-transform: none;
+}
+
+/* Inputs / selects */
+.field input,
+.field select{
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(0,0,0,0.14);
+  padding: 10px 12px;
+  outline: none;
+  background: #fff;
+  color: #111 !important;
+  font-weight: 600;
+  transition: box-shadow 120ms ease, border-color 120ms ease, transform 120ms ease;
+}
+
+/* Placeholder visible */
+.field input::placeholder{
+  color: rgba(0,0,0,0.45);
+  font-weight: 600;
+}
+
+/* Focus bonito */
+.field input:focus,
+.field select:focus{
+  border-color: rgba(46,108,255,0.55);
+  box-shadow: 0 0 0 4px rgba(46,108,255,0.14);
+}
+
+/* Select arrow (mejora visual) */
+.field select{
+  -webkit-appearance: none;
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, rgba(0,0,0,0.55) 50%),
+    linear-gradient(135deg, rgba(0,0,0,0.55) 50%, transparent 50%),
+    linear-gradient(to right, transparent, transparent);
+  background-position:
+    calc(100% - 18px) calc(50% - 3px),
+    calc(100% - 12px) calc(50% - 3px),
+    calc(100% - 40px) 50%;
+  background-size:
+    6px 6px,
+    6px 6px,
+    1px 60%;
+  background-repeat: no-repeat;
+  padding-right: 42px;
+}
+
+/* Opciones del select (evita que se vean “raras” en algunos temas) */
+.field option{
+  color: #111;
+  background: #fff;
+}
+
+/* Actions */
+.recep-empleados__actions{
+  display:flex;
+  justify-content:flex-end;
+  margin-top: 14px;
+}
+
+/* Botones reutilizando tus clases */
+.recep-empleados .btn{
+  border:none;
+  border-radius:12px;
+  padding:10px 14px;
+  cursor:pointer;
+  font-weight: 800;
+  font-size: 13px;
+  transition: transform 120ms ease, opacity 120ms ease, box-shadow 120ms ease;
+}
+
+.recep-empleados .btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.12);
+}
+
+.recep-empleados .btn:active{
+  transform: translateY(0px);
+  box-shadow: none;
+}
+
+.recep-empleados .btn:disabled{
+  opacity:0.6;
+  cursor:not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.recep-empleados .btn-ok{
+  background:#2e6cff;
+  color:#fff !important;
+}
+
+/* Responsive */
+@media (max-width: 900px){
+  .recep-empleados{
+    padding: 20px 14px 40px;
+  }
+  .recep-empleados__grid{
+    grid-template-columns: 1fr;
+  }
+  .recep-empleados__actions{
+    justify-content: stretch;
+  }
+  .recep-empleados__actions .btn{
+    width: 100%;
+  }
+}
+
+/* Contenedor de campos extra del Doctor */
+.recep-empleados__doctorExtra {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  /* Reserva espacio */
+  min-height: 140px;
+
+  /* Suaviza aparición/desaparición */
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+/* Cuando NO es doctor, el espacio se mantiene pero se oculta */
+.recep-empleados__doctorExtraHidden {
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+}
+/* el bloque extra ocupa todo el ancho del grid principal */
+.recep-empleados__doctorExtra{
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 14px;
+
+  /* reserva espacio aunque esté oculto */
+  min-height: 140px;
+
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+.recep-empleados__doctorExtraHidden{
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+}
+
+/* en móvil, que no intente 2 columnas */
+@media (max-width: 900px){
+  .recep-empleados__doctorExtra{
+    grid-template-columns: 1fr;
+    min-height: 0; /* opcional */
+  }
+}

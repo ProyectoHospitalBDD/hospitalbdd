@@ -1,7 +1,7 @@
 /*CREATE DATABASE hospitalBD
-
-USE hospitalBD
 */
+USE hospitalBD
+
 
 CREATE TABLE dbo.contacto (
 	idContacto	INT PRIMARY KEY IDENTITY (1,1),
@@ -306,3 +306,163 @@ CREATE TABLE dbo.pacienteAlergiaPadecimiento (
     CONSTRAINT pacienteTerminoPaciente FOREIGN KEY (idPaciente) REFERENCES dbo.paciente(idUsuario) ON DELETE CASCADE,
     CONSTRAINT PK_PacienteTermino PRIMARY KEY (idPaciente, idAlerPade)
 )
+
+--Corecciones de las tablas 
+
+IF COL_LENGTH('dbo.pago','montoDevuelto') IS NULL
+BEGIN
+    ALTER TABLE dbo.pago 
+    ADD montoDevuelto MONEY NULL 
+        CONSTRAINT DF_pagoMontoDevuelto DEFAULT(0);
+END
+GO
+
+IF OBJECT_ID('dbo.bitacoraEstatusCita','U') IS NULL
+BEGIN
+  CREATE TABLE dbo.bitacoraEstatusCita(
+    idBitacora INT IDENTITY(1,1) PRIMARY KEY,
+    idCita     INT NOT NULL,
+    estatusCita NVARCHAR(25) NOT NULL,
+    fechaMov   DATETIME2 NOT NULL CONSTRAINT DF_Bitacora_fechaMov DEFAULT (SYSUTCDATETIME()),
+    fechaCitaInicio DATETIME2 NULL,
+    fechaCitaFin    DATETIME2 NULL,
+    idPaciente INT NULL,
+    idDoctor  INT NULL,
+    costo MONEY NULL,
+    politica NVARCHAR(50) NULL,
+    montoDevuelto MONEY NULL
+  );
+
+  CREATE INDEX IX_Bitacora_Cita 
+    ON dbo.bitacoraEstatusCita(idCita, fechaMov DESC);
+END
+GO
+
+-- 2) Duración + columna calculada de fin
+
+IF COL_LENGTH('dbo.cita','duracionMin') IS NULL
+BEGIN
+  ALTER TABLE dbo.cita 
+    ADD duracionMin INT NOT NULL 
+      CONSTRAINT DF_cita_duracion DEFAULT(30);
+END
+GO
+
+IF COL_LENGTH('dbo.cita','fechaHoraFin') IS NULL
+BEGIN
+  ALTER TABLE dbo.cita
+    ADD fechaHoraFin AS DATEADD(MINUTE, duracionMin, fechaHoraInicio) PERSISTED;
+END
+GO
+
+-- 3) Duraciones permitidas (30,60,90)
+
+IF NOT EXISTS (SELECT 1 FROM sys.check_constraints WHERE name='CK_Cita_Duracion_30_60_90')
+BEGIN
+  ALTER TABLE dbo.cita WITH CHECK
+  ADD CONSTRAINT CK_Cita_Duracion_30_60_90
+  CHECK (duracionMin IN (30,60,90));
+END
+GO
+
+----------------------------------------------------
+-- 1. Quitar constraint e índice que dependen de fechaHoraFin
+----------------------------------------------------
+IF OBJECT_ID('CK_Cita_RangoHora', 'C') IS NOT NULL
+BEGIN
+    ALTER TABLE dbo.cita DROP CONSTRAINT CK_Cita_RangoHora;
+END
+GO
+
+IF EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE name = 'IX_CitaDoctorFecha'
+      AND object_id = OBJECT_ID('dbo.cita')
+)
+BEGIN
+    DROP INDEX IX_CitaDoctorFecha ON dbo.cita;
+END
+GO
+
+----------------------------------------------------
+-- 2. Borrar la columna normal fechaHoraFin (si no es calculada)
+----------------------------------------------------
+IF EXISTS (
+    SELECT 1
+    FROM sys.columns
+    WHERE object_id = OBJECT_ID('dbo.cita')
+      AND name = 'fechaHoraFin'
+      AND is_computed = 0
+)
+BEGIN
+    ALTER TABLE dbo.cita DROP COLUMN fechaHoraFin;
+END
+GO
+
+----------------------------------------------------
+-- 3. Crear fechaHoraFin como columna calculada PERSISTED
+----------------------------------------------------
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.columns
+    WHERE object_id = OBJECT_ID('dbo.cita')
+      AND name = 'fechaHoraFin'
+      AND is_computed = 1
+)
+BEGIN
+    ALTER TABLE dbo.cita
+    ADD fechaHoraFin AS DATEADD(MINUTE, duracionMin, fechaHoraInicio) PERSISTED;
+END
+GO
+
+----------------------------------------------------
+-- 4. Volver a crear el CHECK y el índice
+----------------------------------------------------
+IF OBJECT_ID('CK_Cita_RangoHora', 'C') IS NULL
+BEGIN
+    ALTER TABLE dbo.cita WITH NOCHECK
+    ADD CONSTRAINT CK_Cita_RangoHora
+        CHECK (fechaHoraFin > fechaHoraInicio);
+END
+GO
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.indexes
+    WHERE name = 'IX_CitaDoctorFecha'
+      AND object_id = OBJECT_ID('dbo.cita')
+)
+BEGIN
+    CREATE INDEX IX_CitaDoctorFecha
+      ON dbo.cita(idDoctor, fechaHoraInicio)
+      INCLUDE (fechaHoraFin, estatusCita);
+END
+GO
+
+--añadidos de hash
+
+-- passwordHash
+IF COL_LENGTH('dbo.usuarioSistema', 'passwordHash') IS NULL
+BEGIN
+    ALTER TABLE dbo.usuarioSistema
+    ADD passwordHash VARBINARY(64) NULL;   -- 64 bytes suele ser suficiente para PBKDF2-SHA256
+END
+GO
+
+-- passwordSalt
+IF COL_LENGTH('dbo.usuarioSistema', 'passwordSalt') IS NULL
+BEGIN
+    ALTER TABLE dbo.usuarioSistema
+    ADD passwordSalt VARBINARY(32) NULL;   
+END
+GO
+
+-- passwordIterations
+IF COL_LENGTH('dbo.usuarioSistema', 'passwordIterations') IS NULL
+BEGIN
+    ALTER TABLE dbo.usuarioSistema
+    ADD passwordIterations INT NOT NULL
+        CONSTRAINT DF_usuarioSistema_passwordIterations DEFAULT(100000); -- mismo valor para todos
+END
+GO

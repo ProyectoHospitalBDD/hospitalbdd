@@ -1,9 +1,22 @@
 import { Navigate } from "react-router-dom";
+import { ReactNode } from "react";
 import { useAuth } from "../lib/auth/AuthContext";
 
-export default function ProtectedRoute({ children }: { children: JSX.Element }) {
-  const { user } = useAuth();
+type Props = {
+  children: ReactNode;
+  roles?: string[]; 
+};
 
+export default function ProtectedRoute({ children, roles }: Props) {
+  const { user, loading } = useAuth();
+
+  if (loading) return <div>Cargando sesión...</div>;
   if (!user) return <Navigate to="/login" replace />;
-  return children;
+
+  if (roles && roles.length > 0) {
+    const rol = user.rol; // según tu AuthContext
+    if (!roles.includes(rol)) return <Navigate to="/home" replace />;
+  }
+
+  return <>{children}</>;
 }
