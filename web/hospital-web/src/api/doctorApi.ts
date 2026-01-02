@@ -29,14 +29,12 @@ export async function getMiPerfilDoctor(): Promise<PerfilDoctor> {
   return data;
 }
 
-
 export type HorarioDoctor = {
-  diaSemana: string;      // "Lunes", "Martes", ...
-  horaInicio: string;     // "08:00"
-  horaFin: string;        // "14:00"
+  diaSemana: string;
+  horaInicio: string;
+  horaFin: string;
 };
 
-// ideal: endpoint por "me"
 export async function getMiHorarioDoctor(): Promise<HorarioDoctor[]> {
   const { data } = await api.get("/api/doctores/me/horario");
   return data;
@@ -44,20 +42,50 @@ export async function getMiHorarioDoctor(): Promise<HorarioDoctor[]> {
 
 export type CitaDoctor = {
   idCita: number;
-  fecha: string;        // yyyy-mm-dd
-  horaInicio: string;   // HH:mm
-  horaFin: string;      // HH:mm
+  fecha: string;
+  horaInicio: string;
+  horaFin: string;
   estatus: string;
-
   idPaciente: number;
   paciente: string;
 };
 
-export async function getMisCitasDoctor(params: { desde: string; hasta: string }): Promise<CitaDoctor[]> {
+export async function getMisCitasDoctor(params: {
+  desde: string;
+  hasta: string;
+}): Promise<CitaDoctor[]> {
   const { data } = await api.get("/api/doctores/me/citas", { params });
   return data;
 }
 
 export async function solicitarCancelacionCita(idCita: number): Promise<void> {
   await api.post(`/api/citas/${idCita}/cancelacion/solicitar`);
+}
+
+
+export type PacienteInfo = {
+  idUsuario: number;
+  nombreCompleto: string;
+  curp: string;
+  fechaNacimiento?: string;
+};
+
+export async function getPacienteInfo(idPaciente: number): Promise<PacienteInfo> {
+  const { data } = await api.get<PacienteInfo>(`/api/doctores/paciente/${idPaciente}`);
+  return data;
+}
+
+export type HistorialMedicoPaciente = {
+  tipoSangre: string;
+  peso: number | null;
+  estatura: number | null;
+};
+
+export async function getHistorialMedicoPaciente(
+  idPaciente: number
+): Promise<HistorialMedicoPaciente> {
+  const { data } = await api.get<HistorialMedicoPaciente>(
+    `/api/doctores/pacientes/${idPaciente}/historial-medico`
+  );
+  return data;
 }
