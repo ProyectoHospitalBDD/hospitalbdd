@@ -2,7 +2,11 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import Layout from "../layout/Layout";
 import PrivateRoute from "./PrivateRoute";
 
-// Auth
+// --- IMPORTANTE: AuthProvider para el contexto de usuario ---
+// Esto es vital para que useAuth() funcione dentro del Layout
+import { AuthProvider } from "../lib/auth/AuthContext"; 
+
+// Auth Pages
 import LoginPage from "../pages/Auth/LoginPage";
 
 // Paciente / General
@@ -10,11 +14,17 @@ import AgendarCitaPage from "../pages/Citas/AgendarCitaPage";
 import ProfilePage from "../pages/Profile/ProfilePage";
 import Comprobante from "../pages/Comprobante/Comprobante";
 
-// Tienda / Farmacia
+// Tienda / Farmacia (Web Paciente)
 import Tienda from "../pages/Tienda/Tienda";
 import Carrito from "../pages/Carrito/Carrito";
+// Contexto Global (Carrito Web del Paciente)
+import { CartProvider } from "../pages/Carrito/CartContext";
+
+// --- MÓDULOS DE FARMACIA (Punto de Venta Físico y Gestión) ---
 import CobroTicket from "../pages/Farmacia/CobroTicket";
 import Inventario from "../pages/Inventario/Productos";
+import PuntoVenta from "../pages/CarroFisico/Cart"; 
+import { CartFisicoProvider } from "../pages/CarroFisico/CartContextFisico";
 
 // Doctor
 import DoctorPerfilPage from "../pages/Doctor/DoctorPerfilPage";
@@ -26,158 +36,164 @@ import RecepCancelacionesPage from "../pages/Recep/Cancelaciones/RecepCancelacio
 import RecepEmpleadosCreatePage from "../pages/Recep/Empleados/RecepEmpleadosCreatePage";
 import RecepEmpleadosListPage from "../pages/Recep/Empleados/RecepEmpleadosListPage";
 
-// Carrito
-import { CartProvider } from "../pages/Carrito/CartContext";
-
 export function AppRouter() {
   return (
-    <CartProvider>
-      <Routes>
-        {/* ---------- PÚBLICA ---------- */}
-        <Route path="/login" element={<LoginPage />} />
+    /* 1. Proveedor de Autenticación (Debe ser el padre de todos) */
+    <AuthProvider>
+      {/* 2. Proveedor del Carrito Web (Paciente) */}
+      <CartProvider>
+        {/* 3. Proveedor del Carrito Físico (Farmacia/Punto de Venta) */}
+        <CartFisicoProvider>
+          
+          <Routes>
+            {/* ---------- PÚBLICA ---------- */}
+            <Route path="/login" element={<LoginPage />} />
 
-        {/* ---------- CON LAYOUT ---------- */}
-        <Route element={<Layout />}>
-          {/* Home */}
-          <Route
-            path="/home"
-            element={
-              <PrivateRoute>
-                <></>
-              </PrivateRoute>
-            }
-          />
+            {/* ---------- CON LAYOUT (Rutas Protegidas) ---------- */}
+            <Route element={<Layout />}>
+              
+              {/* Home / Default */}
+              <Route
+                path="/home"
+                element={
+                  <PrivateRoute>
+                    <></> {/* Dashboard o Home Page vacía por ahora */}
+                  </PrivateRoute>
+                }
+              />
 
-          {/* ---------- PACIENTE ---------- */}
-          <Route
-            path="/citas/agendar"
-            element={
-              <PrivateRoute>
-                <AgendarCitaPage />
-              </PrivateRoute>
-            }
-          />
+              {/* --- Rutas Paciente --- */}
+              <Route
+                path="/citas/agendar"
+                element={
+                  <PrivateRoute>
+                    <AgendarCitaPage />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/perfil"
+                element={
+                  <PrivateRoute>
+                    <ProfilePage />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/comprobante/Comprobar"
+                element={
+                  <PrivateRoute>
+                    <Comprobante />
+                  </PrivateRoute>
+                }
+              />
 
-          <Route
-            path="/perfil"
-            element={
-              <PrivateRoute>
-                <ProfilePage />
-              </PrivateRoute>
-            }
-          />
+              {/* --- Tienda y Carrito (Web) --- */}
+              <Route
+                path="/tienda"
+                element={
+                  <PrivateRoute>
+                    <Tienda />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/carrito"
+                element={
+                  <PrivateRoute>
+                    <Carrito />
+                  </PrivateRoute>
+                }
+              />
 
-          <Route
-            path="/comprobante/Comprobar"
-            element={
-              <PrivateRoute>
-                <Comprobante />
-              </PrivateRoute>
-            }
-          />
+              {/* --- Farmacia / Compra Física / Inventario --- */}
+              <Route
+                path="/farmacia/punto-venta"
+                element={
+                  <PrivateRoute>
+                    <PuntoVenta />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/farmacia"
+                element={
+                  <PrivateRoute>
+                    <CobroTicket />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/inventario"
+                element={
+                  <PrivateRoute>
+                    <Inventario />
+                  </PrivateRoute>
+                }
+              />
 
-          {/* ---------- TIENDA / FARMACIA ---------- */}
-          <Route
-            path="/tienda"
-            element={
-              <PrivateRoute>
-                <Tienda />
-              </PrivateRoute>
-            }
-          />
+              {/* --- Doctor --- */}
+              <Route
+                path="/doctor/perfil"
+                element={
+                  <PrivateRoute>
+                    <DoctorPerfilPage />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/doctor/citas"
+                element={
+                  <PrivateRoute>
+                    <DoctorMisCitasPage />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/doctor/atender"
+                element={
+                  <PrivateRoute>
+                    <DoctorAtenderCitaPage />
+                  </PrivateRoute>
+                }
+              />
 
-          <Route
-            path="/carrito"
-            element={
-              <PrivateRoute>
-                <Carrito />
-              </PrivateRoute>
-            }
-          />
+              {/* --- Recepción --- */}
+              <Route
+                path="/recep/cancelaciones"
+                element={
+                  <PrivateRoute>
+                    <RecepCancelacionesPage />
+                  </PrivateRoute>
+                }
+              />
+              <Route
+                path="/recep/empleados"
+                element={
+                  <PrivateRoute>
+                    <RecepEmpleadosListPage />
+                  </PrivateRoute>
+                }
+              />
+              <Route 
+                path="/recep/empleados/crear" 
+                element={
+                  <PrivateRoute>
+                    <RecepEmpleadosCreatePage />
+                  </PrivateRoute>
+                } 
+              />
 
-          <Route
-            path="/farmacia"
-            element={
-              <PrivateRoute>
-                <CobroTicket />
-              </PrivateRoute>
-            }
-          />
+            </Route>
 
-          <Route
-            path="/inventario"
-            element={
-              <PrivateRoute>
-                <Inventario />
-              </PrivateRoute>
-            }
-          />
+            {/* Redirecciones */}
+            <Route path="/" element={<Navigate to="/home" replace />} />
+            <Route path="*" element={<Navigate to="/home" replace />} />
+          </Routes>
 
-          {/* ---------- DOCTOR ---------- */}
-          <Route
-            path="/doctor/perfil"
-            element={
-              <PrivateRoute>
-                <DoctorPerfilPage />
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/doctor/citas"
-            element={
-              <PrivateRoute>
-                <DoctorMisCitasPage />
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/doctor/atender"
-            element={
-              <PrivateRoute>
-                <DoctorAtenderCitaPage />
-              </PrivateRoute>
-            }
-          />
-
-          {/* ---------- RECEPCIÓN ---------- */}
-          <Route
-            path="/recep/cancelaciones"
-            element={
-              <PrivateRoute>
-                <RecepCancelacionesPage />
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/recep/empleados"
-            element={
-              <PrivateRoute>
-                <RecepEmpleadosListPage />
-              </PrivateRoute>
-            }
-          />
-
-          <Route 
-            path="/recep/empleados/crear" 
-            element={
-              <PrivateRoute>
-                <RecepEmpleadosCreatePage />
-              </PrivateRoute>
-            } 
-          />
-
-        </Route>
-
-        
-
-        {/* ---------- REDIRECCIONES ---------- */}
-        <Route path="/" element={<Navigate to="/home" replace />} />
-        <Route path="*" element={<Navigate to="/home" replace />} />
-      </Routes>
-    </CartProvider>
+        </CartFisicoProvider>
+      </CartProvider>
+    </AuthProvider>
   );
 }
 

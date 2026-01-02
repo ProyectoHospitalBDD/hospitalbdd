@@ -4,9 +4,11 @@ import {
   listarTodoElInventario,
   ProductoFarmaciaDto
 } from "../../api/farmaciaApi";
+import { useAuth } from "../../lib/auth/AuthContext";
 
-
+// Importamos AMBOS contextos
 import { useCart } from "../Carrito/CartContext"; 
+import { useCartFisico } from "../CarroFisico/CartContextFisico";
 
 import "./Tienda.css"; 
 
@@ -34,10 +36,20 @@ const IMAGENES_LOCALES: Record<string, string> = {
   "Aplicacion de Vacuna Tetanos": "../../public/imagenes/Vacuna.png",
 };
 
-
 export default function Tienda() {
   const navigate = useNavigate();
-  const { addToCart } = useCart();
+  const { user } = useAuth();
+  
+  // Detectar rol
+  const role = user?.rol ? String(user.rol).toLowerCase() : "";
+  const esCaja = role.includes("farmac") || role.includes("admin") || role.includes("enfermera");
+
+  // Hooks de carritos (llamamos a ambos, pero usaremos solo uno)
+  const cartWeb = useCart();
+  const cartFisico = useCartFisico();
+
+  // Seleccionamos la función correcta según el rol
+  const addToCart = esCaja ? cartFisico.addToCart : cartWeb.addToCart;
   
   const [productos, setProductos] = useState<ProductoFarmaciaDto[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -48,6 +60,11 @@ export default function Tienda() {
   const [selectedProduct, setSelectedProduct] = useState<ProductoFarmaciaDto | null>(null);
   const [cantidadSeleccionada, setCantidadSeleccionada] = useState(1);
   const [mensajeToast, setMensajeToast] = useState<string | null>(null);
+
+  const irAlCarrito = () => {
+    // Si es farmacéutico, lo mandamos a su Punto de Venta
+    navigate(esCaja ? "/farmacia/punto-venta" : "/carrito");
+  };
 
   useEffect(() => {
     cargarCatalogo();
@@ -96,6 +113,7 @@ export default function Tienda() {
   const confirmarAgregarCarrito = () => {
     if (selectedProduct) {
         const imgUrl = getImagenUrl(selectedProduct);
+        // Aquí usamos la función seleccionada (Web o Físico)
         addToCart(selectedProduct, cantidadSeleccionada, imgUrl);
 
         setMensajeToast(`🛒 Agregado: ${cantidadSeleccionada}x ${selectedProduct.nombre}`);
@@ -126,7 +144,7 @@ export default function Tienda() {
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
         </div>
         
-        <h1>Tienda de Salud</h1>
+        <h1>Tienda de Salud {esCaja && <span style={{fontSize:'0.6em', opacity:0.7}}>(Modo Admin)</span>}</h1>
         
         <div className="search-bar-container">
             <div className="search-wrapper" style={{position: 'relative', width: '100%', maxWidth: '350px'}}>
@@ -142,8 +160,8 @@ export default function Tienda() {
                     style={{paddingLeft: '40px', width: '100%', maxWidth: '100%'}} 
                 />
             </div>
-            <div onClick={() => navigate('/carrito')} style={{marginLeft: '15px', cursor: 'pointer', fontSize:'1.8rem', position: 'relative'}}>
-                🛒
+            <div onClick={irAlCarrito} style={{marginLeft:'15px', cursor:'pointer', fontSize:'1.8rem', position:'relative'}}>
+               {esCaja ? '🖥️' : '🛒'}
             </div>
         </div>
       </header>
@@ -199,7 +217,7 @@ export default function Tienda() {
                             }}
                         >
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                            Agregar al Carrito
+                            {esCaja ? "Añadir a POS" : "Agregar al Carrito"}
                         </button>
                     )}
                   </div>
