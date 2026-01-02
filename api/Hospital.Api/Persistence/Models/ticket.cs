@@ -13,9 +13,17 @@ public partial class Ticket
 
     public int IdFarmaceutico { get; set; }
 
+    public int? IdPaciente { get; set; }
+    public string? NombreClienteInvitado { get; set; }
+    public string? CorreoContacto { get; set; }
+
+    public string EstatusTicket { get; set; } = null!;
+
     public virtual Farmaceutico IdFarmaceuticoNavigation { get; set; } = null!;
 
     public virtual Farmacium? IdFarmaciaNavigation { get; set; }
+
+    public virtual Paciente? IdPacienteNavigation { get; set; }
 
     public virtual ICollection<PagoTicket> PagoTickets { get; set; } = new List<PagoTicket>();
 

@@ -651,6 +651,27 @@ public partial class HospitalContext : DbContext
                 .HasForeignKey(d => d.IdFarmacia)
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_Ticket_Farmacia");
+            entity.Property(e => e.IdPaciente).HasColumnName("idPaciente");
+
+            entity.Property(e => e.NombreClienteInvitado)
+                .HasMaxLength(100)
+                .HasColumnName("nombreClienteInvitado");
+
+            entity.Property(e => e.CorreoContacto)
+                .HasMaxLength(100)
+                .HasColumnName("correoContacto");
+
+            entity.Property(e => e.EstatusTicket)
+                .HasMaxLength(20)
+                .HasColumnName("estatusTicket")
+                .HasDefaultValue("Abierto");
+
+            // Relación Ticket -> Paciente
+            entity.HasOne(d => d.IdPacienteNavigation)
+                .WithMany() // <- usa .WithMany() si Paciente NO tiene ICollection<Ticket> Tickets
+                .HasForeignKey(d => d.IdPaciente)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_ticket_paciente");
         });
 
         modelBuilder.Entity<TicketMedicamento>(entity =>
@@ -674,6 +695,14 @@ public partial class HospitalContext : DbContext
             entity.HasOne(d => d.IdTicketNavigation).WithMany(p => p.TicketMedicamentos)
                 .HasForeignKey(d => d.IdTicket)
                 .HasConstraintName("FK_TicketMed_Ticket");
+            entity.Property(e => e.Importe)
+                .HasColumnName("importe")
+                .HasColumnType("decimal(10,2)")
+                .HasComputedColumnSql(
+                    "(CONVERT(decimal(10,2),[cantidad]) * CONVERT(decimal(10,2),[precioUnitario]))",
+                    stored: true
+                );
+
         });
 
         modelBuilder.Entity<TicketServicio>(entity =>
@@ -697,6 +726,15 @@ public partial class HospitalContext : DbContext
             entity.HasOne(d => d.IdTicketNavigation).WithMany(p => p.TicketServicios)
                 .HasForeignKey(d => d.IdTicket)
                 .HasConstraintName("FK_TicketServ_Ticket");
+
+            entity.Property(e => e.Importe)
+                .HasColumnName("importe")
+                .HasColumnType("decimal(10,2)")
+                .HasComputedColumnSql(
+                    "(CONVERT(decimal(10,2),[cantidad]) * CONVERT(decimal(10,2),[precioUnitario]))",
+                    stored: true
+                );
+
         });
 
         modelBuilder.Entity<UsuarioSistema>(entity =>
