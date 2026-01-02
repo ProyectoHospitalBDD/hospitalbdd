@@ -4,7 +4,7 @@ import { useAuth } from "../lib/auth/AuthContext"; // Asegúrate de que esta rut
 import "./Layout.css";
 
 // Ruta del logo. Nota: En producción, usualmente se usa "/imagenes/..." si está en la carpeta public.
-const LOGO_URL = "/imagenes/Logo_PoliMed.png"; 
+const LOGO_URL = "../../public/imagenes/Logo_PoliMed.png";
 
 export function Layout() {
   const { user, logout } = useAuth();

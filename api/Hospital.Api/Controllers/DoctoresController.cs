@@ -1,13 +1,14 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Hospital.Api.Dtos.Doctores;
+using Hospital.Api.Persistence;
+using Hospital.Api.Persistence.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Hospital.Api.Persistence;
-using Hospital.Api.Dtos.Doctores;
-using Hospital.Api.Persistence.Models;
-using System.Globalization;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Hospital.Api.Controllers
 {
@@ -15,7 +16,7 @@ namespace Hospital.Api.Controllers
     [Route("api/[controller]")]
     [Authorize]
     public class DoctoresController : ControllerBase
-    {        
+    {
         private readonly HospitalContext _db;
 
         public DoctoresController(HospitalContext db)
@@ -23,7 +24,9 @@ namespace Hospital.Api.Controllers
             _db = db;
         }
 
-
+        // ==================================================
+        // GET citas del doctor logueado (rango por fechas)
+        // ==================================================
         [HttpGet("me/citas")]
         [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> GetMisCitasDoctor([FromQuery] DateTime desde, [FromQuery] DateTime hasta)
@@ -51,29 +54,28 @@ namespace Hospital.Api.Controllers
                     idPaciente = c.IdPaciente,
 
                     paciente = c.IdPacienteNavigation != null
-                        && c.IdPacienteNavigation.IdUsuarioNavigation != null
-                            ? (
-                                c.IdPacienteNavigation.IdUsuarioNavigation.Nombre + " " +
-                                c.IdPacienteNavigation.IdUsuarioNavigation.ApPat + " " +
-                                (c.IdPacienteNavigation.IdUsuarioNavigation.ApMat ?? "")
-                            ).Trim()
-                            : "—",
+                               && c.IdPacienteNavigation.IdUsuarioNavigation != null
+                        ? (
+                            c.IdPacienteNavigation.IdUsuarioNavigation.Nombre + " " +
+                            c.IdPacienteNavigation.IdUsuarioNavigation.ApPat + " " +
+                            (c.IdPacienteNavigation.IdUsuarioNavigation.ApMat ?? "")
+                          ).Trim()
+                        : "—",
                 })
                 .ToListAsync();
 
             return Ok(rows);
         }
 
-
-
-
+        // ==================================================
+        // GET horario del doctor logueado
+        // ==================================================
         [HttpGet("me/horario")]
         [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> GetMiHorario()
         {
             var idUsuario = UserClaims.GetIdUsuario(User);
 
-            // Trae el horario del doctor logueado
             var rows = await _db.HorarioEmpleados
                 .AsNoTracking()
                 .Where(h => h.IdUsuario == idUsuario)
@@ -85,21 +87,19 @@ namespace Hospital.Api.Controllers
                 })
                 .ToListAsync();
 
-            // Formateo en memoria 
             var data = rows
-            .Select(x => new
-            {
-                diaSemana = x.DiaSemana,
-                horaInicio = x.HoraInicio.ToString("HH:mm"),
-                horaFin = x.HoraFin.ToString("HH:mm")
-            })
-            .OrderBy(x => DiaOrden(x.diaSemana))
-            .ToList();
+                .Select(x => new
+                {
+                    diaSemana = x.DiaSemana,
+                    horaInicio = x.HoraInicio.ToString("HH:mm"),
+                    horaFin = x.HoraFin.ToString("HH:mm")
+                })
+                .OrderBy(x => DiaOrden(x.diaSemana))
+                .ToList();
 
             return Ok(data);
         }
 
-        
         private static int DiaOrden(string? dia)
         {
             if (string.IsNullOrWhiteSpace(dia)) return 999;
@@ -126,13 +126,11 @@ namespace Hospital.Api.Controllers
             };
         }
 
-
-
         // ==================================================
         // GET perfil del doctor logueado
         // ==================================================
         [HttpGet("me")]
-        [Authorize(Roles = "Doctor")] 
+        [Authorize(Roles = "Doctor")]
         public async Task<IActionResult> GetMe()
         {
             var idUsuario = UserClaims.GetIdUsuario(User);
@@ -144,7 +142,6 @@ namespace Hospital.Api.Controllers
                 {
                     idUsuario = d.IdUsuario,
 
-                    // Doctor -> Empleado -> UsuarioSistema
                     nombreCompleto = (
                         d.IdUsuarioNavigation.IdUsuarioNavigation.Nombre + " " +
                         d.IdUsuarioNavigation.IdUsuarioNavigation.ApPat + " " +
@@ -166,35 +163,30 @@ namespace Hospital.Api.Controllers
             return Ok(data);
         }
 
-
         // ---------------------------
         // Normalización del día
         // ---------------------------
-        private string NormalizarDia(string dia)
+        private static string NormalizarDia(string dia)
         {
-            dia = dia.ToLower();
+            dia = (dia ?? "").Trim().ToLowerInvariant();
 
             return dia switch
             {
                 "miércoles" => "Miercoles",
-                "miércoles " => "Miercoles",
                 "miercoles" => "Miercoles",
-
                 "sábado" => "Sabado",
-                "sábado " => "Sabado",
                 "sabado" => "Sabado",
-
-                _ => char.ToUpper(dia[0]) + dia.Substring(1)
+                _ => string.IsNullOrEmpty(dia)
+                    ? dia
+                    : char.ToUpperInvariant(dia[0]) + dia.Substring(1)
             };
         }
 
-
         // ==================================================
-        // GET doctores por especialidad
+        // GET doctores por especialidad (solo activos)
         // ==================================================
         [HttpGet]
-        public async Task<ActionResult<List<DoctorListaDto>>> GetPorEspecialidad(
-            [FromQuery] int especialidadId)
+        public async Task<ActionResult<List<DoctorListaDto>>> GetPorEspecialidad([FromQuery] int especialidadId)
         {
             if (especialidadId <= 0)
                 return BadRequest("especialidadId debe ser mayor que 0.");
@@ -202,13 +194,17 @@ namespace Hospital.Api.Controllers
             var doctores = await _db.Doctors
                 .Include(d => d.IdUsuarioNavigation)
                 .ThenInclude(e => e.IdUsuarioNavigation)
-                .Where(d => d.IdEspecialidad == especialidadId
-                            && d.IdUsuarioNavigation.Estatus == true) 
+                .Where(d =>
+                    d.IdEspecialidad == especialidadId &&
+                    d.IdUsuarioNavigation.Estatus == true // <- merge: solo doctores activos (dev)
+                )
                 .Select(d => new DoctorListaDto(
                     d.IdUsuario,
-                    (d.IdUsuarioNavigation.IdUsuarioNavigation.Nombre + " " +
-                    d.IdUsuarioNavigation.IdUsuarioNavigation.ApPat + " " +
-                    (d.IdUsuarioNavigation.IdUsuarioNavigation.ApMat ?? "")).Trim(),
+                    (
+                        d.IdUsuarioNavigation.IdUsuarioNavigation.Nombre + " " +
+                        d.IdUsuarioNavigation.IdUsuarioNavigation.ApPat + " " +
+                        (d.IdUsuarioNavigation.IdUsuarioNavigation.ApMat ?? "")
+                    ).Trim(),
                     d.Cedula
                 ))
                 .ToListAsync();
@@ -216,25 +212,22 @@ namespace Hospital.Api.Controllers
             return Ok(doctores);
         }
 
-
         // ==================================================
-        // GET horarios disponibles
+        // GET horarios disponibles (bloquea si doctor inactivo)
         // ==================================================
         [HttpGet("{doctorId}/horarios-disponibles")]
         public async Task<ActionResult<List<HorarioDisponibleDto>>> GetHorariosDisponibles(
             int doctorId,
             [FromQuery] DateTime fecha)
         {
-
+            // merge: si está inactivo, no regresa horarios (dev)
             var activo = await _db.Empleados
-            .AsNoTracking()
-            .Where(e => e.IdUsuario == doctorId)
-            .Select(e => e.Estatus)
-            .SingleOrDefaultAsync();
+                .AsNoTracking()
+                .Where(e => e.IdUsuario == doctorId)
+                .Select(e => e.Estatus)
+                .SingleOrDefaultAsync();
 
-            if (!activo) return Ok(new List<HorarioDisponibleDto>()); // para horarios
-            // o return Ok(new List<DateTime>()); para fechas
-
+            if (activo != true) return Ok(new List<HorarioDisponibleDto>());
 
             if (fecha == default)
                 return BadRequest("Debes enviar una fecha válida (yyyy-MM-dd).");
@@ -283,7 +276,7 @@ namespace Hospital.Api.Controllers
                     continue;
                 }
 
-                bool solapa = citasDia.Any(c =>
+                var solapa = citasDia.Any(c =>
                     c.FechaHoraFin > inicioSlot &&
                     c.FechaHoraInicio < finSlot
                 );
@@ -297,9 +290,8 @@ namespace Hospital.Api.Controllers
             return Ok(slots);
         }
 
-
         // ==================================================
-        // GET fechas disponibles
+        // GET fechas disponibles (bloquea si doctor inactivo)
         // ==================================================
         [HttpGet("{doctorId}/fechas-disponibles")]
         public async Task<ActionResult<List<DateTime>>> GetFechasDisponibles(
@@ -307,14 +299,14 @@ namespace Hospital.Api.Controllers
             [FromQuery] DateTime? desde,
             [FromQuery] DateTime? hasta)
         {
-
+            // merge: si está inactivo, no regresa fechas (dev)
             var activo = await _db.Empleados
-            .AsNoTracking()
-            .Where(e => e.IdUsuario == doctorId)
-            .Select(e => e.Estatus)
-            .SingleOrDefaultAsync();
+                .AsNoTracking()
+                .Where(e => e.IdUsuario == doctorId)
+                .Select(e => e.Estatus)
+                .SingleOrDefaultAsync();
 
-            if (!activo) return Ok(new List<DateTime>()); // para fechas
+            if (activo != true) return Ok(new List<DateTime>());
 
             var ahora = DateTime.UtcNow;
             var inicio = (desde ?? ahora.AddHours(48)).Date;
@@ -331,7 +323,6 @@ namespace Hospital.Api.Controllers
                 return Ok(new List<DateTime>());
 
             var cultura = new CultureInfo("es-ES");
-
             var fechasValidas = new List<DateTime>();
 
             for (var dia = inicio; dia <= fin; dia = dia.AddDays(1))
@@ -354,7 +345,7 @@ namespace Hospital.Api.Controllers
                     .ToListAsync();
 
                 var actual = inicioJornada;
-                bool haySlot = false;
+                var haySlot = false;
 
                 while (actual.AddHours(1) <= finJornada)
                 {
@@ -370,7 +361,7 @@ namespace Hospital.Api.Controllers
                     if (inicioSlot > ahora.AddMonths(3))
                         break;
 
-                    bool solapa = citasDia.Any(c =>
+                    var solapa = citasDia.Any(c =>
                         c.FechaHoraFin > inicioSlot &&
                         c.FechaHoraInicio < finSlot
                     );
@@ -389,6 +380,50 @@ namespace Hospital.Api.Controllers
             }
 
             return Ok(fechasValidas);
+        }
+
+        // ==================================================
+        // GET paciente por ID (para doctores)
+        // ==================================================
+        [HttpGet("paciente/{id}")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> GetPaciente(int id)
+        {
+            var p = await _db.Pacientes
+                .AsNoTracking()
+                .Where(pac => pac.IdUsuario == id)
+                .Select(pac => pac.IdUsuarioNavigation)
+                .Select(us => new
+                {
+                    idUsuario = us.IdUsuario,
+                    nombreCompleto = (us.Nombre + " " + us.ApPat + " " + (us.ApMat ?? "")).Trim(),
+                    curp = us.Curp,
+                })
+                .FirstOrDefaultAsync();
+
+            if (p is null) return NotFound();
+            return Ok(p);
+        }
+
+        // ==================================================
+        // GET historial médico de paciente (para doctores)
+        // ==================================================
+        [HttpGet("pacientes/{idPaciente:int}/historial-medico")]
+        [Authorize(Roles = "Doctor")]
+        public async Task<IActionResult> GetHistorialMedicoPaciente(int idPaciente)
+        {
+            var hm = await _db.HistorialMedicos
+                .AsNoTracking()
+                .Where(h => h.IdPaciente == idPaciente)
+                .Select(h => new
+                {
+                    tipoSangre = h.TipoSangre,
+                    peso = h.PesoKg,
+                    estatura = h.EstaturaM
+                })
+                .FirstOrDefaultAsync();
+
+            return Ok(hm ?? new { tipoSangre = "", peso = (decimal?)null, estatura = (decimal?)null });
         }
     }
 }
