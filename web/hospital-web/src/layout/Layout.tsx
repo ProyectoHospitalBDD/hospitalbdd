@@ -90,10 +90,41 @@ export function Layout() {
                       Mi perfil
                     </li>
 
+<<<<<<< Updated upstream
                     {/* Paciente */}
                     {esPaciente && (
                       <NavLink to="/citas/agendar" onClick={closeMenu}>
                         <li>Agendar cita</li>
+=======
+                    {/* --- FARMACÉUTICO / ADMIN --- */}
+                    {(role.includes("farmac") || role.includes("admin")) && (
+                        <>
+                            <NavLink to="/tienda" onClick={closeMenu}><li>🛒 Tienda</li></NavLink>
+                            <NavLink to="/farmacia" onClick={closeMenu}><li>🏥 Farmacia (Caja)</li></NavLink>
+                            <NavLink to="/inventario" onClick={closeMenu}><li>📦 Inventario (Gestión)</li></NavLink> 
+                        </>
+                    )}
+                    
+                    {/* --- ENFERMERÍA --- */}
+                    {(role.includes("enfermera") || role.includes("admin")) && (
+                        <NavLink to="/farmacia" onClick={closeMenu}><li>🏥 Farmacia (Caja)</li></NavLink>
+                    )}
+
+                    {/* --- RECEPCIÓN --- */}
+                    {(role.includes("recepcionista") || role.includes("admin")) && (
+                        <NavLink to="/recepcion" onClick={closeMenu}><li>📋 Recepción</li></NavLink>
+                    )}
+
+                  </nav>
+                  
+                  <hr style={{margin: '5px 0', border: '0', borderTop: '1px solid #eee'}}/>
+                  
+                  {user ? (
+                      <li onClick={handleLogout} style={{color: '#d63031'}}>Cerrar sesión</li>
+                  ) : (
+                      <NavLink to="/login" onClick={closeMenu}>
+                          <li style={{color: '#27ae60', fontWeight:'bold'}}>Iniciar Sesión</li>
+>>>>>>> Stashed changes
                       </NavLink>
                     )}
 

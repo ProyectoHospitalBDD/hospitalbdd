@@ -1,0 +1,95 @@
+.pos-container {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    height: calc(100vh - 70px); /* Ajustar según tu header */
+    background: #f4f6f8;
+    overflow: hidden;
+}
+
+/* CATÁLOGO IZQUIERDA */
+.pos-catalog {
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.pos-header-search { margin-bottom: 20px; }
+.search-bar {
+    background: white; border-radius: 12px; padding: 12px 15px;
+    display: flex; align-items: center; gap: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.search-bar input { border: none; outline: none; width: 100%; font-size: 1.1rem; }
+
+.catalog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.product-card {
+    background: white; border-radius: 12px; padding: 15px;
+    cursor: pointer; transition: transform 0.2s; border: 1px solid transparent;
+    display: flex; flex-direction: column; align-items: center; text-align: center;
+}
+.product-card:hover { border-color: #27ae60; transform: translateY(-3px); }
+.prod-icon { font-size: 2rem; margin-bottom: 10px; }
+.prod-info h4 { margin: 0 0 5px; font-size: 0.95rem; color: #333; }
+.prod-meta { display: block; font-size: 0.75rem; color: #888; text-transform: uppercase; margin-bottom: 5px; }
+.prod-price { font-weight: bold; color: #27ae60; font-size: 1.1rem; }
+
+/* TICKET DERECHA */
+.pos-ticket-sidebar {
+    background: white; border-left: 1px solid #ddd;
+    display: flex; flex-direction: column;
+    padding: 20px; box-shadow: -5px 0 20px rgba(0,0,0,0.05);
+}
+
+.ticket-title { font-size: 1.2rem; font-weight: 700; color: #2c3e50; margin-bottom: 15px; text-align: center; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; }
+
+/* Formulario Cliente */
+.client-form-box { background: #f8f9fa; border-radius: 10px; padding: 15px; margin-bottom: 15px; }
+.client-toggle { display: flex; margin-bottom: 10px; background: #e9ecef; border-radius: 8px; padding: 3px; }
+.client-toggle button {
+    flex: 1; border: none; background: transparent; padding: 8px; font-size: 0.8rem;
+    cursor: pointer; border-radius: 6px; font-weight: 600; color: #666;
+}
+.client-toggle button.active { background: white; color: #27ae60;  }
+
+.search-group { display: flex; gap: 5px; }
+.search-group input, .general-input {
+    flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 6px; outline: none;
+}
+.search-group button {
+    background: #27ae60; color: white; border: none; width: 36px; border-radius: 6px; cursor: pointer;
+}
+.paciente-found {
+    margin-top: 10px; padding: 8px; background: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 6px;
+    display: flex; gap: 10px; align-items: center; color: #2e7d32; font-size: 0.9rem;
+}
+.error-msg { color: #e74c3c; display: block; margin-top: 5px; font-size: 0.8rem; }
+
+/* Lista Items */
+.cart-items-list { flex: 1; overflow-y: auto; border-top: 1px dashed #ddd; padding-top: 10px; }
+.empty-state { text-align: center; color: #ccc; margin-top: 40px; }
+
+.ticket-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 1px solid #f5f5f5; }
+.row-info { flex: 1; font-size: 0.9rem; font-weight: 600; line-height: 1.2; }
+.row-unit { display: block; font-size: 0.75rem; color: #888; font-weight: normal; }
+.row-controls { display: flex; align-items: center; background: #f0f0f0; border-radius: 12px; padding: 2px; }
+.row-controls button { background: none; border: none; padding: 4px 6px; cursor: pointer; display: flex; color: #555; }
+.row-controls span { font-size: 0.85rem; font-weight: 700; min-width: 18px; text-align: center; }
+.row-total { font-weight: bold; min-width: 50px; text-align: right; font-size: 0.95rem; }
+.row-del { border: none; background: none; color: #ff6b6b; cursor: pointer; padding: 5px; }
+
+/* Footer */
+.ticket-summary { border-top: 2px solid #333; padding-top: 15px; margin-top: 10px; }
+.summary-line.total { display: flex; justify-content: space-between; font-size: 1.5rem; font-weight: 800; color: #2c3e50; margin-bottom: 15px; }
+.btn-pay {
+    width: 100%; background: #2c3e50; color: white; border: none; padding: 15px;
+    border-radius: 12px; font-size: 1.2rem; font-weight: 700; cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-pay:hover { background: #34495e; }
+.btn-pay:disabled { background: #bdc3c7; cursor: not-allowed; }
