@@ -16,7 +16,7 @@ import Carrito from "../pages/Carrito/Carrito";
 // Contexto Global (Carrito Web del Paciente)
 import { CartProvider } from "../pages/Carrito/CartContext";
 
-// --- MÓDULOS DE FARMACIA ---
+// --- MÓDULOS DE FARMACIA (Físico) ---
 import CobroTicket from "../pages/Farmacia/CobroTicket";
 import Inventario from "../pages/Inventario/Productos";
 import PuntoVenta from "../pages/CarroFisico/Cart"; 
@@ -36,21 +36,24 @@ export function AppRouter() {
   return (
     /* 1. Proveedor del Carrito Web (Global) */
     <CartProvider>
-      {/* 2. Proveedor del Carrito Físico (AHORA ES GLOBAL TAMBIÉN) 
-          Esto soluciona el error en la Tienda. */
+      {/* 2. Proveedor del Carrito Físico (Global) 
+          Esto soluciona el error en la Tienda y permite compra física. */
       }
       <CartFisicoProvider>
         <Routes>
           {/* ---------- PÚBLICA ---------- */}
           <Route path="/login" element={<LoginPage />} />
 
-          {/* ---------- CON LAYOUT ---------- */}
+          {/* ---------- CON LAYOUT (Rutas Protegidas) ---------- */}
           <Route element={<Layout />}>
+            
+            {/* Home / Default */}
             <Route
               path="/home"
               element={
                 <PrivateRoute>
-                  <></>
+                  <></> 
+                  {/* Aquí podrías poner una DashboardPage si tienes una */}
                 </PrivateRoute>
               }
             />
@@ -81,7 +84,7 @@ export function AppRouter() {
               }
             />
 
-            {/* Tienda y Carrito */}
+            {/* Tienda y Carrito (Web) */}
             <Route
               path="/tienda"
               element={
@@ -99,7 +102,7 @@ export function AppRouter() {
               }
             />
 
-            {/* Farmacia */}
+            {/* Farmacia / Compra Física / Inventario */}
             <Route
               path="/farmacia/punto-venta"
               element={
@@ -157,27 +160,25 @@ export function AppRouter() {
               element={
                 <PrivateRoute>
                   <RecepCancelacionesPage />
-              </PrivateRoute>
-            }
-          />
-
-          <Route
-            path="/recep/empleados"
-            element={
-              <PrivateRoute>
-                <RecepEmpleadosListPage />
-              </PrivateRoute>
-            }
-          />
-
-          <Route 
-            path="/recep/empleados/crear" 
-            element={
-              <PrivateRoute>
-                <RecepEmpleadosCreatePage />
-              </PrivateRoute>
-            } 
-          />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              path="/recep/empleados"
+              element={
+                <PrivateRoute>
+                  <RecepEmpleadosListPage />
+                </PrivateRoute>
+              }
+            />
+            <Route 
+              path="/recep/empleados/crear" 
+              element={
+                <PrivateRoute>
+                  <RecepEmpleadosCreatePage />
+                </PrivateRoute>
+              } 
+            />
 
           </Route>
 

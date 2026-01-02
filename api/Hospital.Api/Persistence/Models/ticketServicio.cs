@@ -13,7 +13,9 @@ public partial class TicketServicio
 
     public decimal PrecioUnitario { get; set; }
 
-    public virtual Servicio IdServicioNavigation { get; set; } = null!;
+    public decimal? Importe { get; set; }
 
     public virtual Ticket IdTicketNavigation { get; set; } = null!;
+
+    public virtual Servicio IdServicioNavigation { get; set; } = null!;
 }

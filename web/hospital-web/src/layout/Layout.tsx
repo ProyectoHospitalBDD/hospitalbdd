@@ -1,19 +1,19 @@
 import React, { useState } from "react";
 import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../lib/auth/AuthContext";
-import "./Layout.css";  
+import { useAuth } from "../lib/auth/AuthContext"; // Asegúrate de que esta ruta sea correcta
+import "./Layout.css";
 
-// Ruta del logo (asegúrate de que esté en public/imagenes/)
-const LOGO_URL = "../public/imagenes/Logo_PoliMed.png";
+// Ruta del logo. Nota: En producción, usualmente se usa "/imagenes/..." si está en la carpeta public.
+const LOGO_URL = "/imagenes/Logo_PoliMed.png"; 
 
 export function Layout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const toggleMenu = (): void => {
+  const toggleMenu = () => {
     setIsOpen(!isOpen);
   };
 
@@ -25,37 +25,40 @@ export function Layout() {
     navigate("/login");
   };
 
-  // Lógica de perfil que trajo tu compañero
+  // Lógica de perfil
   const handleMiPerfil = () => {
     closeMenu();
     if (!user) return;
     if (user.rol === "Doctor") navigate("/doctor/perfil");
     else if (user.rol === "Paciente") navigate("/perfil");
-    else navigate("/home");
+    else navigate("/home"); // O una ruta por defecto
   };
 
-  const userRole = user?.rol;
-  const role = userRole ? String(userRole).toLowerCase() : "";
+  // --- LÓGICA DE ROLES ---
+  const userRole = user?.rol ? String(user.rol).toLowerCase() : "";
+  
+  const esDoctor = userRole.includes("doctor");
+  const esPaciente = userRole.includes("paciente");
+  const esRecepcionista = userRole.includes("recepcionista");
+  const esFarmaceutico = userRole.includes("farmac"); // Cubre 'Farmacéutico' o 'Farmacia'
+  const esEnfermera = userRole.includes("enfermera");
+  const esAdmin = userRole.includes("admin");
 
-  const esDoctor = role.includes("doctor");
-  const esPaciente = role.includes("paciente");
-  const esRecepcionista = user?.rol === "Recepcionista"
   // Determinamos si estamos en la página de inicio
   const isHome = location.pathname === "/home" || location.pathname === "/";
-  
-
-
 
   return (
     <div className="layout-root">
       <header className="layout-header">
         <div className="layout-header-inner">
           
-          {/* Logo y Tabs (Fusión) */}
+          {/* --- IZQUIERDA: LOGO + TABS DE ESCRITORIO --- */}
           <div className="layout-left">
-            <div className="layout-logo">PoliMed</div> 
+            <div className="layout-logo" onClick={() => navigate('/home')} style={{cursor: 'pointer'}}>
+              PoliMed
+            </div>
             
-            {/* Tabs SOLO para Doctor (Aporte de tu compañero) */}
+            {/* Tabs SOLO para Doctor (Visible en escritorio) */}
             {esDoctor && (
               <nav className="layout-tabs">
                 <NavLink
@@ -75,25 +78,20 @@ export function Layout() {
               </nav>
             )}
 
-            {/* Tabs SOLO para Recepcionista */}
+            {/* Tabs SOLO para Recepcionista (Visible en escritorio) */}
             {esRecepcionista && (
               <nav className="layout-tabs">
                 <NavLink
                   to="/recep/cancelaciones"
                   onClick={closeMenu}
-                  className={({ isActive }) =>
-                    `layout-tab ${isActive ? "layout-tab--active" : ""}`
-                  }
+                  className={({ isActive }) => `layout-tab ${isActive ? "layout-tab--active" : ""}`}
                 >
                   Administrar citas
                 </NavLink>
-
                 <NavLink
                   to="/recep/empleados"
                   onClick={closeMenu}
-                  className={({ isActive }) =>
-                    `layout-tab ${isActive ? "layout-tab--active" : ""}`
-                  }
+                  className={({ isActive }) => `layout-tab ${isActive ? "layout-tab--active" : ""}`}
                 >
                   Administrar empleados
                 </NavLink>
@@ -101,14 +99,16 @@ export function Layout() {
             )}
           </div>
 
-          {/* Usuario + Menú */}
+          {/* --- DERECHA: USUARIO + HAMBURGUESA --- */}
           <div className="layout-user">
             {user ? (
                 <span className="layout-user-name" onClick={handleMiPerfil} style={{cursor: 'pointer'}}>
                     {user.nombreCompleto}
                 </span>
             ) : (
-                <span className="layout-user-name" style={{fontStyle:'italic', fontWeight:'normal'}}>Invitado</span>
+                <span className="layout-user-name" style={{fontStyle:'italic', fontWeight:'normal'}}>
+                  Invitado
+                </span>
             )}
             
             <div className="hamburger-menu">
@@ -119,19 +119,22 @@ export function Layout() {
               </div>
             </div>
 
-            {/* Menú Desplegable (Fusión de opciones) */}
+            {/* --- MENÚ DESPLEGABLE (MÓVIL Y PERFIL) --- */}
             {isOpen && (
               <div className="menu">
                 <ul>
-                  <nav>
-                    <NavLink to="/home" onClick={closeMenu}><li>Inicio</li></NavLink>
+                    {/* Opción Común: Inicio */}
+                    <NavLink to="/home" onClick={closeMenu}>
+                      <li>Inicio</li>
+                    </NavLink>
                     
+                    {/* Opción Común: Mi Perfil (Si hay usuario) */}
                     {user && (
-                        <li onClick={handleMiPerfil}>Mi perfil</li>
+                        <li onClick={handleMiPerfil} style={{ cursor: "pointer" }}>Mi perfil</li>
                     )}
                     
                     {/* --- PACIENTES E INVITADOS --- */}
-                    {(!role || esPaciente) && (
+                    {(!userRole || esPaciente) && (
                         <>
                             <NavLink to="/tienda" onClick={closeMenu}><li>🛒 Tienda</li></NavLink>
                             <NavLink to="/citas/agendar" onClick={closeMenu}><li>📅 Agendar cita</li></NavLink>
@@ -140,15 +143,14 @@ export function Layout() {
 
                     {/* --- DOCTOR (Opciones extra en menú móvil) --- */}
                     {esDoctor && (
-                         <>
-                            <NavLink to="/medico/agenda" onClick={closeMenu}><li>👨‍⚕️ Mi Agenda</li></NavLink>
-                            {/* Los tabs de arriba también disponibles aquí por si acaso */}
-                            <NavLink to="/doctor/citas" onClick={closeMenu}><li>Mis citas</li></NavLink>
-                         </>
+                        <>
+                           <NavLink to="/medico/agenda" onClick={closeMenu}><li>👨‍⚕️ Mi Agenda</li></NavLink>
+                           <NavLink to="/doctor/citas" onClick={closeMenu}><li>Mis citas</li></NavLink>
+                        </>
                     )}
 
                     {/* --- FARMACÉUTICO / ADMIN --- */}
-                    {(role.includes("farmac") || role.includes("admin")) && (
+                    {(esFarmaceutico || esAdmin) && (
                         <>
                             <NavLink to="/tienda" onClick={closeMenu}><li>🛒 Tienda</li></NavLink>
                             <NavLink to="/farmacia" onClick={closeMenu}><li>🏥 Farmacia (Caja)</li></NavLink>
@@ -157,21 +159,22 @@ export function Layout() {
                     )}
                     
                     {/* --- ENFERMERÍA --- */}
-                    {(role.includes("enfermera") || role.includes("admin")) && (
+                    {(esEnfermera || esAdmin) && (
                         <NavLink to="/farmacia" onClick={closeMenu}><li>🏥 Farmacia (Caja)</li></NavLink>
                     )}
 
                     {/* --- RECEPCIÓN --- */}
-                    {(role.includes("recepcionista") || role.includes("admin")) && (
+                    {(esRecepcionista || esAdmin) && (
                         <NavLink to="/recepcion" onClick={closeMenu}><li>📋 Recepción</li></NavLink>
                     )}
-
-                  </nav>
                   
                   <hr style={{margin: '5px 0', border: '0', borderTop: '1px solid #eee'}}/>
                   
+                  {/* --- LOGIN / LOGOUT --- */}
                   {user ? (
-                      <li onClick={handleLogout} style={{color: '#d63031'}}>Cerrar sesión</li>
+                      <li onClick={handleLogout} style={{color: '#d63031', cursor: 'pointer'}}>
+                        Cerrar sesión
+                      </li>
                   ) : (
                       <NavLink to="/login" onClick={closeMenu}>
                           <li style={{color: '#27ae60', fontWeight:'bold'}}>Iniciar Sesión</li>
@@ -185,7 +188,7 @@ export function Layout() {
       </header>
 
       <main className="layout-main">
-        {/* HERO SECTION */}
+        {/* HERO SECTION (Solo se muestra en Home) */}
         {isHome ? (
             <div className="home-welcome-section">
                 <div className="home-text">
@@ -194,7 +197,7 @@ export function Layout() {
                         Hospital PoliMed somos una institución dedicada al diagnóstico y seguimiento integral de diversos padecimientos. Contamos con más de 15 especialidades médicas y un equipo de más de 50 doctores altamente capacitados, además de servicio de farmacia y aplicación de tratamientos, estamos comprometidos con brindar atención de calidad y confianza a nuestros pacientes.
                     </p>
                     
-                    {(!role || esPaciente) && (
+                    {(!userRole || esPaciente) && (
                         <div className="home-cta-buttons">
                             <button className="cta-btn primary" onClick={() => navigate('/citas/agendar')}>
                                 📅 Agendar Cita
@@ -207,10 +210,11 @@ export function Layout() {
                 </div>
 
                 <div className="home-logo-visual">
-                    <img src={LOGO_URL} alt="Logo PoliMed Grande" />
+                    <img src={LOGO_URL} alt="Logo PoliMed Grande" onError={(e) => e.currentTarget.style.display = 'none'} />
                 </div>
             </div>
         ) : (
+            /* Renderiza las rutas hijas aquí si NO es Home */
             <Outlet />
         )}
       </main>

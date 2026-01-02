@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hospital.Api.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
+using Hospital.Api.Persistence.Models;
 using Hospital.Api.Dtos.Empleados;
+using Hospital.Api.Models;
 
 namespace Hospital.Api.Persistence;
 
@@ -51,9 +52,9 @@ public partial class HospitalContext : DbContext
 
     public virtual DbSet<PacienteAlergiaPadecimiento> PacienteAlergiaPadecimientos { get; set; }
 
-    public virtual DbSet<Hospital.Api.Models.CompraWeb> CompraWebs { get; set; }
+    public virtual DbSet<CompraWeb> CompraWebs { get; set; }
     
-    public virtual DbSet<Hospital.Api.Models.DetalleCompraWeb> DetalleCompraWebs { get; set; }
+    public virtual DbSet<DetalleCompraWeb> DetalleCompraWebs { get; set; }
 
     public virtual DbSet<Pago> Pagos { get; set; }
 
@@ -509,10 +510,10 @@ public partial class HospitalContext : DbContext
             entity.Property(e => e.IdFarmaceutico).HasColumnName("idFarmaceutico");
             entity.Property(e => e.IdTicket).HasColumnName("idTicket");
 
-        entity.Property(e => e.Monto)
-            .HasColumnType("decimal(10, 2)")
-            .HasColumnName("monto")
-            .HasDefaultValue(0m);
+            entity.Property(e => e.Monto)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("monto")
+                .HasDefaultValue(0m);
 
             entity.HasOne(d => d.IdFarmaceuticoNavigation).WithMany(p => p.PagoTickets).HasForeignKey(d => d.IdFarmaceutico).OnDelete(DeleteBehavior.SetNull).HasConstraintName("FK_Pago_Farmaceutico");
             entity.HasOne(d => d.IdTicketNavigation).WithMany(p => p.PagoTickets).HasForeignKey(d => d.IdTicket).HasConstraintName("FK_Pago_Ticket");
@@ -625,135 +626,81 @@ public partial class HospitalContext : DbContext
                 .HasConstraintName("FK_Servicio_Enfermera");
         });
 
-    modelBuilder.Entity<Ticket>(entity =>
-    {
-        entity.HasKey(e => e.IdTicket).HasName("PK__ticket__22B1456FF34DCA0C"); 
-        entity.ToTable("ticket");
+        modelBuilder.Entity<Ticket>(entity =>
+        {
+            entity.HasKey(e => e.IdTicket).HasName("PK__ticket__22B1456FF34DCA0C"); 
+            entity.ToTable("ticket");
 
-        entity.Property(e => e.IdTicket).HasColumnName("idTicket");
-        
-        entity.Property(e => e.Fecha)
-            .HasDefaultValueSql("(sysutcdatetime())")
-            .HasColumnName("fecha");
+            entity.Property(e => e.IdTicket).HasColumnName("idTicket");
+            
+            entity.Property(e => e.Fecha)
+                .HasDefaultValueSql("(sysutcdatetime())")
+                .HasColumnName("fecha");
 
-        entity.Property(e => e.IdFarmaceutico).HasColumnName("idFarmaceutico");
-        entity.Property(e => e.IdFarmacia).HasColumnName("idFarmacia");
+            entity.Property(e => e.IdFarmaceutico).HasColumnName("idFarmaceutico");
+            entity.Property(e => e.IdFarmacia).HasColumnName("idFarmacia");
+            entity.Property(e => e.IdPaciente).HasColumnName("idPaciente"); // Asegurando que exista la propiedad
 
-
-<<<<<<< Updated upstream
             entity.HasOne(d => d.IdFarmaciaNavigation).WithMany(p => p.Tickets)
                 .HasForeignKey(d => d.IdFarmacia)
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_Ticket_Farmacia");
+
+            entity.HasOne(d => d.IdPacienteNavigation)
+                .WithMany(p => p.Tickets) 
+                .HasForeignKey(d => d.IdPaciente)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_ticket_paciente");
         });
-=======
-        entity.Property(e => e.IdPaciente).HasColumnName("idPaciente");
-        
-        entity.Property(e => e.NombreClienteInvitado)
-            .HasMaxLength(100)
-            .HasColumnName("nombreClienteInvitado");
 
-        entity.Property(e => e.CorreoContacto)
-            .HasMaxLength(100)
-            .HasColumnName("correoContacto");
+        modelBuilder.Entity<TicketMedicamento>(entity =>
+        {
+            entity.HasKey(e => new { e.IdTicket, e.IdMedicamento }).HasName("PK_TicketMed");
+            entity.ToTable("ticketMedicamento");
 
-        entity.Property(e => e.EstatusTicket)
-            .HasMaxLength(20)
-            .HasColumnName("estatusTicket")
-            .HasDefaultValue("Abierto");
+            entity.Property(e => e.IdTicket).HasColumnName("idTicket");
+            entity.Property(e => e.IdMedicamento).HasColumnName("idMedicamento");
+            entity.Property(e => e.Cantidad).HasColumnName("cantidad");
+            
+            entity.Property(e => e.PrecioUnitario)
+                .HasColumnType("money") // O decimal(10,2) según tu BD
+                .HasColumnName("precioUnitario");
 
-        entity.HasOne(d => d.IdFarmaceuticoNavigation).WithMany(p => p.Tickets)
-            .HasForeignKey(d => d.IdFarmaceutico)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("FK_Ticket_Farmaceutico"); 
+            // --- IMPORTANTE: Configuración de Columna Calculada ---
+            entity.Property(e => e.Importe)
+                .HasColumnName("importe")
+                .HasColumnType("decimal(10, 2)")
+                .HasComputedColumnSql("(CONVERT([decimal](10,2),[cantidad])*CONVERT([decimal](10,2),[precioUnitario]))", stored: true);
+            // -----------------------------------------------------
 
-        entity.HasOne(d => d.IdFarmaciaNavigation).WithMany(p => p.Tickets)
-            .HasForeignKey(d => d.IdFarmacia)
-            .OnDelete(DeleteBehavior.SetNull)
-            .HasConstraintName("FK_Ticket_Farmacia");
->>>>>>> Stashed changes
-
-        entity.HasOne(d => d.IdPacienteNavigation)
-            .WithMany(p => p.Tickets) 
-            .HasForeignKey(d => d.IdPaciente)
-            .OnDelete(DeleteBehavior.SetNull)
-            .HasConstraintName("FK_ticket_paciente");
-    });
-
-    modelBuilder.Entity<TicketMedicamento>(entity =>
-    {
-        entity.HasKey(e => new { e.IdTicket, e.IdMedicamento }).HasName("PK_TicketMed");
-        entity.ToTable("ticketMedicamento");
-
-        entity.Property(e => e.IdTicket).HasColumnName("idTicket");
-        entity.Property(e => e.IdMedicamento).HasColumnName("idMedicamento");
-        entity.Property(e => e.Cantidad).HasColumnName("cantidad");
-        
-        entity.Property(e => e.PrecioUnitario)
-            .HasColumnType("money") // O decimal(10,2) según tu BD
-            .HasColumnName("precioUnitario");
-
-        // --- IMPORTANTE: Configuración de Columna Calculada ---
-        // Esto evita que EF intente hacer INSERT en 'importe'
-        entity.Property(e => e.Importe)
-            .HasColumnName("importe")
-            .HasColumnType("decimal(10, 2)")
-            .HasComputedColumnSql("(CONVERT([decimal](10,2),[cantidad])*CONVERT([decimal](10,2),[precioUnitario]))", stored: true);
-        // -----------------------------------------------------
-
-<<<<<<< Updated upstream
             entity.HasOne(d => d.IdTicketNavigation).WithMany(p => p.TicketMedicamentos)
                 .HasForeignKey(d => d.IdTicket)
                 .HasConstraintName("FK_TicketMed_Ticket");
         });
-=======
-        entity.HasOne(d => d.IdMedicamentoNavigation).WithMany(p => p.TicketMedicamentos)
-            .HasForeignKey(d => d.IdMedicamento)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("FK_TicketMed_Med");
 
-        entity.HasOne(d => d.IdTicketNavigation).WithMany(p => p.TicketMedicamentos)
-            .HasForeignKey(d => d.IdTicket)
-            .HasConstraintName("FK_TicketMed_Ticket");
-    });
->>>>>>> Stashed changes
+        modelBuilder.Entity<TicketServicio>(entity =>
+        {
+            entity.HasKey(e => new { e.IdTicket, e.IdServicio }).HasName("PK_TicketServ");
+            entity.ToTable("ticketServicio");
 
-    modelBuilder.Entity<TicketServicio>(entity =>
-    {
-        entity.HasKey(e => new { e.IdTicket, e.IdServicio }).HasName("PK_TicketServ");
-        entity.ToTable("ticketServicio");
+            entity.Property(e => e.IdTicket).HasColumnName("idTicket");
+            entity.Property(e => e.IdServicio).HasColumnName("idServicio");
+            entity.Property(e => e.Cantidad).HasColumnName("cantidad");
+            
+            entity.Property(e => e.PrecioUnitario)
+                .HasColumnType("money")
+                .HasColumnName("precioUnitario");
 
-        entity.Property(e => e.IdTicket).HasColumnName("idTicket");
-        entity.Property(e => e.IdServicio).HasColumnName("idServicio");
-        entity.Property(e => e.Cantidad).HasColumnName("cantidad");
-        
-        entity.Property(e => e.PrecioUnitario)
-            .HasColumnType("money")
-            .HasColumnName("precioUnitario");
+            entity.Property(e => e.Importe)
+                .HasColumnName("importe")
+                .HasColumnType("decimal(10, 2)")
+                .HasComputedColumnSql("(CONVERT([decimal](10,2),[cantidad])*CONVERT([decimal](10,2),[precioUnitario]))", stored: true);
 
-
-        entity.Property(e => e.Importe)
-            .HasColumnName("importe")
-            .HasColumnType("decimal(10, 2)")
-            .HasComputedColumnSql("(CONVERT([decimal](10,2),[cantidad])*CONVERT([decimal](10,2),[precioUnitario]))", stored: true);
-
-<<<<<<< Updated upstream
             entity.HasOne(d => d.IdTicketNavigation).WithMany(p => p.TicketServicios)
                 .HasForeignKey(d => d.IdTicket)
                 .HasConstraintName("FK_TicketServ_Ticket");
         });
-=======
 
-        entity.HasOne(d => d.IdServicioNavigation).WithMany(p => p.TicketServicios)
-            .HasForeignKey(d => d.IdServicio)
-            .OnDelete(DeleteBehavior.ClientSetNull)
-            .HasConstraintName("FK_TicketServ_Serv");
->>>>>>> Stashed changes
-
-        entity.HasOne(d => d.IdTicketNavigation).WithMany(p => p.TicketServicios)
-            .HasForeignKey(d => d.IdTicket)
-            .HasConstraintName("FK_TicketServ_Ticket");
-    });
         modelBuilder.Entity<UsuarioSistema>(entity =>
         {
             entity.HasKey(e => e.IdUsuario).HasName("PK__usuarioS__645723A605BB04DE");
@@ -788,21 +735,20 @@ public partial class HospitalContext : DbContext
                 .HasConstraintName("FK_usuarioContacto");
         });
 
-        modelBuilder.Entity<Hospital.Api.Models.CompraWeb>(entity =>
+        modelBuilder.Entity<CompraWeb>(entity =>
         {
             entity.HasKey(e => e.IdCompra);
             entity.ToTable("compraWeb");
             entity.Property(e => e.TotalGeneral).HasColumnType("decimal(10, 2)");
         });
 
-        modelBuilder.Entity<Hospital.Api.Models.DetalleCompraWeb>(entity =>
+        modelBuilder.Entity<DetalleCompraWeb>(entity =>
         {
             entity.HasKey(e => e.IdDetalleWeb);
             entity.ToTable("detalleCompraWeb");
             
             entity.Property(e => e.PrecioUnitario).HasColumnType("decimal(10, 2)");
             
-        
             entity.Property(e => e.Importe)
                   .HasComputedColumnSql("([cantidad] * [precioUnitario])", stored: false);
 

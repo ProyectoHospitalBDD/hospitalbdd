@@ -14,4 +14,6 @@ public partial class Paciente
     public virtual UsuarioSistema IdUsuarioNavigation { get; set; } = null!;
 
     public virtual ICollection<PacienteAlergiaPadecimiento> PacienteAlergiaPadecimientos { get; set; } = new List<PacienteAlergiaPadecimiento>();
+
+    public virtual ICollection<Ticket> Tickets { get; set; } = new List<Ticket>();
 }
