@@ -13,6 +13,8 @@ public partial class TicketMedicamento
 
     public decimal PrecioUnitario { get; set; }
 
+    public decimal? Importe { get; set; } 
+
     public virtual Medicamento IdMedicamentoNavigation { get; set; } = null!;
 
     public virtual Ticket IdTicketNavigation { get; set; } = null!;

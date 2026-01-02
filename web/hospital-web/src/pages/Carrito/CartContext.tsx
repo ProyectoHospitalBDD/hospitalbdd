@@ -10,14 +10,17 @@ export interface CartItem extends ProductoFarmaciaDto {
 interface CartContextType {
   cart: CartItem[];
   addToCart: (product: ProductoFarmaciaDto, quantity: number, imagenUrl: string) => void;
-  removeFromCart: (productId: number) => void;
+  removeFromCart: (key: string) => void;
   clearCart: () => void;
-  updateQuantity: (productId: number, quantity: number) => void;
+  updateQuantity: (key: string, quantity: number) => void;
   total: number;
   itemCount: number;
 }
 
+
 const CartContext = createContext<CartContextType | undefined>(undefined);
+const cartKey = (p: { origen: string; idProducto: number }) => `${p.origen}-${p.idProducto}`;
+
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>(() => {
@@ -31,33 +34,39 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const addToCart = (product: ProductoFarmaciaDto, quantity: number, imagenUrl: string) => {
     setCart((prevCart) => {
-      const existingItem = prevCart.find((item) => item.idProducto === product.idProducto);
+      const key = cartKey(product);
+
+      const existingItem = prevCart.find((item) => cartKey(item) === key);
       if (existingItem) {
         return prevCart.map((item) =>
-          item.idProducto === product.idProducto
+          cartKey(item) === key
             ? { ...item, cantidad: item.cantidad + quantity }
             : item
         );
       }
+
       return [...prevCart, { ...product, cantidad: quantity, imagenUrl }];
     });
   };
 
-  const removeFromCart = (productId: number) => {
-    setCart((prevCart) => prevCart.filter((item) => item.idProducto !== productId));
+
+  const removeFromCart = (key: string) => {
+    setCart((prevCart) => prevCart.filter((item) => cartKey(item) !== key));
   };
 
-  const updateQuantity = (productId: number, quantity: number) => {
+  const updateQuantity = (key: string, quantity: number) => {
     if (quantity <= 0) {
-        removeFromCart(productId);
-        return;
+      removeFromCart(key);
+      return;
     }
+
     setCart((prevCart) =>
       prevCart.map((item) =>
-        item.idProducto === productId ? { ...item, cantidad: quantity } : item
+        cartKey(item) === key ? { ...item, cantidad: quantity } : item
       )
     );
   };
+
 
   const clearCart = () => setCart([]);
 
@@ -76,3 +85,5 @@ export function useCart() {
   if (!context) throw new Error('useCart debe usarse dentro de un CartProvider');
   return context;
 }
+
+export const getCartKey = cartKey;

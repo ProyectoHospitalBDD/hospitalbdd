@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hospital.Api.Persistence.Models;
 using Microsoft.EntityFrameworkCore;
+using Hospital.Api.Persistence.Models;
 using Hospital.Api.Dtos.Empleados;
+using Hospital.Api.Models;
 
 namespace Hospital.Api.Persistence;
 
@@ -51,9 +52,9 @@ public partial class HospitalContext : DbContext
 
     public virtual DbSet<PacienteAlergiaPadecimiento> PacienteAlergiaPadecimientos { get; set; }
 
-    public virtual DbSet<Hospital.Api.Models.CompraWeb> CompraWebs { get; set; }
+    public virtual DbSet<CompraWeb> CompraWebs { get; set; }
     
-    public virtual DbSet<Hospital.Api.Models.DetalleCompraWeb> DetalleCompraWebs { get; set; }
+    public virtual DbSet<DetalleCompraWeb> DetalleCompraWebs { get; set; }
 
     public virtual DbSet<Pago> Pagos { get; set; }
 
@@ -500,26 +501,22 @@ public partial class HospitalContext : DbContext
         modelBuilder.Entity<PagoTicket>(entity =>
         {
             entity.HasKey(e => e.IdPagoTicket).HasName("PK__pagoTick__266A4AAA1C8ACDAC");
-
             entity.ToTable("pagoTicket");
 
             entity.Property(e => e.IdPagoTicket).HasColumnName("idPagoTicket");
-            entity.Property(e => e.EstatusPago)
-                .HasMaxLength(15)
-                .HasColumnName("estatusPago");
+            entity.Property(e => e.EstatusPago).HasMaxLength(15).HasColumnName("estatusPago");
             entity.Property(e => e.FechaPago).HasColumnName("fechaPago");
             entity.Property(e => e.HoraPago).HasColumnName("horaPago");
             entity.Property(e => e.IdFarmaceutico).HasColumnName("idFarmaceutico");
             entity.Property(e => e.IdTicket).HasColumnName("idTicket");
 
-            entity.HasOne(d => d.IdFarmaceuticoNavigation).WithMany(p => p.PagoTickets)
-                .HasForeignKey(d => d.IdFarmaceutico)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK_Pago_Farmaceutico");
+            entity.Property(e => e.Monto)
+                .HasColumnType("decimal(10, 2)")
+                .HasColumnName("monto")
+                .HasDefaultValue(0m);
 
-            entity.HasOne(d => d.IdTicketNavigation).WithMany(p => p.PagoTickets)
-                .HasForeignKey(d => d.IdTicket)
-                .HasConstraintName("FK_Pago_Ticket");
+            entity.HasOne(d => d.IdFarmaceuticoNavigation).WithMany(p => p.PagoTickets).HasForeignKey(d => d.IdFarmaceutico).OnDelete(DeleteBehavior.SetNull).HasConstraintName("FK_Pago_Farmaceutico");
+            entity.HasOne(d => d.IdTicketNavigation).WithMany(p => p.PagoTickets).HasForeignKey(d => d.IdTicket).HasConstraintName("FK_Pago_Ticket");
         });
 
         modelBuilder.Entity<Recepcionistum>(entity =>
@@ -631,45 +628,50 @@ public partial class HospitalContext : DbContext
 
         modelBuilder.Entity<Ticket>(entity =>
         {
-            entity.HasKey(e => e.IdTicket).HasName("PK__ticket__22B1456FF34DCA0C");
-
+            entity.HasKey(e => e.IdTicket).HasName("PK__ticket__22B1456FF34DCA0C"); 
             entity.ToTable("ticket");
 
             entity.Property(e => e.IdTicket).HasColumnName("idTicket");
+            
             entity.Property(e => e.Fecha)
                 .HasDefaultValueSql("(sysutcdatetime())")
                 .HasColumnName("fecha");
+
             entity.Property(e => e.IdFarmaceutico).HasColumnName("idFarmaceutico");
             entity.Property(e => e.IdFarmacia).HasColumnName("idFarmacia");
-
-            entity.HasOne(d => d.IdFarmaceuticoNavigation).WithMany(p => p.Tickets)
-                .HasForeignKey(d => d.IdFarmaceutico)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Ticket_Farmaceutico");
+            entity.Property(e => e.IdPaciente).HasColumnName("idPaciente"); // Asegurando que exista la propiedad
 
             entity.HasOne(d => d.IdFarmaciaNavigation).WithMany(p => p.Tickets)
                 .HasForeignKey(d => d.IdFarmacia)
                 .OnDelete(DeleteBehavior.SetNull)
                 .HasConstraintName("FK_Ticket_Farmacia");
+
+            entity.HasOne(d => d.IdPacienteNavigation)
+                .WithMany(p => p.Tickets) 
+                .HasForeignKey(d => d.IdPaciente)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_ticket_paciente");
         });
 
         modelBuilder.Entity<TicketMedicamento>(entity =>
         {
             entity.HasKey(e => new { e.IdTicket, e.IdMedicamento }).HasName("PK_TicketMed");
-
             entity.ToTable("ticketMedicamento");
 
             entity.Property(e => e.IdTicket).HasColumnName("idTicket");
             entity.Property(e => e.IdMedicamento).HasColumnName("idMedicamento");
             entity.Property(e => e.Cantidad).HasColumnName("cantidad");
+            
             entity.Property(e => e.PrecioUnitario)
-                .HasColumnType("money")
+                .HasColumnType("money") // O decimal(10,2) según tu BD
                 .HasColumnName("precioUnitario");
 
-            entity.HasOne(d => d.IdMedicamentoNavigation).WithMany(p => p.TicketMedicamentos)
-                .HasForeignKey(d => d.IdMedicamento)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_TicketMed_Med");
+            // --- IMPORTANTE: Configuración de Columna Calculada ---
+            entity.Property(e => e.Importe)
+                .HasColumnName("importe")
+                .HasColumnType("decimal(10, 2)")
+                .HasComputedColumnSql("(CONVERT([decimal](10,2),[cantidad])*CONVERT([decimal](10,2),[precioUnitario]))", stored: true);
+            // -----------------------------------------------------
 
             entity.HasOne(d => d.IdTicketNavigation).WithMany(p => p.TicketMedicamentos)
                 .HasForeignKey(d => d.IdTicket)
@@ -679,20 +681,20 @@ public partial class HospitalContext : DbContext
         modelBuilder.Entity<TicketServicio>(entity =>
         {
             entity.HasKey(e => new { e.IdTicket, e.IdServicio }).HasName("PK_TicketServ");
-
             entity.ToTable("ticketServicio");
 
             entity.Property(e => e.IdTicket).HasColumnName("idTicket");
             entity.Property(e => e.IdServicio).HasColumnName("idServicio");
             entity.Property(e => e.Cantidad).HasColumnName("cantidad");
+            
             entity.Property(e => e.PrecioUnitario)
                 .HasColumnType("money")
                 .HasColumnName("precioUnitario");
 
-            entity.HasOne(d => d.IdServicioNavigation).WithMany(p => p.TicketServicios)
-                .HasForeignKey(d => d.IdServicio)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_TicketServ_Serv");
+            entity.Property(e => e.Importe)
+                .HasColumnName("importe")
+                .HasColumnType("decimal(10, 2)")
+                .HasComputedColumnSql("(CONVERT([decimal](10,2),[cantidad])*CONVERT([decimal](10,2),[precioUnitario]))", stored: true);
 
             entity.HasOne(d => d.IdTicketNavigation).WithMany(p => p.TicketServicios)
                 .HasForeignKey(d => d.IdTicket)
@@ -733,28 +735,27 @@ public partial class HospitalContext : DbContext
                 .HasConstraintName("FK_usuarioContacto");
         });
 
-        modelBuilder.Entity<Hospital.Api.Models.CompraWeb>(entity =>
+        modelBuilder.Entity<CompraWeb>(entity =>
         {
             entity.HasKey(e => e.IdCompra);
             entity.ToTable("compraWeb");
             entity.Property(e => e.TotalGeneral).HasColumnType("decimal(10, 2)");
         });
 
-        modelBuilder.Entity<Hospital.Api.Models.DetalleCompraWeb>(entity =>
+        modelBuilder.Entity<DetalleCompraWeb>(entity =>
         {
             entity.HasKey(e => e.IdDetalleWeb);
             entity.ToTable("detalleCompraWeb");
             
             entity.Property(e => e.PrecioUnitario).HasColumnType("decimal(10, 2)");
             
-            // Importante: Decirle a EF que 'Importe' es calculado por la BD
             entity.Property(e => e.Importe)
                   .HasComputedColumnSql("([cantidad] * [precioUnitario])", stored: false);
 
             entity.HasOne(d => d.Compra)
                   .WithMany(p => p.Detalles)
                   .HasForeignKey(d => d.IdCompra)
-                  .OnDelete(DeleteBehavior.Cascade); // Si borras compra, se borran detalles
+                  .OnDelete(DeleteBehavior.Cascade);
         });
 
         modelBuilder.Entity<_EmpleadoCrearSpRow>().HasNoKey();
