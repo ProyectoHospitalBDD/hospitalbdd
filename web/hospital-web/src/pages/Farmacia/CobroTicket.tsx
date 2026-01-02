@@ -2,13 +2,12 @@ import React, { useState, useEffect } from "react";
 import { getHistorialCaja, CobroItemDto } from "../../api/caja";
 import "./CobroTicket.css";
 
-// --- ÍCONOS SVG NATIVOS (Para no depender de librerías externas) ---
+// --- ÍCONOS SVG NATIVOS ---
 const PrinterIcon = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>;
 const UserIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>;
 const ChevronRightIcon = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>;
 const ArrowLeftIcon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>;
 
-// Interfaz para agrupar por paciente
 interface PacienteResumen {
     nombre: string;
     total: number;
@@ -25,6 +24,9 @@ export default function CobroTicket() {
   // Filtros
   const today = new Date().toISOString().split('T')[0];
   const [fecha, setFecha] = useState(today);
+  
+  // Filtro de tipo visual
+  const [filtroTipo, setFiltroTipo] = useState<"Todos" | "Cita" | "Farmacia">("Todos");
 
   useEffect(() => {
     cargarDatos();
@@ -43,11 +45,18 @@ export default function CobroTicket() {
     }
   };
 
+  // Lógica de filtrado
+  const itemsFiltrados = items.filter(item => {
+    if (filtroTipo === "Todos") return true;
+    if (filtroTipo === "Farmacia") return item.origen.includes("Farmacia"); // Incluye "Farmacia" y "Farmacia Web"
+    return item.origen === filtroTipo;
+  });
+
   // 1. Agrupar movimientos por Paciente
   const pacientesAgrupados = React.useMemo(() => {
     const grupos: Record<string, PacienteResumen> = {};
     
-    items.forEach(item => {
+    itemsFiltrados.forEach(item => {
         if (!grupos[item.paciente]) {
             grupos[item.paciente] = { nombre: item.paciente, total: 0, movimientos: [] };
         }
@@ -58,9 +67,9 @@ export default function CobroTicket() {
     });
 
     return Object.values(grupos).sort((a, b) => b.total - a.total); // Ordenar por quien pagó más
-  }, [items]);
+  }, [itemsFiltrados]);
 
-  const totalDia = items
+  const totalDia = itemsFiltrados
     .filter(i => i.esPagado)
     .reduce((acc, curr) => acc + curr.montoTotal, 0);
 
@@ -87,15 +96,15 @@ export default function CobroTicket() {
         <head>
           <title>Ticket Final - ${paciente.nombre}</title>
           <style>
-            body { font-family: 'Courier New', monospace; margin: 20px; color: #333; max-width: 350px; }
+            body { font-family: 'Courier New', monospace; margin: 20px; color: #000; max-width: 350px; }
             .center { text-align: center; }
             h2 { margin: 5px 0; text-transform: uppercase; font-size: 1.1rem; color: #27ae60; }
             p { margin: 2px 0; font-size: 0.85rem; }
-            hr { border: 0.5px dashed #ccc; margin: 10px 0; }
+            hr { border: 0.5px dashed #000; margin: 10px 0; }
             table { width: 100%; font-size: 0.85rem; border-collapse: collapse; margin-top: 10px; }
             td { padding: 4px 0; vertical-align: top; }
             .text-right { text-align: right; }
-            .total-section { margin-top: 15px; font-size: 1.1rem; font-weight: bold; text-align: right; border-top: 1px solid #000; padding-top: 5px; }
+            .total-section { margin-top: 15px; font-size: 1.1rem; font-weight: bold; text-align: right; border-top: 1px dashed #333; padding-top: 5px; color: #27ae60; }
             .footer { margin-top: 20px; font-size: 0.75rem; text-align: center; color: #666; }
             @media print { .no-print { display: none; } }
           </style>
@@ -159,6 +168,20 @@ export default function CobroTicket() {
                     onChange={(e) => setFecha(e.target.value)} 
                     className="fecha-input"
                 />
+            </div>
+
+             <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <label style={{fontWeight: 'bold', fontSize:'0.8rem', color:'#666'}}>Filtrar:</label>
+                <select 
+                    value={filtroTipo} 
+                    onChange={(e) => setFiltroTipo(e.target.value as any)}
+                    className="fecha-input"
+                    style={{minWidth: '150px'}}
+                >
+                    <option value="Todos">Todos</option>
+                    <option value="Cita">Solo Citas</option>
+                    <option value="Farmacia">Solo Farmacia</option>
+                </select>
             </div>
         </div>
 

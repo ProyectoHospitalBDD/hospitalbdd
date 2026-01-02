@@ -150,6 +150,7 @@ export function Layout() {
                     {/* --- FARMACÉUTICO / ADMIN --- */}
                     {(role.includes("farmac") || role.includes("admin")) && (
                         <>
+                            <NavLink to="/tienda" onClick={closeMenu}><li>🛒 Tienda</li></NavLink>
                             <NavLink to="/farmacia" onClick={closeMenu}><li>🏥 Farmacia (Caja)</li></NavLink>
                             <NavLink to="/inventario" onClick={closeMenu}><li>📦 Inventario (Gestión)</li></NavLink> 
                         </>
