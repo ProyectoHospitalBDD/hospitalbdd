@@ -319,3 +319,16 @@
     min-height: 0; /* opcional */
   }
 }
+.recep-empleados__hero{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap: 12px;
+}
+
+.recep-empleados__filters{
+  display:grid;
+  grid-template-columns: 2fr 1fr 1fr auto;
+  gap: 12px;
+  align-items:end;
+}

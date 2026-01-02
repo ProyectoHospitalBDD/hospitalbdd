@@ -1,0 +1,272 @@
+/* =========================
+   Admin Empleados (List)
+   ========================= */
+
+/* Contenedor general */
+.recep-emp-list{
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 22px 24px 44px;
+  color: #111;
+}
+
+/* HERO */
+.recep-emp-list__hero{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  gap: 14px;
+
+  background: rgba(255,255,255,0.72);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 18px;
+  padding: 18px 18px;
+  box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+  margin: 14px auto 18px;
+}
+
+.recep-emp-list__hero h1{
+  margin: 0;
+  font-size: 34px;
+  letter-spacing: -0.6px;
+  line-height: 1.1;
+  color: #111;
+}
+
+.recep-emp-list__hero p{
+  margin: 8px 0 0;
+  font-size: 14px;
+  color: rgba(0,0,0,0.65);
+}
+
+/* Card general */
+.recep-emp-list__card{
+  background:#fff;
+  border-radius:16px;
+  padding:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,0.08);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
+/* Header interno del card (filtros + botón) */
+.recep-emp-list__filters{
+  display:grid;
+  grid-template-columns: 1.6fr 0.9fr 0.9fr auto;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 14px;
+}
+
+/* Campo (label + input/select) */
+.recep-emp-list__field{
+  display:flex;
+  flex-direction:column;
+  gap: 6px;
+}
+
+.recep-emp-list__field label{
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(0,0,0,0.65);
+  letter-spacing: 0.2px;
+}
+
+/* Inputs / selects */
+.recep-emp-list__input,
+.recep-emp-list__select{
+  width: 100%;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,0.14);
+  padding: 10px 12px;
+  outline: none;
+  background: #fff;
+  font-weight: 600;
+  color: #111;
+}
+
+.recep-emp-list__input::placeholder{
+  color: rgba(0,0,0,0.45);
+  font-weight: 600;
+}
+
+.recep-emp-list__input:focus,
+.recep-emp-list__select:focus{
+  border-color: rgba(46,108,255,0.55);
+  box-shadow: 0 0 0 4px rgba(46,108,255,0.14);
+}
+
+/* Botones (reusa el estilo que ya traes) */
+.btn{
+  border:none;
+  border-radius:12px;
+  padding:9px 12px;
+  cursor:pointer;
+  font-weight: 800;
+  font-size: 13px;
+  transition: transform 120ms ease, opacity 120ms ease, box-shadow 120ms ease, background 120ms ease;
+}
+
+.btn:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.12);
+}
+.btn:active{
+  transform: translateY(0px);
+  box-shadow: none;
+}
+.btn:disabled{
+  opacity:0.6;
+  cursor:not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-ok{
+  background:#2e6cff;
+  color:white;
+}
+
+.btn-bad{
+  background:#ff4d4d;
+  color:white;
+}
+
+.btn-ghost{
+  background:#f0f2f5;
+  color:#111;
+  border: 1px solid rgba(0,0,0,0.10);
+}
+.btn-ghost:hover{ background:#e8ebf0; }
+
+/* Tabla */
+.recep-emp-list__tableWrap{
+  overflow:auto;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+.recep-emp-list__table{
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #fff;
+}
+
+/* Encabezados */
+.recep-emp-list__table thead th{
+  position: sticky;
+  top: 0;
+  z-index: 1;
+
+  background: #f7f8fa;
+  border-bottom: 1px solid rgba(0,0,0,0.10);
+
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: 0.25px;
+  text-transform: uppercase;
+  color: rgba(0,0,0,0.70);
+}
+
+/* Celdas */
+.recep-emp-list__table th,
+.recep-emp-list__table td{
+  text-align:left;
+  padding: 12px 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  white-space: nowrap;
+  color: #111;
+}
+
+.recep-emp-list__table tbody tr:hover{
+  background: rgba(0,0,0,0.025);
+}
+
+.recep-emp-list__table tbody tr:last-child td{
+  border-bottom: none;
+}
+
+/* Columnas para que se vea “pro” */
+.recep-emp-list__table td:nth-child(1){
+  font-weight: 900; /* ID */
+}
+.recep-emp-list__table td:nth-child(6){
+  font-weight: 900; /* salario */
+}
+
+/* Badge estatus */
+.recep-emp-list__badge{
+  display:inline-flex;
+  align-items:center;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 900;
+  font-size: 12px;
+  border: 1px solid transparent;
+}
+
+.recep-emp-list__badge--ok{
+  background: rgba(46, 204, 113, 0.14);
+  border-color: rgba(46, 204, 113, 0.22);
+  color: #0f5132;
+}
+
+.recep-emp-list__badge--off{
+  background: rgba(255, 77, 77, 0.12);
+  border-color: rgba(255, 77, 77, 0.20);
+  color: #7a1111;
+}
+
+/* Acciones en fila */
+.recep-emp-list__actions{
+  display:flex;
+  justify-content:flex-end;
+  gap: 10px;
+}
+
+/* Mensajes */
+.recep-emp-list__error,
+.recep-emp-list__ok{
+  margin: 12px 0 0;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid;
+}
+
+.recep-emp-list__error{
+  background:#ffe9e9;
+  border-color: rgba(255, 77, 77, 0.35);
+  color:#7a1111;
+}
+
+.recep-emp-list__ok{
+  background: rgba(46, 204, 113, 0.12);
+  border-color: rgba(46, 204, 113, 0.25);
+  color: #0f5132;
+}
+
+/* Responsive */
+@media (max-width: 980px){
+  .recep-emp-list__hero{
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .recep-emp-list__filters{
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .recep-emp-list__filters .btn{
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px){
+  .recep-emp-list{
+    padding: 18px 14px 36px;
+  }
+  .recep-emp-list__filters{
+    grid-template-columns: 1fr;
+  }
+}
