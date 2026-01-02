@@ -17,6 +17,54 @@ public class EmpleadosService
         _password = password;
     }
 
+    public async Task<List<EmpleadoListItemDto>> ListarAsync(string? tipoUsuario, bool? estatus, string? texto)
+    {
+        var p = new[]
+        {
+            new SqlParameter("@tipoUsuario", (object?)tipoUsuario ?? DBNull.Value),
+            new SqlParameter("@estatus", (object?)estatus ?? DBNull.Value),
+            new SqlParameter("@texto", (object?)texto ?? DBNull.Value),
+        };
+
+        var rows = await _db.Set<_EmpleadoListSpRow>()
+            .FromSqlRaw(@"EXEC dbo.sp_Empleado_Listar @tipoUsuario, @estatus, @texto", p)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return rows.Select(x => new EmpleadoListItemDto(
+            x.IdUsuario,
+            x.TipoUsuario,
+            x.Nombre,
+            x.ApPat,
+            x.ApMat,
+            x.Curp,
+            x.CorreoPersonal,
+            x.TelPersonal,
+            x.TelCasa,
+            x.Estatus,
+            x.Salario,
+            x.Cedula,
+            x.IdEspecialidad,
+            x.IdConsultorio
+        )).ToList();
+    }
+
+    public async Task CambiarEstatusAsync(int idUsuario, bool estatus)
+    {
+        var p = new[]
+        {
+            new SqlParameter("@idUsuario", idUsuario),
+            new SqlParameter("@estatus", estatus),
+        };
+
+        // No regresa filas; solo ejecuta
+        await _db.Database.ExecuteSqlRawAsync(
+            @"EXEC dbo.sp_Empleado_CambiarEstatus @idUsuario, @estatus",
+            p
+        );
+    }
+
+
     public async Task<CreateEmpleadoResponseDto> CrearAsync(CreateEmpleadoDto dto)
     {
         var (hash, salt, iterations) = _password.HashPassword(dto.Password);

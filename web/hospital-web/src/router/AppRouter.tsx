@@ -23,7 +23,8 @@ import DoctorAtenderCitaPage from "../pages/Doctor/Citas/DoctorAtenderCitaPage";
 
 // Recepción
 import RecepCancelacionesPage from "../pages/Recep/Cancelaciones/RecepCancelacionesPage";
-import RecepEmpleadosPage from "../pages/Recep/Empleados/RecepEmpleadosPage";
+import RecepEmpleadosCreatePage from "../pages/Recep/Empleados/RecepEmpleadosCreatePage";
+import RecepEmpleadosListPage from "../pages/Recep/Empleados/RecepEmpleadosListPage";
 
 // Carrito
 import { CartProvider } from "../pages/Carrito/CartContext";
@@ -154,11 +155,23 @@ export function AppRouter() {
             path="/recep/empleados"
             element={
               <PrivateRoute>
-                <RecepEmpleadosPage />
+                <RecepEmpleadosListPage />
               </PrivateRoute>
             }
           />
+
+          <Route 
+            path="/recep/empleados/crear" 
+            element={
+              <PrivateRoute>
+                <RecepEmpleadosCreatePage />
+              </PrivateRoute>
+            } 
+          />
+
         </Route>
+
+        
 
         {/* ---------- REDIRECCIONES ---------- */}
         <Route path="/" element={<Navigate to="/home" replace />} />

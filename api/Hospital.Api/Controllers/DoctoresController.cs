@@ -202,12 +202,13 @@ namespace Hospital.Api.Controllers
             var doctores = await _db.Doctors
                 .Include(d => d.IdUsuarioNavigation)
                 .ThenInclude(e => e.IdUsuarioNavigation)
-                .Where(d => d.IdEspecialidad == especialidadId)
+                .Where(d => d.IdEspecialidad == especialidadId
+                            && d.IdUsuarioNavigation.Estatus == true) 
                 .Select(d => new DoctorListaDto(
                     d.IdUsuario,
-                    d.IdUsuarioNavigation.IdUsuarioNavigation.Nombre + " " +
+                    (d.IdUsuarioNavigation.IdUsuarioNavigation.Nombre + " " +
                     d.IdUsuarioNavigation.IdUsuarioNavigation.ApPat + " " +
-                    d.IdUsuarioNavigation.IdUsuarioNavigation.ApMat,
+                    (d.IdUsuarioNavigation.IdUsuarioNavigation.ApMat ?? "")).Trim(),
                     d.Cedula
                 ))
                 .ToListAsync();
@@ -224,6 +225,17 @@ namespace Hospital.Api.Controllers
             int doctorId,
             [FromQuery] DateTime fecha)
         {
+
+            var activo = await _db.Empleados
+            .AsNoTracking()
+            .Where(e => e.IdUsuario == doctorId)
+            .Select(e => e.Estatus)
+            .SingleOrDefaultAsync();
+
+            if (!activo) return Ok(new List<HorarioDisponibleDto>()); // para horarios
+            // o return Ok(new List<DateTime>()); para fechas
+
+
             if (fecha == default)
                 return BadRequest("Debes enviar una fecha válida (yyyy-MM-dd).");
 
@@ -295,6 +307,15 @@ namespace Hospital.Api.Controllers
             [FromQuery] DateTime? desde,
             [FromQuery] DateTime? hasta)
         {
+
+            var activo = await _db.Empleados
+            .AsNoTracking()
+            .Where(e => e.IdUsuario == doctorId)
+            .Select(e => e.Estatus)
+            .SingleOrDefaultAsync();
+
+            if (!activo) return Ok(new List<DateTime>()); // para fechas
+
             var ahora = DateTime.UtcNow;
             var inicio = (desde ?? ahora.AddHours(48)).Date;
             var fin = (hasta ?? ahora.AddMonths(3)).Date;

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import "./RecepEmpleadosPage.css";
+import { useNavigate } from "react-router-dom";
+import "./RecepEmpleadosCreatePage.css";
 
 import {
   crearEmpleado,
@@ -33,6 +34,8 @@ export default function RecepEmpleadosPage() {
   const [especialidades, setEspecialidades] = useState<EspecialidadItem[]>([]);
   const [consultorios, setConsultorios] = useState<ConsultorioItem[]>([]);
   const [cargandoCatalogos, setCargandoCatalogos] = useState(false);
+
+  const nav = useNavigate();
 
   // Doctor extra
   const [cedula, setCedula] = useState("");
@@ -150,8 +153,14 @@ export default function RecepEmpleadosPage() {
   return (
     <div className="recep-empleados">
       <div className="recep-empleados__hero">
-        <h1>Alta de empleados</h1>
-        <p>Crea Doctor, Recepcionista, Enfermera o Farmacéutico.</p>
+        <div>
+          <h1>Alta de empleados</h1>
+          <p>Crea Doctor, Recepcionista, Enfermera o Farmacéutico.</p>
+        </div>
+
+        <button className="btn btn-ghost" type="button" onClick={() => nav("/recep/empleados")}>
+          Volver al listado
+        </button>
       </div>
 
       {error && <div className="recep-empleados__error">{error}</div>}
