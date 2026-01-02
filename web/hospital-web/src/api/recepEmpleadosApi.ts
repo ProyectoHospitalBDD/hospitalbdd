@@ -69,3 +69,38 @@ export async function getConsultorios() {
   const r = await api.get<ConsultorioItem[]>("/api/catalogos/consultorios");
   return r.data;
 }
+
+export type EmpleadoListItem = {
+  idUsuario: number;
+  tipoUsuario: TipoEmpleado | string;
+
+  nombre: string;
+  apPat: string;
+  apMat?: string | null;
+  curp: string;
+
+  correoPersonal?: string | null;
+  telPersonal?: string | null;
+  telCasa?: string | null;
+
+  estatus: boolean;
+  salario: number;
+
+  // doctor extra (pueden venir null)
+  cedula?: string | null;
+  idEspecialidad?: number | null;
+  idConsultorio?: number | null;
+};
+
+export async function listarEmpleados(params?: {
+  tipoUsuario?: string;
+  estatus?: boolean;
+  texto?: string;
+}) {
+  const r = await api.get<EmpleadoListItem[]>("/api/recep/empleados", { params });
+  return r.data;
+}
+
+export async function cambiarEstatusEmpleado(idUsuario: number, estatus: boolean) {
+  await api.patch(`/api/recep/empleados/${idUsuario}/estatus`, { estatus });
+}

@@ -758,7 +758,8 @@ public partial class HospitalContext : DbContext
         });
 
         modelBuilder.Entity<_EmpleadoCrearSpRow>().HasNoKey();
-
+        modelBuilder.Entity<_EmpleadoListSpRow>().HasNoKey();
+        
         OnModelCreatingPartial(modelBuilder);
     }
 
