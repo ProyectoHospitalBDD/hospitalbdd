@@ -1,0 +1,102 @@
+.page {
+  min-height: calc(100vh - 72px); /* ajusta si tu header mide otra cosa */
+  padding: 32px 16px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.carta {
+  width: 100%;
+  max-width: 980px;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  padding: 22px 22px 18px;
+}
+
+.titulo {
+  margin: 0 0 12px;
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a; /* slate-900 */
+}
+
+.texto{
+    margin: 0 0 18px;
+    color: #111111; /* slate-600 */
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.area-texto {
+    width: 100%;
+    height: 150px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    resize: vertical;
+    background-color: #ccc;
+    color: #0f172a;
+}
+
+.etiqueta {
+  display: block;
+  font-size: 12px;
+  font-weight: 800;
+  color: #64748b; /* slate-500 */
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.titulo-seccion {
+  margin: 0 0 10px;
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.caja {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.caja-campo {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: rgba(248, 250, 252, 0.8);
+  border-radius: 14px;
+  padding: 12px 12px;
+}
+
+.perfil-field-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  word-break: break-word;
+}
+
+.boton {
+  background-color: #0ea5e9; /* sky-500 */
+  color: #ffffff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.selector-medicamentos {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: #ccc;
+    color: #0f172a;
+}
+
