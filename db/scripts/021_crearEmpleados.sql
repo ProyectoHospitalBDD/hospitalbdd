@@ -1,4 +1,4 @@
-USE hospitalBD;
+--USE hospitalBD;
 GO
 
 CREATE OR ALTER PROCEDURE dbo.sp_Empleado_Crear

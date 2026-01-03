@@ -29,6 +29,12 @@ import DoctorPerfilPage from "../pages/Doctor/DoctorPerfilPage";
 import DoctorMisCitasPage from "../pages/Doctor/Citas/DoctorMisCitasPage";
 import DoctorAtenderCitaPage from "../pages/Doctor/Citas/DoctorAtenderCitaPage";
 
+//Farmaceutico
+import FarmaceuticoPerfilPage from "../pages/Farmaceutico/FarmaceuticoPerfilPage";
+
+//Recepcionista
+import RecepcionistaPerfilPage from "../pages/Recepcionista/RecepcionistaPerfilPage";
+
 // Receta (del compa)
 import Receta from "../pages/Receta/RecetaM";
 import ComprobanteReceta from "../pages/Receta/ComprobanteReceta";
@@ -132,6 +138,26 @@ export function AppRouter() {
                 }
               />
 
+              {/* --- Farmaceutico --- */}
+              <Route
+                path="/farmaceutico/perfil"
+                element={
+                  <PrivateRoute>
+                    <FarmaceuticoPerfilPage />
+                  </PrivateRoute>
+                }
+              />
+
+              {/* --- Recepcionista ---*/}
+              <Route
+                path="/recepcionista/perfil"
+                element={
+                  <PrivateRoute>
+                    <RecepcionistaPerfilPage />
+                  </PrivateRoute>
+                }
+              />
+
               {/* --- Doctor --- */}
               <Route
                 path="/doctor/perfil"
@@ -201,6 +227,8 @@ export function AppRouter() {
                   </PrivateRoute>
                 }
               />
+
+
 
               {/* (Opcional) Alias si quieres conservar la pantalla “todo en uno” del compa */}
               {/* 

@@ -1,22 +1,22 @@
 /*
- * * NOMBRE DEL SISTEMA:   POLIMED: GestiÛn Hospitalaria (Backend SQL)
+ * * NOMBRE DEL SISTEMA:   POLIMED: GestiÔøΩn Hospitalaria (Backend SQL)
  * ARCHIVO:              Vistas.sql
- * FECHA DE DOCUMENTACI”N: 22 de Noviembre de 2025
+ * FECHA DE DOCUMENTACIÔøΩN: 22 de Noviembre de 2025
  * MOTOR DE BASE DE DATOS: SQL Server (T-SQL)
  *
- * DESCRIPCI”N GENERAL:
- * Este script contiene las Vistas (Views) del sistema, diseÒadas para
- * simplificar consultas complejas (Joins m˙ltiples) y presentar informaciÛn
+ * DESCRIPCIÔøΩN GENERAL:
+ * Este script contiene las Vistas (Views) del sistema, diseÔøΩadas para
+ * simplificar consultas complejas (Joins mÔøΩltiples) y presentar informaciÔøΩn
  * consolidada a las interfaces de usuario (Frontend).
  *
  * FUNCIONES PRINCIPALES:
- * 1. AbstracciÛn de la complejidad del modelo relacional.
+ * 1. AbstracciÔøΩn de la complejidad del modelo relacional.
  * 2. Seguridad (oculta columnas sensibles como passwords o salarios).
- * 3. Reportes operativos instant·neos (Directorios, Agendas, Historiales).
+ * 3. Reportes operativos instantÔøΩneos (Directorios, Agendas, Historiales).
  *
  * HISTORIAL DE CAMBIOS:
- * [22/11/2025] - CreaciÛn de vistas base para mÛdulos de paciente y mÈdico.
- * [26/11/2025] - DocumentaciÛn tÈcnica y revisiÛn de est·ndares.
+ * [22/11/2025] - CreaciÔøΩn de vistas base para mÔøΩdulos de paciente y mÔøΩdico.
+ * [26/11/2025] - DocumentaciÔøΩn tÔøΩcnica y revisiÔøΩn de estÔøΩndares.
  * */
 
 
@@ -24,18 +24,18 @@
  * NOMBRE DE LA VISTA:           info_Doctor
  * TIPO:                         Vista de Directorio
  *
- * DESCRIPCI”N:
- * Provee una ficha p˙blica del mÈdico combinando su informaciÛn personal,
- * profesional y logÌstica. Es la fuente principal para que los pacientes
+ * DESCRIPCIÔøΩN:
+ * Provee una ficha pÔøΩblica del mÔøΩdico combinando su informaciÔøΩn personal,
+ * profesional y logÔøΩstica. Es la fuente principal para que los pacientes
  * elijan doctor.
  *
- * CARACTERÕSTICAS:
+ * CARACTERÔøΩSTICAS:
  * - Joins: [usuarioSistema], [horarioEmpleado], [doctor], [consultorio], [especialidad], [contacto].
  * - Filtros: Muestra todos los doctores..
  *
  * CAMPOS PRINCIPALES:
- * - Nombre Completo, CÈdula, Especialidad.
- * - UbicaciÛn (Consultorio) y Horarios de atenciÛn (DÌa, Desde, Hasta).
+ * - Nombre Completo, CÔøΩdula, Especialidad.
+ * - UbicaciÔøΩn (Consultorio) y Horarios de atenciÔøΩn (DÔøΩa, Desde, Hasta).
  * - Contacto (Correo).
  */
 CREATE VIEW info_Doctor AS
@@ -61,19 +61,19 @@ GO
  * NOMBRE DE LA VISTA:           info_Citas
  * TIPO:                         Vista Operativa (Agenda Activa)
  *
- * DESCRIPCI”N:
- * Reporte de citas que ya han sido pagadas y confirmadas, pero que a˙n no
- * han sido atendidas. Es vital para la pantalla de recepciÛn y la agenda
- * diaria del mÈdico.
+ * DESCRIPCIÔøΩN:
+ * Reporte de citas que ya han sido pagadas y confirmadas, pero que aÔøΩn no
+ * han sido atendidas. Es vital para la pantalla de recepciÔøΩn y la agenda
+ * diaria del mÔøΩdico.
  *
- * CARACTERÕSTICAS:
- * - Filtro CrÌtico: estatusCita = 'PagadaPendAtender'.
+ * CARACTERÔøΩSTICAS:
+ * - Filtro CrÔøΩtico: estatusCita = 'PagadaPendAtender'.
  * - Joins: Conecta Doctor, Paciente (ambos desde usuarioSistema), Cita y Consultorio.
  *
  * CAMPOS PRINCIPALES:
  * - Nombres completos de Doctor y Paciente.
  * - Fecha/Hora Inicio y Fin.
- * - UbicaciÛn fÌsica.
+ * - UbicaciÔøΩn fÔøΩsica.
  */
 CREATE VIEW info_Citas AS
 SELECT
@@ -94,18 +94,18 @@ GO
 
 /*
  * NOMBRE DE LA VISTA:           info_padecimientos
- * TIPO:                         Vista de Expediente ClÌnico
+ * TIPO:                         Vista de Expediente ClÔøΩnico
  *
- * DESCRIPCI”N:
- * Resumen clÌnico de alertas importantes del paciente. Muestra tanto
- * alergias como padecimientos crÛnicos registrados.
+ * DESCRIPCIÔøΩN:
+ * Resumen clÔøΩnico de alertas importantes del paciente. Muestra tanto
+ * alergias como padecimientos crÔøΩnicos registrados.
  *
- * CARACTERÕSTICAS:
- * - Uso: Pantalla de alerta para el mÈdico antes de recetar.
+ * CARACTERÔøΩSTICAS:
+ * - Uso: Pantalla de alerta para el mÔøΩdico antes de recetar.
  * - Joins: [paciente], [usuarioSistema], [pacienteAlergiaPadecimiento], [alergiaPadecimiento].
  *
  * CAMPOS PRINCIPALES:
- * - Paciente, DiagnÛstico (Nombre de alergia/enfermedad), Tipo, Severidad, ReacciÛn.
+ * - Paciente, DiagnÔøΩstico (Nombre de alergia/enfermedad), Tipo, Severidad, ReacciÔøΩn.
  */
 CREATE VIEW info_padecimientos AS
 SELECT
@@ -123,17 +123,17 @@ GO
 
 /*
  * NOMBRE DE LA VISTA:           info_Servicios
- * TIPO:                         Vista de Cat·logo de Servicios
+ * TIPO:                         Vista de CatÔøΩlogo de Servicios
  *
- * DESCRIPCI”N:
- * Registro de servicios aplicados (enfermerÌa, curaciones, etc.) disponibles,
+ * DESCRIPCIÔøΩN:
+ * Registro de servicios aplicados (enfermerÔøΩa, curaciones, etc.) disponibles,
  * vinculando directamente al personal responsable.
  *
- * CARACTERÕSTICAS:
- * - Joins: [usuarioSistema] (filtrado implÌcitamente por la tabla servicio), [servicio].
+ * CARACTERÔøΩSTICAS:
+ * - Joins: [usuarioSistema] (filtrado implÔøΩcitamente por la tabla servicio), [servicio].
  *
  * CAMPOS PRINCIPALES:
- * - Nombre de la Enfermera/o, DescripciÛn del servicio, Tipo.
+ * - Nombre de la Enfermera/o, DescripciÔøΩn del servicio, Tipo.
  */
 CREATE VIEW info_Servicios AS
 SELECT
@@ -144,7 +144,80 @@ FROM usuarioSistema en
 JOIN servicio ser ON ser.idEnfermera = en.idUsuario;
 GO
 
+
+/*
+ * NOMBRE DE LA VISTA:           info_Farmaceutico
+ * TIPO:                         Vista de Directorio
+ *
+ * DESCRIPCI√ìN:
+ * Provee una ficha del farmac√©utico combinando su informaci√≥n personal,
+ * laboral y de horario. Es √∫til para directorios y gesti√≥n de personal.
+ *
+ * CARACTER√çSTICAS:
+ * - Joins: [usuarioSistema], [horarioEmpleado], [farmaceutico], [empleado], [contacto].
+ * - Filtros: Muestra todos los farmac√©uticos.
+ *
+ * CAMPOS PRINCIPALES:
+ * - Nombre Completo, CURP, Estatus, Salario.
+ * - Horarios de atenci√≥n (D√≠a, Desde, Hasta).
+ * - Contacto (Correo).
+ */
+CREATE VIEW info_Farmaceutico AS
+SELECT
+    d.nombre + ' ' + d.apPat + ' ' + ISNULL(d.apMat,' ') AS Nombre,
+    d.curp AS CURP,
+    e.estatus AS Estatus,
+    e.salario AS Salario,
+    co.correoPersonal AS Correo,
+    h.diaSemana AS Dia,
+    h.horaInicio AS Desde,
+    h.horaFin AS Hasta
+FROM usuarioSistema d
+JOIN horarioEmpleado h ON d.idUsuario = h.idUsuario
+JOIN farmaceutico f ON d.idUsuario = f.idUsuario
+JOIN empleado e ON d.idUsuario = e.idUsuario
+JOIN contacto co ON co.idContacto = d.idContacto;
+GO
+
+
+/*
+ * NOMBRE DE LA VISTA:           info_Recepcionista
+ * TIPO:                         Vista de Directorio
+ *
+ * DESCRIPCI√ìN:
+ * Provee una ficha de la recepcionista combinando su informaci√≥n personal,
+ * laboral y de horario. Es √∫til para directorios y gesti√≥n de personal.
+ *
+ * CARACTER√çSTICAS:
+ * - Joins: [usuarioSistema], [horarioEmpleado], [recepcionistum], [empleado], [contacto].
+ * - Filtros: Muestra todas las recepcionistas.
+ *
+ * CAMPOS PRINCIPALES:
+ * - Nombre Completo, CURP, Estatus, Salario.
+ * - Horarios de atenci√≥n (D√≠a, Desde, Hasta).
+ * - Contacto (Correo).
+ */
+CREATE VIEW info_Recepcionista AS
+SELECT
+    d.nombre + ' ' + d.apPat + ' ' + ISNULL(d.apMat,' ') AS Nombre,
+    d.curp AS CURP,
+    e.estatus AS Estatus,
+    e.salario AS Salario,
+    co.correoPersonal AS Correo,
+    h.diaSemana AS Dia,
+    h.horaInicio AS Desde,
+    h.horaFin AS Hasta
+FROM usuarioSistema d
+JOIN horarioEmpleado h ON d.idUsuario = h.idUsuario
+JOIN recepcionista r ON d.idUsuario = r.idUsuario
+JOIN empleado e ON d.idUsuario = e.idUsuario
+JOIN contacto co ON co.idContacto = d.idContacto;
+GO
+
+
 SELECT * FROM info_Doctor; 
 SELECT * FROM info_Citas; 
 SELECT * FROM info_padecimientos; 
-SELECT * FROM info_Servicios; 
+SELECT * FROM info_Servicios;
+SELECT * FROM info_Farmaceutico;
+SELECT * FROM info_Recepcionista; 
