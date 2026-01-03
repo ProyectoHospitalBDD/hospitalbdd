@@ -28,6 +28,12 @@ export default function PuntoVenta() {
     const [nombreClienteGeneral, setNombreClienteGeneral] = useState("");
     const [procesandoVenta, setProcesandoVenta] = useState(false);
 
+
+    const limpiar = (s?: string | null) => {
+    const t = (s ?? "").trim();
+    return t.length ? t : null;
+    };
+
     // Cargar inventario al inicio
     useEffect(() => {
         cargarProductos();
@@ -95,20 +101,23 @@ export default function PuntoVenta() {
         setProcesandoVenta(true);
 
         try {
-            const payload: CrearTicketPayload = {
-                idFarmacia: 1, // ID fijo de la farmacia local o obtenido de config
-                totalGeneral: total,
-                idPaciente: esPacienteRegistrado ? pacienteEncontrado?.idPaciente : null,
-                nombreClienteInvitado: !esPacienteRegistrado ? nombreClienteGeneral : null,
-                correoContacto: esPacienteRegistrado ? pacienteEncontrado?.email : null, // Opcional
-                metodoPago: "Efectivo", // Se podría agregar selector de método
-                detalles: cart.map(item => ({
-                    idMedicamento: item.origen === 'Medicamento' ? item.idProducto : null,
-                    idServicio: item.origen === 'Servicio' ? item.idProducto : null,
-                    cantidad: item.cantidad,
-                    precioUnitario: item.precio
-                }))
+            
+            const payload = {
+            idFarmacia: 1,
+            totalGeneral: total,
+            idUsuarioPaciente: esPacienteRegistrado ? pacienteEncontrado!.idUsuarioPaciente : null,
+            nombreClienteInvitado: esPacienteRegistrado ? null : limpiar(nombreClienteGeneral),
+            correoContacto: null,
+            metodoPago: "Efectivo",
+            detalles: cart.map(item => ({
+                idMedicamento: item.origen === "Medicamento" ? item.idProducto : null,
+                idServicio: item.origen === "Servicio" ? item.idProducto : null,
+                cantidad: item.cantidad,
+                precioUnitario: item.precio,
+            })),
             };
+
+            console.log("payload armado:", payload);
 
             const res = await registrarTicketFisico(payload);
             
@@ -220,11 +229,19 @@ export default function PuntoVenta() {
                     <div className="client-toggle">
                         <button 
                             className={esPacienteRegistrado ? "active" : ""} 
-                            onClick={() => setEsPacienteRegistrado(true)}
+                            onClick={() => {
+                                setEsPacienteRegistrado(true);
+                                setNombreClienteGeneral("");
+                                }}
                         >Paciente Registrado</button>
                         <button 
                             className={!esPacienteRegistrado ? "active" : ""} 
-                            onClick={() => setEsPacienteRegistrado(false)}
+                            onClick={() => {
+                                setEsPacienteRegistrado(false);
+                                setPacienteEncontrado(null);
+                                setBusquedaPaciente("");
+                                }
+                            }
                         >Venta Mostrador</button>
                     </div>
 
@@ -247,7 +264,7 @@ export default function PuntoVenta() {
                                         <IconCheck/> 
                                         <div>
                                             <strong>{pacienteEncontrado.nombreCompleto}</strong><br/>
-                                            <span style={{fontSize:'0.75rem'}}>ID: {pacienteEncontrado.idPaciente} | {pacienteEncontrado.curp}</span>
+                                            <span style={{fontSize:'0.75rem'}}>ID: {pacienteEncontrado.idUsuarioPaciente} | {pacienteEncontrado.curp}</span>
                                         </div>
                                     </div>
                                 )}

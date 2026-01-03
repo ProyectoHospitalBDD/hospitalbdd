@@ -13,7 +13,7 @@ namespace Hospital.Api.Dtos.Tickets
     public class CrearTicketPayload
     {
         // Identificación del cliente (caja)
-        public int? IdPaciente { get; set; }
+        public int? IdUsuarioPaciente { get; set; }
         public string? NombreClienteInvitado { get; set; }
         public string? CorreoContacto { get; set; }
 
@@ -37,7 +37,7 @@ namespace Hospital.Api.Dtos.Tickets
     // DTO para la búsqueda rápida en caja
     public class PacienteLookupDto
     {
-        public int IdPaciente { get; set; }
+        public int IdUsuarioPaciente { get; set; }
         public string NombreCompleto { get; set; } = string.Empty;
         public string Curp { get; set; } = string.Empty;
         public string? Email { get; set; }
