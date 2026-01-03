@@ -179,7 +179,7 @@ GO
 
 
 /* =========================================================
-   5) VISTA para consumo en API (lo que pide el profe)
+   5) VISTA para consumo en API 
    ========================================================= */
 CREATE OR ALTER VIEW dbo.vw_BitacoraHistorialCitaMP
 AS
@@ -189,6 +189,7 @@ SELECT
     b.usuarioMov,
     b.especialidad,
     b.nombrePaciente,
+    b.nombreDoctor,      
     b.diagnostico,
     b.consultorio,
     b.idPaciente,
@@ -200,7 +201,6 @@ SELECT
     b.horaCita
 FROM dbo.bitacoraHistorialCitaMP b;
 GO
-
 
 /* =========================================================
    6) SP: “pasando el id_paciente” (y opcional filtrar por doctor)

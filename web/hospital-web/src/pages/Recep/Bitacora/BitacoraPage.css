@@ -230,3 +230,28 @@
     grid-column: span 2;
   }
 }
+
+.bitacora-tabla th,
+.bitacora-tabla td {
+  white-space: nowrap;
+}
+
+.diagnostico {
+  max-width: 260px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bitacora-tabla th,
+.bitacora-tabla td {
+  white-space: nowrap;
+}
+
+.bitacora-tableWrap {
+  max-height: 520px;      /* ajusta a gusto: 450-650 */
+  overflow: auto;         /* scroll vertical y horizontal aquí */
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: rgba(255,255,255,0.6);
+}

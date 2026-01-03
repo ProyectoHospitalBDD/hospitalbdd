@@ -43,3 +43,35 @@ export async function buscarBitacoraRecepcion(params: {
 
   return res.data;
 }
+
+export type BitacoraEstatusCitaRow = {
+  idBitacora: number;
+  fechaMov: string;
+  idCita: number;
+  estatusCita: string;
+  fechaCitaInicio: string | null;
+  fechaCitaFin: string | null;
+  idPaciente: number | null;
+  nombrePaciente: string | null;
+  idDoctor: number | null;
+  nombreDoctor: string | null;
+  costo: number | null;
+  politica: string | null;
+  montoDevuelto: number | null;
+};
+
+export async function buscarBitacoraEstatusRecepcion(params: {
+  texto?: string;
+  desdeUtc?: string;
+  hastaUtc?: string;
+  estatusCita?: string;
+  idCita?: number;
+  idPaciente?: number;
+  idDoctor?: number;
+}) {
+  const res = await api.get<BitacoraEstatusCitaRow[]>(
+    "/api/Bitacora/recepcion/estatus/buscar",
+    { params }
+  );
+  return res.data;
+}

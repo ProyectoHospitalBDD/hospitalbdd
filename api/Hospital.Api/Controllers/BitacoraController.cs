@@ -27,4 +27,23 @@ public class BitacoraController : ControllerBase
         var res = await _svc.BuscarAsync(texto, desdeUtc, hastaUtc, estatus, idPaciente, idDoctor);
         return Ok(res);
     }
+
+    // GET: /api/Bitacora/recepcion/estatus/buscar?texto=...&desdeUtc=...&hastaUtc=...&estatusCita=...&idCita=...&idPaciente=...&idDoctor=...
+    [HttpGet("recepcion/estatus/buscar")]
+    public async Task<ActionResult<List<BitacoraEstatusCitaRowDto>>> BuscarEstatus(
+        [FromQuery] string? texto,
+        [FromQuery] DateTime? desdeUtc,
+        [FromQuery] DateTime? hastaUtc,
+        [FromQuery] string? estatusCita,
+        [FromQuery] int? idCita,
+        [FromQuery] int? idPaciente,
+        [FromQuery] int? idDoctor
+    )
+    {
+        var res = await _svc.BuscarEstatusAsync(texto, desdeUtc, hastaUtc, estatusCita, idCita, idPaciente, idDoctor);
+        return Ok(res);
+    }
+
+
+
 }
