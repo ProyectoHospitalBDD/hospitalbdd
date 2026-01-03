@@ -1,0 +1,232 @@
+.bitacora-page {
+  padding: 1.5rem;
+}
+
+.bitacora-filtros {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr auto;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.bitacora-filtros input,
+.bitacora-filtros select {
+  padding: 0.5rem;
+}
+
+.bitacora-tabla table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.bitacora-tabla th,
+.bitacora-tabla td {
+  padding: 0.6rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.chip {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+}
+
+.chip--Atendida {
+  background: #e6f7ee;
+  color: #0a7a3f;
+}
+
+.chip--NoAsistio {
+  background: #fdecea;
+  color: #a61b1b;
+}
+
+.diagnostico {
+  max-width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.error {
+  color: red;
+}
+/* Layout general */
+.bitacora-wrap {
+  padding: 2rem 1.25rem;
+  display: flex;
+  justify-content: center;
+}
+
+.bitacora-card {
+  width: min(1100px, 100%);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  padding: 1.25rem 1.25rem 1rem;
+}
+
+/* Header */
+.bitacora-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.bitacora-header h2 {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: #123;
+}
+
+.bitacora-header p {
+  margin: 0.25rem 0 0;
+  color: rgba(0,0,0,0.55);
+  font-size: 0.95rem;
+}
+
+/* Filtros */
+.bitacora-filtros {
+  display: grid;
+  grid-template-columns: 2.2fr 1fr 1fr 1fr auto;
+  gap: 0.85rem;
+  align-items: end;
+  padding: 0.85rem;
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: 14px;
+  margin-bottom: 1rem;
+}
+
+.bitacora-filtros input[type="text"],
+.bitacora-filtros input[type="date"],
+.bitacora-filtros select {
+  width: 100%;
+  padding: 0.62rem 0.75rem;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: white;
+  outline: none;
+  font-size: 0.95rem;
+}
+
+.bitacora-filtros label {
+  display: block;
+  font-size: 0.78rem;
+  color: rgba(0,0,0,0.6);
+  margin-bottom: 0.25rem;
+}
+
+.bitacora-filtros button {
+  padding: 0.62rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.12);
+  background: #12b886; /* combina con tu navbar */
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.05s ease, filter 0.15s ease;
+}
+
+.bitacora-filtros button:hover {
+  filter: brightness(0.95);
+}
+
+.bitacora-filtros button:active {
+  transform: translateY(1px);
+}
+
+/* Tabla */
+.bitacora-tableWrap {
+  overflow: auto;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,0.06);
+  background: rgba(255,255,255,0.6);
+}
+
+.bitacora-tabla table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 900px;
+}
+
+.bitacora-tabla thead th {
+  position: sticky;
+  top: 0;
+  background: rgba(245, 247, 250, 0.95);
+  backdrop-filter: blur(6px);
+  text-align: left;
+  font-size: 0.85rem;
+  color: rgba(0,0,0,0.7);
+  padding: 0.8rem;
+  border-bottom: 1px solid rgba(0,0,0,0.08);
+  z-index: 1;
+}
+
+.bitacora-tabla tbody td {
+  padding: 0.8rem;
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+  font-size: 0.95rem;
+  color: rgba(0,0,0,0.82);
+  vertical-align: top;
+}
+
+/* Zebra + hover */
+.bitacora-tabla tbody tr:nth-child(odd) td {
+  background: rgba(255,255,255,0.45);
+}
+.bitacora-tabla tbody tr:hover td {
+  background: rgba(18, 184, 134, 0.08);
+}
+
+/* Chips */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.22rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+  border: 1px solid rgba(0,0,0,0.08);
+}
+
+.chip--Atendida {
+  background: rgba(18,184,134,0.15);
+  color: #0b6b4f;
+}
+
+.chip--NoAsistio {
+  background: rgba(240, 68, 56, 0.15);
+  color: #9a1b14;
+}
+
+/* Diagnóstico: que no rompa todo */
+.diagnostico {
+  max-width: 320px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Mensajes */
+.error {
+  color: #b42318;
+  margin: 0.5rem 0;
+}
+
+@media (max-width: 900px) {
+  .bitacora-filtros {
+    grid-template-columns: 1fr 1fr;
+  }
+  .bitacora-filtros button {
+    grid-column: span 2;
+  }
+}

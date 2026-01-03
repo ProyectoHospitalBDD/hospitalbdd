@@ -69,6 +69,8 @@ builder.Services.AddScoped<Hospital.Api.Services.Auth.PasswordService>();
 
 builder.Services.AddScoped<Hospital.Api.Services.Catalogos.CatalogosService>();
 
+builder.Services.AddScoped<BitacoraService>();
+
 // ================== Swagger ==================
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
