@@ -48,12 +48,15 @@ namespace Hospital.Api.Controllers
                 return BadRequest($"La farmacia con ID {payload.IdFarmacia} no existe en la base de datos.");
             }
 
+
+            var idUsuarioPaciente = payload.IdUsuarioPaciente;   
+
+
             // 3. Validar Paciente (si aplica)
-            if (payload.IdPaciente.HasValue)
+            if (idUsuarioPaciente.HasValue)
             {
-                int idPacienteBuscado = payload.IdPaciente.Value;
-                var existePaciente = await _db.Pacientes.AnyAsync(p => p.IdUsuario == idPacienteBuscado);
-                if (!existePaciente) return BadRequest($"El paciente con ID {idPacienteBuscado} no existe.");
+                var existePaciente = await _db.Pacientes.AnyAsync(p => p.IdUsuario == idUsuarioPaciente.Value);
+                if (!existePaciente) return BadRequest("Paciente no existe");
             }
 
             using var tx = await _db.Database.BeginTransactionAsync();
@@ -65,7 +68,7 @@ namespace Hospital.Api.Controllers
                     Fecha = DateTime.Now,
                     IdFarmacia = payload.IdFarmacia,
                     IdFarmaceutico = idUsuario.Value,
-                    IdPaciente = payload.IdPaciente,
+                    IdPaciente = payload.IdUsuarioPaciente,
                     NombreClienteInvitado = payload.NombreClienteInvitado,
                     CorreoContacto = payload.CorreoContacto,
                     EstatusTicket = "Pagado" 
@@ -171,7 +174,7 @@ namespace Hospital.Api.Controllers
 
             return Ok(new PacienteLookupDto
             {
-                IdPaciente = usuario.IdUsuario,
+                IdUsuarioPaciente = usuario.IdUsuario,
                 NombreCompleto = $"{usuario.Nombre} {usuario.ApPat} {usuario.ApMat}".Trim(),
                 Curp = usuario.Curp ?? "Sin CURP",
                 Email = usuario.IdContactoNavigation?.CorreoPersonal,
