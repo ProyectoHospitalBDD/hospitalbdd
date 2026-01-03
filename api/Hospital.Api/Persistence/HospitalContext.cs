@@ -17,6 +17,7 @@ public partial class HospitalContext : DbContext
         : base(options)
     {
     }
+    public DbSet<_PacienteCrearSpRow> PacienteCrearSpRows { get; set; }
 
     public virtual DbSet<AlergiaPadecimiento> AlergiaPadecimientos { get; set; }
 
@@ -78,7 +79,6 @@ public partial class HospitalContext : DbContext
 
     public virtual DbSet<UsuarioSistema> UsuarioSistemas { get; set; }
 
-    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<AlergiaPadecimiento>(entity =>
@@ -760,7 +760,8 @@ public partial class HospitalContext : DbContext
 
         modelBuilder.Entity<_EmpleadoCrearSpRow>().HasNoKey();
         modelBuilder.Entity<_EmpleadoListSpRow>().HasNoKey();
-        
+        modelBuilder.Entity<_PacienteCrearSpRow>().HasNoKey();
+
         OnModelCreatingPartial(modelBuilder);
     }
 

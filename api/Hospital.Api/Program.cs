@@ -66,7 +66,8 @@ builder.Services.AddHostedService<VencerCitasHostedService>();
 
 builder.Services.AddScoped<Hospital.Api.Services.Empleados.EmpleadosService>();
 builder.Services.AddScoped<Hospital.Api.Services.Auth.PasswordService>();
-
+// REGISTRAR AuthService
+builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<Hospital.Api.Services.Catalogos.CatalogosService>();
 
 // ================== Swagger ==================

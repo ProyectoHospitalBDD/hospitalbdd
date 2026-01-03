@@ -9,6 +9,7 @@ import { CartFisicoProvider } from "../pages/CarroFisico/CartContextFisico";
 
 // Auth Pages
 import LoginPage from "../pages/Auth/LoginPage";
+import RegisterPage from "../pages/Register/RegisterPage";
 
 // Paciente / General
 import AgendarCitaPage from "../pages/Citas/AgendarCitaPage";
@@ -55,6 +56,7 @@ export function AppRouter() {
           <Routes>
             {/* ---------- PÚBLICA ---------- */}
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
 
             {/* ---------- CON LAYOUT (Rutas Protegidas) ---------- */}
             <Route element={<Layout />}>
