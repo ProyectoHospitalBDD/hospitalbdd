@@ -10,7 +10,7 @@ precioUnitario: number;
 
 
 export interface CrearTicketPayload {
-idPaciente?: number | null;
+idUsuarioPaciente?: number | null;
 nombreClienteInvitado?: string | null;
 correoContacto?: string | null;
 idFarmacia: number;
@@ -33,7 +33,7 @@ return res.data;
 
 
 export interface PacienteLookupDto {
-idPaciente: number;
+idUsuarioPaciente: number;
 nombreCompleto: string;
 curp: string;
 email?: string | null;
