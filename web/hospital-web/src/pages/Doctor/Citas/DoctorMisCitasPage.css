@@ -52,7 +52,7 @@
 
 .doc-btn {
   border: 1px solid #dbeafe;
-  background: #f8fafc;
+  background: #000000;
   border-radius: 10px;
   padding: 8px 12px;
   cursor: pointer;
@@ -60,7 +60,7 @@
 }
 
 .doc-btn:hover {
-  background: #eef2ff;
+  background: #033cf8;
 }
 
 .doc-cal-loading {

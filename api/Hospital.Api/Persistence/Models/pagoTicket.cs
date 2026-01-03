@@ -13,6 +13,8 @@ public partial class PagoTicket
 
     public TimeOnly HoraPago { get; set; }
 
+    public decimal Monto { get; set; }
+
     public int IdTicket { get; set; }
 
     public int? IdFarmaceutico { get; set; }

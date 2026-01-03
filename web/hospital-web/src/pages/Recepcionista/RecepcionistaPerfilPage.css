@@ -1,0 +1,63 @@
+/* Horario: tarjetas por día */
+.doctor-horario-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 12px;
+}
+
+.doctor-horario-card {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 8px 18px rgba(2, 6, 23, 0.06);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.doctor-horario-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 26px rgba(2, 6, 23, 0.10);
+}
+
+.doctor-horario-dia {
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.doctor-horario-horas {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.doctor-horario-hora {
+  font-weight: 800;
+  font-size: 22px;
+  color: #0f172a;
+}
+
+.doctor-horario-sep {
+  color: #64748b;
+  font-weight: 700;
+}
+
+.doctor-horario-meta {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .doctor-horario-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .doctor-horario-grid {
+    grid-template-columns: 1fr;
+  }
+}

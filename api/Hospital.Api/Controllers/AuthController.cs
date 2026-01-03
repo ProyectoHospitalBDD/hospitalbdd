@@ -53,6 +53,22 @@ public class AuthController : ControllerBase
         if (!ok)
             return Unauthorized("Usuario o contraseña incorrectos.");
 
+        // ================================
+        // Validación de estatus de Doctor
+        // ================================
+        if (usuario.TipoUsuario == "Doctor")
+        {
+            var activo = await _db.Empleados
+                .AsNoTracking()
+                .Where(e => e.IdUsuario == usuario.IdUsuario)
+                .Select(e => e.Estatus) // BIT → bool
+                .SingleOrDefaultAsync();
+
+            // Si no existe o está inactivo → NO LOGIN
+            if (!activo)
+                return Unauthorized("Tu cuenta está inactiva. Contacta a recepción.");
+        }
+
         // Construir respuesta
         var nombre = $"{usuario.Nombre} {usuario.ApPat} {usuario.ApMat}";
         

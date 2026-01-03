@@ -35,3 +35,5 @@ VALUES (@idUsuarioDoc, N'CED123', @idConsultorio, @idEspecialidad);
 -- Horario (Lunes 09:00-13:00)
 INSERT INTO dbo.horarioEmpleado (diaSemana, horaInicio, horaFin, idUsuario)
 VALUES (N'Lunes', '09:00', '13:00', @idUsuarioDoc);
+
+SELECT * FROM ESPECIALIDAD
