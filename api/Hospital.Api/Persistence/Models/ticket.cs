@@ -22,13 +22,8 @@ public partial class Ticket
     
     public string? EstatusTicket { get; set; }
 
-    public int? IdPaciente { get; set; }
-    public string? NombreClienteInvitado { get; set; }
-    public string? CorreoContacto { get; set; }
-
-    public string EstatusTicket { get; set; } = null!;
-
-    public virtual Farmaceutico IdFarmaceuticoNavigation { get; set; } = null!;
+    [ForeignKey("IdFarmaceutico")]
+    public virtual Farmaceutico? IdFarmaceuticoNavigation { get; set; }
 
     [ForeignKey("IdFarmacia")]
     public virtual Farmacium? IdFarmaciaNavigation { get; set; }
