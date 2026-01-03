@@ -1,4 +1,4 @@
-Select * from servicio;
+--Select * from servicio;
 
 -- =============================================
 -- SCRIPT DE SANITIZACIÓN DE CARACTERES
@@ -6,7 +6,7 @@ Select * from servicio;
 --TABLAS MEDICAMENTO Y SERVICIO
 -- =============================================
 
-USE hospitalBD; -- Asegúrate de estar en tu base de datos
+--USE hospitalBD; -- Asegúrate de estar en tu base de datos
 GO
 
 PRINT 'Iniciando limpieza de la tabla MEDICAMENTO...';

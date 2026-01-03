@@ -1,21 +1,21 @@
 /*
- * * NOMBRE DEL SISTEMA:   POLIMED: GestiÛn Hospitalaria (Backend SQL)
+ * * NOMBRE DEL SISTEMA:   POLIMED: GestiÔøΩn Hospitalaria (Backend SQL)
  * ARCHIVO:              Triggers.sql
- * FECHA DE DOCUMENTACI”N: 22 de Noviembre de 2025
+ * FECHA DE DOCUMENTACIÔøΩN: 22 de Noviembre de 2025
  * MOTOR DE BASE DE DATOS: SQL Server (T-SQL)
  *
- * DESCRIPCI”N GENERAL:
+ * DESCRIPCIÔøΩN GENERAL:
  * Este script contiene los disparadores (Triggers) del sistema, encargados
- * de mantener la integridad referencial y, principalmente, la auditorÌa de datos.
+ * de mantener la integridad referencial y, principalmente, la auditorÔøΩa de datos.
  *
  * FUNCIONES PRINCIPALES:
- * 1. AuditorÌa autom·tica de cambios de estado (Ciclo de vida de la cita).
- * 2. GeneraciÛn de historial inmutable para reportes y seguimiento.
- * 3. ReacciÛn autom·tica ante eventos DML (Update).
+ * 1. AuditorÔøΩa automÔøΩtica de cambios de estado (Ciclo de vida de la cita).
+ * 2. GeneraciÔøΩn de historial inmutable para reportes y seguimiento.
+ * 3. ReacciÔøΩn automÔøΩtica ante eventos DML (Update).
  *
  * HISTORIAL DE CAMBIOS:
- * [22/11/2025] - ImplementaciÛn del log de estados.
- * [26/11/2025] - DocumentaciÛn tÈcnica y revisiÛn de est·ndares.
+ * [22/11/2025] - ImplementaciÔøΩn del log de estados.
+ * [26/11/2025] - DocumentaciÔøΩn tÔøΩcnica y revisiÔøΩn de estÔøΩndares.
  * */
 
 
@@ -24,22 +24,22 @@
  * TIPO:                         DML Trigger (AFTER UPDATE)
  * TABLA OBJETIVO:               [dbo.cita]
  *
- * DESCRIPCI”N:
+ * DESCRIPCIÔøΩN:
  * Disparador encargado de registrar el historial completo del ciclo de vida
- * de una cita mÈdica. Cada vez que el campo 'estatusCita' cambia, se guarda
- * una copia del estado actual en la tabla de bit·cora.
+ * de una cita mÔøΩdica. Cada vez que el campo 'estatusCita' cambia, se guarda
+ * una copia del estado actual en la tabla de bitÔøΩcora.
  *
- * CARACTERÕSTICAS:
- * - Evento:     Se ejecuta DESPU…S (AFTER) de un UPDATE exitoso en [cita].
- * - Eficiencia: Utiliza la funciÛn UPDATE(columna) para ejecutarse SOLO si
- * el estatus cambiÛ. Si se actualizan otros campos (ej. costo),
+ * CARACTERÔøΩSTICAS:
+ * - Evento:     Se ejecuta DESPUÔøΩS (AFTER) de un UPDATE exitoso en [cita].
+ * - Eficiencia: Utiliza la funciÔøΩn UPDATE(columna) para ejecutarse SOLO si
+ * el estatus cambiÔøΩ. Si se actualizan otros campos (ej. costo),
  * el trigger termina silenciosamente para ahorrar recursos.
  * - Datos:      Lee de la tabla virtual [inserted] para obtener los nuevos valores.
  *
  * ALGORITMO:
- * 1. Verifica si la columna 'estatusCita' fue modificada en la transacciÛn.
+ * 1. Verifica si la columna 'estatusCita' fue modificada en la transacciÔøΩn.
  * 2. Si no fue modificada, retorna inmediatamente (RETURN).
- * 3. Si hubo cambio, inserta en [dbo.bitacoraEstatusCita] una instant·nea
+ * 3. Si hubo cambio, inserta en [dbo.bitacoraEstatusCita] una instantÔøΩnea
  * con el ID, el nuevo estatus, fechas, paciente, doctor y costo.
  */
 CREATE TRIGGER dbo.tr_CitaLogEstatus
@@ -50,7 +50,7 @@ BEGIN
     SET NOCOUNT ON;
 
     -- Solo ejecutar SI el campo estatusCita fue modificado realmente
-    -- (OptimizaciÛn para evitar escrituras innecesarias en disco)
+    -- (OptimizaciÔøΩn para evitar escrituras innecesarias en disco)
     IF NOT UPDATE(estatusCita)
         RETURN;
 
@@ -67,3 +67,41 @@ BEGIN
     FROM inserted i;
 END;
 GO
+
+/*
+ * NOMBRE DEL TRIGGER:           dbo.tr_RecetaCitaAtendida
+ * TIPO:                         DML Trigger (AFTER INSERT)
+ * TABLA OBJETIVO:               [dbo.receta]
+ *
+ * DESCRIPCI√ìN:
+ * Disparador que cambia el estatus de la cita a 'Atendida' cuando se genera una receta.
+ * Esto indica que la cita m√©dica ha sido completada con la emisi√≥n de la receta.
+ *
+ * CARACTER√çSTICAS:
+ * - Evento:     Se ejecuta DESPU√âS (AFTER) de un INSERT exitoso en [receta].
+ * - Eficiencia: Actualiza solo la cita correspondiente usando el idCita de la receta insertada.
+ *
+ * ALGORITMO:
+ * 1. Para cada receta insertada, actualiza el estatusCita de la cita relacionada a 'Atendida'.
+ */
+CREATE TRIGGER dbo.tr_RecetaCitaAtendida
+ON dbo.receta
+AFTER INSERT
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    UPDATE c
+    SET c.estatusCita = N'Atendida'
+    FROM dbo.cita c
+    INNER JOIN inserted i ON c.idCita = i.idCita;
+END;
+GO
+
+select * from receta
+
+select * from recetaMedicamento
+
+select * from recetaServicio
+
+Select * from cita
