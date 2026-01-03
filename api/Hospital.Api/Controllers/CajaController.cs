@@ -22,12 +22,11 @@ namespace Hospital.Api.Controllers
             [FromQuery] DateTime? fechaInicio, 
             [FromQuery] DateTime? fechaFin)
         {
-            // 1. Configuración de fechas (DateTime para CompraWeb)
+            // 1. Configuración de fechas
             var hoy = DateTime.Today;
             var inicioDt = fechaInicio?.Date ?? hoy;
             var finDt = fechaFin?.Date.AddDays(1) ?? hoy.AddDays(1);
 
-            // 2. Configuración de fechas (DateOnly para Pago)
             var inicioDate = DateOnly.FromDateTime(inicioDt);
             var finDate = DateOnly.FromDateTime(finDt);
 
@@ -43,43 +42,35 @@ namespace Hospital.Api.Controllers
                 .Where(p => p.EstatusPago == "Pagado") 
                 .Select(p => new CobroItemDto
                 {
-                    // CORRECCIÓN 1: IdCita ya es int (no nulo), quitamos '?? 0'
                     IdReferencia = p.IdCita, 
                     Origen = "Cita",
-                    
                     Paciente = p.IdCitaNavigation != null && p.IdCitaNavigation.IdPacienteNavigation != null && p.IdCitaNavigation.IdPacienteNavigation.IdUsuarioNavigation != null
                         ? (p.IdCitaNavigation.IdPacienteNavigation.IdUsuarioNavigation.Nombre + " " + 
                            p.IdCitaNavigation.IdPacienteNavigation.IdUsuarioNavigation.ApPat).Trim()
                         : "Paciente Desconocido",
-                    
                     Concepto = p.IdCitaNavigation != null && p.IdCitaNavigation.IdDoctorNavigation != null
                         ? "Pago Cita " + (p.IdCitaNavigation.IdDoctorNavigation.IdEspecialidadNavigation != null ? p.IdCitaNavigation.IdDoctorNavigation.IdEspecialidadNavigation.NombreEsp : "Gral")
                         : "Pago Cita",
-                    
                     MontoTotal = p.Monto,
-                    
-                    // CORRECCIÓN 2: Usamos ToDateTime pasando el TimeOnly (o MinValue si es nulo)
                     Fecha = p.FechaPago.HasValue 
                         ? p.FechaPago.Value.ToDateTime(p.HoraPago ?? TimeOnly.MinValue)
                         : DateTime.MinValue,
-                    
                     Estatus = p.EstatusPago ?? "Pagado"
                 })
                 .ToListAsync();
 
             // --- 2. VENTAS FARMACIA WEB (Ingresos directos) ---
-            var listaFarmacia = await _db.CompraWebs
+            var listaFarmaciaWeb = await _db.CompraWebs
                 .Include(cw => cw.IdPacienteNavigation!.IdUsuarioNavigation)
                 .Where(cw => cw.FechaCompra >= inicioDt && cw.FechaCompra < finDt)
                 .Where(cw => cw.Estatus != "Carrito") 
                 .Select(cw => new CobroItemDto
                 {
                     IdReferencia = cw.IdCompra,
-                    Origen = "Farmacia",
+                    Origen = "Farmacia Web", // Diferenciamos Web de Física
                     Paciente = cw.IdPaciente != null && cw.IdPacienteNavigation != null && cw.IdPacienteNavigation.IdUsuarioNavigation != null
                         ? (cw.IdPacienteNavigation.IdUsuarioNavigation.Nombre + " " + cw.IdPacienteNavigation.IdUsuarioNavigation.ApPat).Trim()
                         : (cw.NombreClienteInvitado ?? "Cliente Mostrador"),
-                    
                     Concepto = "Venta Farmacia Web",
                     MontoTotal = cw.TotalGeneral,
                     Fecha = cw.FechaCompra,
@@ -87,9 +78,30 @@ namespace Hospital.Api.Controllers
                 })
                 .ToListAsync();
 
-            // --- 3. UNIFICAR ---
+            // --- 3. VENTAS FARMACIA FÍSICA (Desde PagoTicket y Ticket) ---
+            var listaFarmaciaFisica = await _db.PagoTickets
+                .Include(pt => pt.IdTicketNavigation)
+                    .ThenInclude(t => t.IdPacienteNavigation!.IdUsuarioNavigation)
+                .Where(pt => pt.FechaPago >= inicioDate && pt.FechaPago < finDate)
+                .Where(pt => pt.EstatusPago == "Pagado")
+                .Select(pt => new CobroItemDto
+                {
+                    IdReferencia = pt.IdTicket,
+                    Origen = "Farmacia", // O "Farmacia Local"
+                    Paciente = pt.IdTicketNavigation.IdPaciente != null && pt.IdTicketNavigation.IdPacienteNavigation != null && pt.IdTicketNavigation.IdPacienteNavigation.IdUsuarioNavigation != null
+                         ? (pt.IdTicketNavigation.IdPacienteNavigation.IdUsuarioNavigation.Nombre + " " + pt.IdTicketNavigation.IdPacienteNavigation.IdUsuarioNavigation.ApPat).Trim()
+                         : (pt.IdTicketNavigation.NombreClienteInvitado ?? "Cliente Mostrador"),
+                    Concepto = "Venta Mostrador #" + pt.IdTicket,
+                    MontoTotal = pt.Monto,
+                    Fecha = pt.FechaPago.ToDateTime(pt.HoraPago),
+                    Estatus = pt.EstatusPago
+                })
+                .ToListAsync();
+
+            // --- 4. UNIFICAR ---
             var historialUnificado = listaPagosCitas
-                .Concat(listaFarmacia)
+                .Concat(listaFarmaciaWeb)
+                .Concat(listaFarmaciaFisica)
                 .OrderByDescending(x => x.Fecha)
                 .ToList();
 

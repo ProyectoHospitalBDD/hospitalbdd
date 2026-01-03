@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema; 
 
 namespace Hospital.Api.Persistence.Models;
 
@@ -9,9 +10,17 @@ public partial class Ticket
 
     public DateTime Fecha { get; set; }
 
+    public int? IdFarmaceutico { get; set; }
+
     public int? IdFarmacia { get; set; }
 
-    public int IdFarmaceutico { get; set; }
+    public int? IdPaciente { get; set; }
+    
+    public string? NombreClienteInvitado { get; set; }
+    
+    public string? CorreoContacto { get; set; }
+    
+    public string? EstatusTicket { get; set; }
 
     public int? IdPaciente { get; set; }
     public string? NombreClienteInvitado { get; set; }
@@ -21,9 +30,11 @@ public partial class Ticket
 
     public virtual Farmaceutico IdFarmaceuticoNavigation { get; set; } = null!;
 
+    [ForeignKey("IdFarmacia")]
     public virtual Farmacium? IdFarmaciaNavigation { get; set; }
 
-    public virtual Paciente? IdPacienteNavigation { get; set; }
+    [ForeignKey("IdPaciente")]
+    public virtual Paciente? IdPacienteNavigation { get; set; } 
 
     public virtual ICollection<PagoTicket> PagoTickets { get; set; } = new List<PagoTicket>();
 

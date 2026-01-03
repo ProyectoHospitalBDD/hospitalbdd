@@ -14,7 +14,7 @@ export default function ProtectedRoute({ children, roles }: Props) {
   if (!user) return <Navigate to="/login" replace />;
 
   if (roles && roles.length > 0) {
-    const rol = user.rol; // según tu AuthContext
+    const rol = user.rol; 
     if (!roles.includes(rol)) return <Navigate to="/home" replace />;
   }
 

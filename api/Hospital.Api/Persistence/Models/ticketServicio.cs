@@ -20,4 +20,6 @@ public partial class TicketServicio
     public virtual Servicio IdServicioNavigation { get; set; } = null!;
 
     public virtual Ticket IdTicketNavigation { get; set; } = null!;
+
+    public virtual Servicio IdServicioNavigation { get; set; } = null!;
 }
