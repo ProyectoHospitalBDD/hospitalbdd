@@ -1,21 +1,21 @@
 /*
  * 
- * NOMBRE DEL SISTEMA:   POLIMED: Gestión Hospitalaria (Backend SQL)                    
+ * NOMBRE DEL SISTEMA:   POLIMED: Gestiï¿½n Hospitalaria (Backend SQL)                    
  * ARCHIVO:              Procedimientos_Almacenados.sql                            
- * FECHA DE DOCUMENTACIÓN: 22 de Noviembre de 2025                             
+ * FECHA DE DOCUMENTACIï¿½N: 22 de Noviembre de 2025                             
  * MOTOR DE BASE DE DATOS: SQL Server (T-SQL)                                  
  * 
- * DESCRIPCIÓN GENERAL:                                                        
- * Este script contiene la lógica central del negocio encapsulada en           
- * Procedimientos Almacenados. Abarca los flujos críticos de:                  
- * 1. Gestión automática de vencimiento de citas (Cron Jobs).                
+ * DESCRIPCIï¿½N GENERAL:                                                        
+ * Este script contiene la lï¿½gica central del negocio encapsulada en           
+ * Procedimientos Almacenados. Abarca los flujos crï¿½ticos de:                  
+ * 1. Gestiï¿½n automï¿½tica de vencimiento de citas (Cron Jobs).                
  * 2. Cancelaciones y devoluciones (Reglas de negocio monetarias).           
- * 3. Creación y validación de citas (Agenda y disponibilidad).              
+ * 3. Creaciï¿½n y validaciï¿½n de citas (Agenda y disponibilidad).              
  * 4. Procesamiento de pagos.                                                
  * 
  * HISTORIAL DE CAMBIOS:    
- * [22/11/2025] - Documentación técnica y revisión de estándares. 
- * [26/11/2025] - Correciones en documentación técnica y revisión de estándares.              
+ * [22/11/2025] - Documentaciï¿½n tï¿½cnica y revisiï¿½n de estï¿½ndares. 
+ * [26/11/2025] - Correciones en documentaciï¿½n tï¿½cnica y revisiï¿½n de estï¿½ndares.              
  * 
 */
 
@@ -25,18 +25,18 @@
  * NOMBRE DEL PROCEDIMIENTO ALMACENADO:       dbo.sp_Admin_VencerCitas
  * TIPO:         Procedimiento Almacenado (Mantenimiento)
  *
- * DESCRIPCIÓN:
- * Libera horarios de doctores buscando citas reservadas cuyo tiempo límite
+ * DESCRIPCIï¿½N:
+ * Libera horarios de doctores buscando citas reservadas cuyo tiempo lï¿½mite
  * de pago ha expirado. Invalida tanto el pago como la cita.
  *
- * CARACTERÍSTICAS:
- * - Parámetros: Ninguno (Se basa en SYSUTCDATETIME).
+ * CARACTERï¿½STICAS:
+ * - Parï¿½metros: Ninguno (Se basa en SYSUTCDATETIME).
  * - Tablas:     Lee y Modifica [dbo.cita] y [dbo.pago].
  * - Seguridad:  Manejo de transacciones (Atomicidad) y Try/Catch.
  *
  * ALGORITMO:
  * 1. Identifica IDs de citas vencidas y los guarda en tabla variable @V.
- * 2. Si no existen, termina la ejecución.
+ * 2. Si no existen, termina la ejecuciï¿½n.
  * 3. Actualiza estatusPago a 'Cancelado'.
  * 4. Actualiza estatusCita a 'CanceladaFaltaPago' (Dispara Trigger de Log).
  */
@@ -76,7 +76,7 @@ BEGIN
         JOIN @V v ON v.idCita = p.idCita;
 
         -- 3) Cita pasa a CanceladaFaltaPago
-        -- ALERTA: Este UPDATE disparará el trigger 'tr_CitaLogEstatus' automáticamente.
+        -- ALERTA: Este UPDATE dispararï¿½ el trigger 'tr_CitaLogEstatus' automï¿½ticamente.
         UPDATE c
         SET estatusCita = N'CanceladaFaltaPago'
         FROM dbo.cita c
@@ -94,28 +94,28 @@ GO
 /* 
  * NOMBRE DEL PROCEDIMIENTO ALMACENADO:       dbo.sp_Cita_Cancelar_Doctor
  * TIPO:         Procedimiento Almacenado (Transaccional)
- * DESCRIPCIÓN:
- * Gestiona la cancelación de una cita cuando es iniciada por el médico.
+ * DESCRIPCIï¿½N:
+ * Gestiona la cancelaciï¿½n de una cita cuando es iniciada por el mï¿½dico.
  * Aplica la regla de negocio "Causa imputable al hospital", lo que garantiza
  * el reembolso del 100% al paciente sin penalizaciones, independientemente
  * del tiempo restante.
  *
- * CARACTERÍSTICAS:
- * - Parámetros: @idCita (INT) - Identificador único de la cita.
+ * CARACTERï¿½STICAS:
+ * - Parï¿½metros: @idCita (INT) - Identificador ï¿½nico de la cita.
  * - Tablas:     Lee [dbo.cita]. Modifica [dbo.pago], [dbo.cita], [dbo.bitacoraEstatusCita].
- * - Validaciones: Verifica que la cita esté en un estatus válido para cancelar
+ * - Validaciones: Verifica que la cita estï¿½ en un estatus vï¿½lido para cancelar
  * ('AgendadaPendPago' o 'PagadaPendAtender').
  *
  * ALGORITMO:
  * 1. Obtiene estatus y costo actual de la cita.
- * 2. Si el estatus no permite cancelación, lanza Excepción 51030.
- * 3. Abre Transacción.
+ * 2. Si el estatus no permite cancelaciï¿½n, lanza Excepciï¿½n 51030.
+ * 3. Abre Transacciï¿½n.
  * 4. Actualiza Pago: Establece 'montoDevuelto' al 100% del costo. Si estaba pendiente, lo cancela.
  * 5. Actualiza Cita: Cambia estatus a 'CanceladaDoctor'.
- * (Nota: Esto dispara el trigger de auditoría automáticamente).
- * 6. Actualiza Bitácora: Localiza el registro recién creado por el trigger y
- * sobrescribe la política de devolución a "100% por doctor".
- * 7. Confirma Transacción (Commit).
+ * (Nota: Esto dispara el trigger de auditorï¿½a automï¿½ticamente).
+ * 6. Actualiza Bitï¿½cora: Localiza el registro reciï¿½n creado por el trigger y
+ * sobrescribe la polï¿½tica de devoluciï¿½n a "100% por doctor".
+ * 7. Confirma Transacciï¿½n (Commit).
  */
 CREATE PROCEDURE dbo.sp_Cita_Cancelar_Doctor
     @idCita INT
@@ -126,20 +126,20 @@ BEGIN
 
     DECLARE @estatus NVARCHAR(25), @monto MONEY;
 
-    -- 1. Obtención de datos actuales
+    -- 1. Obtenciï¿½n de datos actuales
     SELECT @estatus = estatusCita,
            @monto = costo
     FROM dbo.cita
     WHERE idCita = @idCita;
 
-    -- 2. Validación de reglas de negocio
+    -- 2. Validaciï¿½n de reglas de negocio
     IF @estatus NOT IN (N'AgendadaPendPago', N'PagadaPendAtender')
         THROW 51030, 'NoCancelable', 1;
 
     BEGIN TRY
         BEGIN TRAN;
 
-        -- 3. Lógica de Reembolso (100% por ser causa del Doctor)
+        -- 3. Lï¿½gica de Reembolso (100% por ser causa del Doctor)
         UPDATE dbo.pago
         SET estatusPago = CASE WHEN estatusPago = N'Pendiente' THEN N'Cancelado' ELSE estatusPago END,
             montoDevuelto = @monto
@@ -150,8 +150,8 @@ BEGIN
         SET estatusCita = N'CanceladaDoctor'
         WHERE idCita = @idCita;
 
-        -- 5. Ajuste de Auditoría (Bitácora)
-        -- Se busca la última entrada generada por el Trigger para especificar la política aplicada
+        -- 5. Ajuste de Auditorï¿½a (Bitï¿½cora)
+        -- Se busca la ï¿½ltima entrada generada por el Trigger para especificar la polï¿½tica aplicada
         UPDATE b
         SET b.politica = N'100% por doctor',
             b.montoDevuelto = @monto
@@ -175,28 +175,28 @@ GO
 /*
  * NOMBRE DEL PROCEDIMIENTO ALMACENADO:       dbo.sp_Cita_Cancelar_Paciente
  * TIPO:         Procedimiento Almacenado (Transaccional)
- * DESCRIPCIÓN:
- * Procesa la cancelación solicitada por el paciente. A diferencia de la
- * cancelación por doctor, esta aplica reglas de penalización monetaria
- * basadas en la anticipación (tiempo restante para la cita).
- * Reglas típicas: >48h (100%), >24h (50%), <24h (0%).
+ * DESCRIPCIï¿½N:
+ * Procesa la cancelaciï¿½n solicitada por el paciente. A diferencia de la
+ * cancelaciï¿½n por doctor, esta aplica reglas de penalizaciï¿½n monetaria
+ * basadas en la anticipaciï¿½n (tiempo restante para la cita).
+ * Reglas tï¿½picas: >48h (100%), >24h (50%), <24h (0%).
  *
- * CARACTERÍSTICAS:
- * - Parámetros: @idCita (INT) - Identificador único de la cita.
+ * CARACTERï¿½STICAS:
+ * - Parï¿½metros: @idCita (INT) - Identificador ï¿½nico de la cita.
  * - Tablas:     Lee [dbo.cita]. Modifica [dbo.pago], [dbo.cita], [dbo.bitacoraEstatusCita].
- * - Dependencias: Invoca la función escalar [dbo.fnPorcentajeDevolucion].
+ * - Dependencias: Invoca la funciï¿½n escalar [dbo.fnPorcentajeDevolucion].
  * - Salida:     Retorna un result set con el monto devuelto y el porcentaje aplicado.
  *
  * ALGORITMO:
  * 1. Obtiene fecha inicio, estatus y costo de la cita.
- * 2. Valida si es cancelable (Si no, lanza Excepción 51020).
- * 3. Calcula el porcentaje de devolución usando la función auxiliar.
- * 4. Abre Transacción.
+ * 2. Valida si es cancelable (Si no, lanza Excepciï¿½n 51020).
+ * 3. Calcula el porcentaje de devoluciï¿½n usando la funciï¿½n auxiliar.
+ * 4. Abre Transacciï¿½n.
  * 5. Actualiza Pago: Registra el monto calculado. Si estaba 'Pendiente', pasa a 'Cancelado'.
  * 6. Actualiza Cita: Cambia estatus a 'CanceladaPaciente' (Dispara Trigger de Log).
- * 7. Actualiza Bitácora: Busca el registro del trigger y documenta qué política de
- * tiempo se aplicó (Texto explícito: ">=48h 100%", etc.).
- * 8. Confirma Transacción y retorna los valores calculados al frontend.
+ * 7. Actualiza Bitï¿½cora: Busca el registro del trigger y documenta quï¿½ polï¿½tica de
+ * tiempo se aplicï¿½ (Texto explï¿½cito: ">=48h 100%", etc.).
+ * 8. Confirma Transacciï¿½n y retorna los valores calculados al frontend.
  */
 CREATE PROCEDURE dbo.sp_Cita_Cancelar_Paciente
     @idCita INT
@@ -210,25 +210,25 @@ BEGIN
     DECLARE @estatus NVARCHAR(25);
     DECLARE @monto MONEY;
 
-    -- 1. Obtención de datos para cálculo
+    -- 1. Obtenciï¿½n de datos para cï¿½lculo
     SELECT @ini = fechaHoraInicio,
            @estatus = estatusCita,
            @monto = costo
     FROM dbo.cita
     WHERE idCita = @idCita;
 
-    -- 2. Validación de estatus
+    -- 2. Validaciï¿½n de estatus
     IF @estatus NOT IN (N'AgendadaPendPago', N'PagadaPendAtender')
         THROW 51020, 'NoCancelable', 1;
 
-    -- 3. Cálculo de penalización (Lógica externa en función)
+    -- 3. Cï¿½lculo de penalizaciï¿½n (Lï¿½gica externa en funciï¿½n)
     DECLARE @pct DECIMAL(4,2) = dbo.fnPorcentajeDevolucion(@ahora, @ini);
     DECLARE @dev MONEY = @monto * @pct;
 
     BEGIN TRY
         BEGIN TRAN;
 
-        -- 4. Actualización del registro de Pago
+        -- 4. Actualizaciï¿½n del registro de Pago
         UPDATE dbo.pago
         SET estatusPago = CASE
                             WHEN estatusPago = N'Pendiente' THEN N'Cancelado'
@@ -242,7 +242,7 @@ BEGIN
         SET estatusCita = N'CanceladaPaciente'
         WHERE idCita = @idCita;
 
-        -- 6. Auditoría de la Regla de Negocio Aplicada
+        -- 6. Auditorï¿½a de la Regla de Negocio Aplicada
         ;WITH UltimaBitacora AS (
             SELECT TOP (1) *
             FROM dbo.bitacoraEstatusCita
@@ -261,7 +261,7 @@ BEGIN
 
         COMMIT;
 
-        -- 7. Retorno de resultados para confirmación visual
+        -- 7. Retorno de resultados para confirmaciï¿½n visual
         SELECT @dev AS montoDevuelto, @pct AS porcentaje;
     END TRY
     BEGIN CATCH
@@ -275,33 +275,33 @@ GO
  * NOMBRE DEL PROCEDIMIENTO ALMACENADO:       dbo.sp_Cita_Crear
  * TIPO:         Procedimiento Almacenado (Transaccional / Principal)
  *
- * DESCRIPCIÓN:
+ * DESCRIPCIï¿½N:
  * Motor principal para el agendamiento de citas. Orquesta todas las validaciones
  * de negocio (disponibilidad de horario, no traslapes, costos) y realiza la
- * inserción atómica de la Cita, el Pago pendiente y el Log de auditoría.
+ * inserciï¿½n atï¿½mica de la Cita, el Pago pendiente y el Log de auditorï¿½a.
  *
- * CARACTERÍSTICAS:
- * - Parámetros: @PacienteId, @DoctorId, @FechaInicio, @DuracionMin.
+ * CARACTERï¿½STICAS:
+ * - Parï¿½metros: @PacienteId, @DoctorId, @FechaInicio, @DuracionMin.
  * - Tablas:     Lee [dbo.doctor], [dbo.especialidad].
  * Modifica [dbo.cita], [dbo.pago], [dbo.bitacoraEstatusCita].
  * - Dependencias: [dbo.fnDentroHorarioDoctor], [dbo.fnCitaSeTraslapa].
  * - Seguridad:  Usa nivel de aislamiento SERIALIZABLE para prevenir "Race Conditions"
- * (doble reserva simultánea del mismo hueco).
+ * (doble reserva simultï¿½nea del mismo hueco).
  *
  * ALGORITMO:
  * 1. Validaciones Preliminares:
  * - Fecha dentro del rango permitido (48h a 3 meses).
- * - Duración válida (30, 60, 90 min).
- * - Hora dentro del horario laboral del doctor (Función auxiliar).
+ * - Duraciï¿½n vï¿½lida (30, 60, 90 min).
+ * - Hora dentro del horario laboral del doctor (Funciï¿½n auxiliar).
  * - Existencia de especialidad y costo.
- * 2. Inicio de Transacción (SERIALIZABLE):
+ * 2. Inicio de Transacciï¿½n (SERIALIZABLE):
  * 3. Validaciones de Integridad (Bloqueo de Lectura/Escritura):
  * - Paciente no tiene ya una cita pendiente con el mismo doctor.
  * - Paciente no tiene otra cita en ese horario (con cualquier doctor).
  * - Doctor no tiene otra cita en ese horario (traslape).
- * 4. Inserción de Cita ('AgendadaPendPago').
- * 5. Generación del Pago ('Pendiente' con vigencia de 8 horas).
- * 6. Registro en Bitácora de Estatus.
+ * 4. Inserciï¿½n de Cita ('AgendadaPendPago').
+ * 5. Generaciï¿½n del Pago ('Pendiente' con vigencia de 8 horas).
+ * 6. Registro en Bitï¿½cora de Estatus.
  * 7. Commit y Retorno de datos completos de la reserva.
  */
 CREATE PROCEDURE dbo.sp_Cita_Crear
@@ -321,17 +321,17 @@ BEGIN
        OR @FechaInicio > DATEADD(MONTH, 3, CAST(@ahora AS date))
         THROW 51000, 'CitaFueraDeRango', 1;
 
-    -- 2. Validación de Duración Estándar
+    -- 2. Validaciï¿½n de Duraciï¿½n Estï¿½ndar
     IF @DuracionMin NOT IN (30,60,90)
         THROW 51006, 'DuracionNoPermitida', 1;
 
     DECLARE @FechaFin DATETIME2 = DATEADD(MINUTE, @DuracionMin, @FechaInicio);
 
-    -- 3. Validación de Horario Laboral (Lógica Externa)
+    -- 3. Validaciï¿½n de Horario Laboral (Lï¿½gica Externa)
     IF dbo.fnDentroHorarioDoctor(@DoctorId, @FechaInicio, @FechaFin) = 0
         THROW 51002, 'FueraDeHorarioLaboral', 1;
 
-    -- 4. Obtención del Costo por Especialidad
+    -- 4. Obtenciï¿½n del Costo por Especialidad
     DECLARE @Costo MONEY = (
         SELECT TOP(1) e.costo
         FROM dbo.doctor d
@@ -341,13 +341,13 @@ BEGIN
 
     IF @Costo IS NULL THROW 51005, 'DoctorSinEspecialidad', 1;
 
-    -- CRÍTICO: Elevamos nivel de aislamiento para evitar doble booking
+    -- CRï¿½TICO: Elevamos nivel de aislamiento para evitar doble booking
     SET TRANSACTION ISOLATION LEVEL SERIALIZABLE;
 
     BEGIN TRY
         BEGIN TRAN;
 
-        -- 5. Validación: Paciente no duplica trámite con mismo doctor
+        -- 5. Validaciï¿½n: Paciente no duplica trï¿½mite con mismo doctor
         IF EXISTS(
             SELECT 1
             FROM dbo.cita c WITH (UPDLOCK, HOLDLOCK)
@@ -357,20 +357,20 @@ BEGIN
         )
             THROW 51004, 'PacientePendienteConMismoDoctor', 1;
 
-        -- 6. Validación: Paciente libre (no ocupado en otro consultorio)
+        -- 6. Validaciï¿½n: Paciente libre (no ocupado en otro consultorio)
         IF EXISTS(
             SELECT 1
             FROM dbo.cita c WITH (UPDLOCK, HOLDLOCK)
             WHERE c.idPaciente = @PacienteId
-              -- Importante: No filtramos por DoctorId aquí, buscamos en general
+              -- Importante: No filtramos por DoctorId aquï¿½, buscamos en general
               AND c.estatusCita IN (N'AgendadaPendPago', N'PagadaPendAtender')
-              -- Lógica de traslape de tiempo
+              -- Lï¿½gica de traslape de tiempo
               AND c.fechaHoraFin > @FechaInicio
               AND c.fechaHoraInicio < @FechaFin
         )
             THROW 51007, 'PacienteOcupadoEnOtroConsultorio', 1;
 
-        -- 7. Validación: Doctor libre (Lógica Externa e Interna)
+        -- 7. Validaciï¿½n: Doctor libre (Lï¿½gica Externa e Interna)
         IF dbo.fnCitaSeTraslapa(@DoctorId, @FechaInicio, @FechaFin) = 1
             THROW 51003, 'DoctorOcupado', 1;
 
@@ -384,24 +384,24 @@ BEGIN
         )
             THROW 51003, 'DoctorOcupado', 2;
 
-        -- 8. Inserción de Datos Maestros (Cita)
+        -- 8. Inserciï¿½n de Datos Maestros (Cita)
         INSERT dbo.cita(idPaciente, idDoctor, estatusCita, fechaHoraInicio, duracionMin, costo)
         VALUES(@PacienteId, @DoctorId, N'AgendadaPendPago', @FechaInicio, @DuracionMin, @Costo);
 
         DECLARE @idCita INT = SCOPE_IDENTITY();
 
-        -- 9. Inserción de Pago (Vigencia 8 horas)
+        -- 9. Inserciï¿½n de Pago (Vigencia 8 horas)
         INSERT dbo.pago(idCita, estatusPago, monto, venceEn)
         VALUES(@idCita, N'Pendiente', @Costo, DATEADD(HOUR, 8, @ahora));
 
-        -- 10. Inserción de Bitácora Inicial
+        -- 10. Inserciï¿½n de Bitï¿½cora Inicial
         INSERT dbo.bitacoraEstatusCita(idCita, estatusCita, fechaCitaInicio, fechaCitaFin, idPaciente, idDoctor, costo)
         SELECT idCita, N'AgendadaPendPago', fechaHoraInicio, fechaHoraFin, idPaciente, idDoctor, costo
         FROM dbo.cita WHERE idCita = @idCita;
 
         COMMIT;
 
-        -- 11. Retorno de confirmación
+        -- 11. Retorno de confirmaciï¿½n
         SELECT c.idCita,
                c.idPaciente,
                c.idDoctor,
@@ -427,26 +427,26 @@ GO
  * NOMBRE DEL PROCEDIMIENTO ALMACENADO:       dbo.sp_Cita_Pagar
  * TIPO:         Procedimiento Almacenado (Transaccional)
  *
- * DESCRIPCIÓN:
- * Registra la confirmación del pago de una cita por parte del paciente.
- * Es el paso final para asegurar la reserva. Si el pago se realiza después
- * del tiempo límite (venceEn), la operación es rechazada.
+ * DESCRIPCIï¿½N:
+ * Registra la confirmaciï¿½n del pago de una cita por parte del paciente.
+ * Es el paso final para asegurar la reserva. Si el pago se realiza despuï¿½s
+ * del tiempo lï¿½mite (venceEn), la operaciï¿½n es rechazada.
  *
- * CARACTERÍSTICAS:
- * - Parámetros: @idCita (INT).
+ * CARACTERï¿½STICAS:
+ * - Parï¿½metros: @idCita (INT).
  * - Tablas:     Lee y Modifica [dbo.pago], [dbo.cita].
- * - Validaciones Críticas:
+ * - Validaciones Crï¿½ticas:
  * 1. El pago debe existir.
  * 2. El estatus debe ser 'Pendiente' (no pagado ni cancelado previamente).
- * 3. La hora actual no debe superar la fecha límite (@venceEn).
+ * 3. La hora actual no debe superar la fecha lï¿½mite (@venceEn).
  *
  * ALGORITMO:
  * 1. Obtiene fecha de vencimiento y estatus actual del pago.
  * 2. Valida condiciones (Lanza errores 51010, 51011, 51012 si fallan).
- * 3. Abre Transacción.
+ * 3. Abre Transacciï¿½n.
  * 4. Actualiza Pago: Cambia a 'Pagado' y registra fecha/hora exacta.
  * 5. Actualiza Cita: Cambia estatus a 'PagadaPendAtender' (Listo para consulta).
- * 6. Confirma Transacción.
+ * 6. Confirma Transacciï¿½n.
  */
 CREATE PROCEDURE dbo.sp_Cita_Pagar
     @idCita INT
@@ -458,7 +458,7 @@ BEGIN
     DECLARE @ahora DATETIME2 = SYSUTCDATETIME();
     DECLARE @venceEn DATETIME2, @estatusPago NVARCHAR(15);
 
-    -- 1. Verificación de estado actual y vigencia
+    -- 1. Verificaciï¿½n de estado actual y vigencia
     SELECT @venceEn = p.venceEn, @estatusPago = p.estatusPago
     FROM dbo.pago p
     WHERE p.idCita = @idCita;
@@ -478,7 +478,7 @@ BEGIN
             horaPago = CAST(@ahora AS TIME)
         WHERE idCita = @idCita;
 
-        -- 4. Actualización del flujo de la Cita
+        -- 4. Actualizaciï¿½n del flujo de la Cita
         UPDATE dbo.cita
         SET estatusCita = N'PagadaPendAtender'
         WHERE idCita = @idCita;
@@ -496,12 +496,12 @@ GO
  * NOMBRE DEL PROCEDIMIENTO ALMACENADO:       dbo.sp_Debug_ExpirarPagosPendientes1
  * TIPO:         Procedimiento Almacenado (Herramienta de Testing/Debug)
  *
- * DESCRIPCIÓN:
+ * DESCRIPCIï¿½N:
  * Procedimiento auxiliar para pruebas de desarrollo. Forza el vencimiento
- * inmediato de todos los pagos pendientes moviendo su fecha límite al pasado.
- * Útil para probar el job 'sp_Admin_VencerCitas' sin esperar 8 horas reales.
+ * inmediato de todos los pagos pendientes moviendo su fecha lï¿½mite al pasado.
+ * ï¿½til para probar el job 'sp_Admin_VencerCitas' sin esperar 8 horas reales.
  *
- * NOTA: NO EJECUTAR EN PRODUCCIÓN A MENOS QUE SEA INTENCIONAL.
+ * NOTA: NO EJECUTAR EN PRODUCCIï¿½N A MENOS QUE SEA INTENCIONAL.
  * 
  */
 CREATE PROCEDURE dbo.sp_Debug_ExpirarPagosPendientes1
@@ -509,7 +509,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- Simula que el tiempo límite pasó hace 10 minutos
+    -- Simula que el tiempo lï¿½mite pasï¿½ hace 10 minutos
     UPDATE p
     SET venceEn = DATEADD(MINUTE, -10, SYSUTCDATETIME())
     FROM dbo.pago p
@@ -518,4 +518,3 @@ BEGIN
       AND c.estatusCita = N'AgendadaPendPago';
 END
 GO
-
