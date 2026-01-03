@@ -3,7 +3,7 @@ import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login as loginApi } from "../../api/authApi";
 import { useAuth } from "../../lib/auth/AuthContext";
-import "./LoginPage.css"; 
+import "./LoginPage.css";
 
 export function LoginPage() {
   const [correo, setCorreo] = useState("");
@@ -40,7 +40,7 @@ export function LoginPage() {
       setLoading(false);
     }
   };
-   
+
   return (
     <div className="login-page">
       <div className="login-card">
@@ -74,6 +74,11 @@ export function LoginPage() {
 
           <button type="submit" className="login-btn" disabled={loading}>
             {loading ? "Ingresando..." : "Ingresar"}
+          </button>
+          <button type="button"
+            className="signup-btn"
+            onClick={() => navigate("/register")}>
+            Crear cuenta
           </button>
         </form>
       </div>
