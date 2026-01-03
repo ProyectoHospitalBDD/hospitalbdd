@@ -761,6 +761,11 @@ public partial class HospitalContext : DbContext
         modelBuilder.Entity<_EmpleadoCrearSpRow>().HasNoKey();
         modelBuilder.Entity<_EmpleadoListSpRow>().HasNoKey();
         modelBuilder.Entity<_PacienteCrearSpRow>().HasNoKey();
+        
+        modelBuilder.Entity<VwBitacoraHistorialCitaMp>()
+        .ToView("vw_BitacoraHistorialCitaMP")
+        .HasNoKey();
+
 
         OnModelCreatingPartial(modelBuilder);
     }
