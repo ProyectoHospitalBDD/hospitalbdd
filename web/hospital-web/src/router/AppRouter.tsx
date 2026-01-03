@@ -43,6 +43,7 @@ import ComprobanteReceta from "../pages/Receta/ComprobanteReceta";
 import RecepCancelacionesPage from "../pages/Recep/Cancelaciones/RecepCancelacionesPage";
 import RecepEmpleadosCreatePage from "../pages/Recep/Empleados/RecepEmpleadosCreatePage";
 import RecepEmpleadosListPage from "../pages/Recep/Empleados/RecepEmpleadosListPage";
+import BitacoraPage from "../pages/Recep/Bitacora/BitacoraPage";
 
 // (Opcional) Recepción (compa, pantalla “todo en uno”)
 // import RecepEmpleadosPage from "../pages/Recep/Empleados/RecepEmpleadosPage";
@@ -157,6 +158,17 @@ export function AppRouter() {
                   </PrivateRoute>
                 }
               />
+
+                <Route
+                  path="/recep/bitacora"
+                  element={
+                    <PrivateRoute>
+                      <BitacoraPage />
+                    </PrivateRoute>
+                  }
+                />
+
+
 
               {/* --- Doctor --- */}
               <Route
