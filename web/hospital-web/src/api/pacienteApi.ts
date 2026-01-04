@@ -1,4 +1,3 @@
-// services/pacienteApi.ts
 import axios from "axios";
 
 const api = axios.create({
@@ -24,16 +23,30 @@ function normalizeError(e: unknown): never {
 }
 
 export type PerfilPaciente = {
+  nombre: string;
+  apPat: string;
+  apMat?: string | null;
+  
   nombreCompleto: string;
   curp: string;
   telefono: string | null;
   email: string | null;
 };
 
+// --- ACTUALIZADO: Agregamos curp al DTO de edición ---
+export type UpdatePerfilDto = {
+  nombre: string;
+  apPat: string;
+  apMat?: string | null;
+  curp: string; // Nuevo campo
+  telefono?: string | null;
+  email?: string | null;
+};
+
 export type CitaPaciente = {
   folioCita: number;
-  fecha: string;   // yyyy-mm-dd
-  hora: string;    // HH:mm
+  fecha: string;
+  hora: string;
   doctor: string;
   especialidad: string;
   consultorio: number | string;
@@ -47,10 +60,36 @@ export type HistorialMedicoPaciente = {
   estatura: number | null;
 };
 
+export type AlergiaItem = {
+  idAlerPade: number; 
+  nombre: string;
+  tipo: string;
+};
+
+export type MiAlergia = {
+  idAlerPade: number;
+  nombre: string;
+  nombreNormalizado: string;
+  tipo: string;
+  severidad?: string;
+  estado?: string;
+  reaccion?: string;
+  observaciones?: string;
+};
+
 export async function getMiPerfil(): Promise<PerfilPaciente> {
   try {
     const { data } = await api.get("/api/pacientes/me");
     return data;
+  } catch (e) {
+    normalizeError(e);
+  }
+}
+
+export async function updateMiPerfil(dto: UpdatePerfilDto): Promise<{ message: string; requireRelogin: boolean }> {
+  try {
+    const { data } = await api.put("/api/pacientes/me", dto);
+    return data; 
   } catch (e) {
     normalizeError(e);
   }
@@ -79,6 +118,48 @@ export async function getMiHistorialMedico(): Promise<HistorialMedicoPaciente> {
   try {
     const { data } = await api.get("/api/pacientes/me/historial-medico");
     return data;
+  } catch (e) {
+    normalizeError(e);
+  }
+}
+
+export async function saveMiHistorialMedico(dto: HistorialMedicoPaciente): Promise<void> {
+  try {
+    await api.post("/api/pacientes/me/historial-medico", dto);
+  } catch (e) {
+    normalizeError(e);
+  }
+}
+
+export async function getCatalogoAlergias(): Promise<AlergiaItem[]> {
+  try {
+    const { data } = await api.get("/api/pacientes/alergias/catalogo");
+    return data;
+  } catch (e) {
+    normalizeError(e);
+  }
+}
+
+export async function getMisAlergias(): Promise<MiAlergia[]> {
+  try {
+    const { data } = await api.get("/api/pacientes/me/alergias");
+    return data;
+  } catch (e) {
+    normalizeError(e);
+  }
+}
+
+export async function agregarAlergia(idAlerPade: number): Promise<void> {
+  try {
+    await api.post("/api/pacientes/me/alergias", { idAlerPade });
+  } catch (e) {
+    normalizeError(e);
+  }
+}
+
+export async function eliminarAlergia(idAlerPade: number): Promise<void> {
+  try {
+    await api.delete(`/api/pacientes/me/alergias/${idAlerPade}`);
   } catch (e) {
     normalizeError(e);
   }
