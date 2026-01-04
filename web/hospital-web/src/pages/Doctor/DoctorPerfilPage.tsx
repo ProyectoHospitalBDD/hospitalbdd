@@ -1,12 +1,20 @@
-// pages/Doctor/DoctorPerfilPage.tsx
-import "../Profile/ProfilePage.css"; // reutiliza tu css del paciente
-import "./DoctorPerfilPage.css";   // estilos extra para horario
+import "../Profile/ProfilePage.css"; 
+import "./DoctorPerfilPage.css";   
+import { mapRecetaToDatosReceta } from "../../api/recetaobtenerApi";
+import { useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
-import { getMiPerfilDoctor, getMiHorarioDoctor, type PerfilDoctor, type HorarioDoctor } from "../../api/doctorApi";
-
-type TabKey = "datos" | "horario" | "consultorio";
+import { getMiPerfilDoctor, getMisCitasDoctor , type CitaDoctor , getMiHorarioDoctor, type PerfilDoctor, type HorarioDoctor } from "../../api/doctorApi";
+import { obtenerReceta, Receta } from "../../api/recetasApi";
+type TabKey = "datos" | "horario" | "consultorio" | "Recetas";
 
 const ordenDias = ["Lunes","Martes","Miercoles","Miércoles","Jueves","Viernes","Sabado","Sábado","Domingo"];
+
+function ymd(d: Date) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
 
 function normalizaDia(d: string) {
   return (d ?? "")
@@ -17,19 +25,61 @@ function normalizaDia(d: string) {
 }
 
 function soloHHmm(s: string) {
-  // soporta "08:00", "08:00:00", "2025-..T08:00:00"
   if (!s) return "";
   if (s.length >= 5) return s.slice(0, 5);
   return s;
 }
 
 export default function DoctorPerfilPage() {
+  const navigate = useNavigate();
+  const [mostrar, setmostrar] = useState(false);
+  const [buscar, setbuscar] = useState("");
+  const [selectedPaciente, setSelectedPaciente] = useState<string | null>(null);
+  const [citas, setCitas] = useState<CitaDoctor[]>([]);
   const [tab, setTab] = useState<TabKey>("datos");
   const [perfil, setPerfil] = useState<PerfilDoctor | null>(null);
   const [horario, setHorario] = useState<HorarioDoctor[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingHorario, setLoadingHorario] = useState(false);
   const [error, setError] = useState("");
+
+
+  
+
+
+useEffect(() => {
+
+  (async () => {
+    setLoading(true);
+    try {
+      const desde = "1900-01-01"; 
+      const hastaDate = new Date();
+      hastaDate.setDate(hastaDate.getDate() + 90);
+      const hasta = ymd(hastaDate);
+      const data = await getMisCitasDoctor({ desde, hasta });
+      setCitas(data);
+    } catch (err) {
+      console.error("Error cargando citas:", err);
+    } finally {
+      setLoading(false);
+    }
+  })();
+}, []);
+
+  const citasAtendidas = citas
+  .filter((cita) => cita.estatus === "Atendida")
+  .sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
+
+  const pacientesUnicos = Array.from(new Set(citasAtendidas.map(c => c.paciente)));
+
+  const pacientesFiltrados = pacientesUnicos.filter(p =>
+    p.toLowerCase().includes(buscar.toLowerCase())
+  );
+
+  const citasPacienteSeleccionado = selectedPaciente
+  ? citasAtendidas.filter(c => c.paciente === selectedPaciente)
+  : [];
+
 
   useEffect(() => {
     (async () => {
@@ -46,7 +96,7 @@ export default function DoctorPerfilPage() {
     })();
   }, []);
 
-  // carga horario solo cuando se entra a la tab (más ligero)
+
   useEffect(() => {
     if (tab !== "horario") return;
 
@@ -105,6 +155,13 @@ export default function DoctorPerfilPage() {
             onClick={() => setTab("consultorio")}
           >
             Consultorio
+          </button>
+
+          <button
+            className={`perfil-tab ${tab === "Recetas" ? "perfil-tab--active" : ""}`}
+            onClick={() => setTab("Recetas")}
+          >
+            Recetas
           </button>
         </div>
 
@@ -196,6 +253,76 @@ export default function DoctorPerfilPage() {
                 </div>
               ))}
             </div>
+          </section>
+        )}
+
+        {tab === "Recetas" && (
+          <section className="perfil-section">
+            <h3 className="perfil-section-title">Recetas recientes {citasAtendidas.length}</h3> 
+            <input
+                type="text"
+                placeholder="Buscar paciente..."
+                value={buscar}
+                onChange={e => {
+                  setbuscar(e.target.value);
+                  setSelectedPaciente(null); 
+                  setmostrar(true);
+                }}
+                className="doctor-busqueda-input"
+              />
+
+              {buscar && mostrar && pacientesFiltrados.length > 0 && (
+                <ul className="doctor-busqueda-lista">
+                  {pacientesFiltrados.map(p => (
+                    <li
+                      key={p}
+                      onClick={() => {
+                        setSelectedPaciente(p);
+                        setbuscar(p); 
+                        setmostrar(false);
+                      }}
+                      className="doctor-busqueda-item"
+                    >
+                      {p}
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {selectedPaciente && (
+                <table className="doctor-recetas-table">
+                  <thead>
+                    <tr>
+                      <th>Paciente</th>
+                      <th>Fecha</th>
+                      <th>Receta</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {citasPacienteSeleccionado.map(cita => (
+                      <tr key={cita.idCita}>
+                        <td>{cita.paciente}</td>
+                        <td>{cita.fecha}</td>
+                        <td>
+                          <button
+                            onClick={async () => {
+                              const receta = await obtenerReceta(cita.idCita);
+                              const datosReceta = mapRecetaToDatosReceta(
+                                receta,
+                                cita.paciente,
+                                perfil?.nombreCompleto ?? ""
+                              );
+                              navigate("/comprobante-receta", { state: { datosReceta } });
+                            }}
+                          >
+                            Ver Receta
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
           </section>
         )}
       </div>
