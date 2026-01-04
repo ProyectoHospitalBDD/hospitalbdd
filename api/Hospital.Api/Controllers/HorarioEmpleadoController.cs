@@ -20,29 +20,44 @@ namespace Hospital.Api.Controllers
         }
 
         [HttpGet("pendientes")]
-        public async Task<ActionResult<List<EmpleadoSinHorarioDto>>> GetEmpleadosSinHorario()
+        public async Task<ActionResult<List<EmpleadoSinHorarioDto>>> GetEmpleadosSinHorario([FromQuery] string? search = null)
         {
-
+            // Base query: Empleados activos, con roles válidos, SIN horario asignado
             var query = from u in _context.UsuarioSistemas
                         join e in _context.Empleados on u.IdUsuario equals e.IdUsuario
-                        where e.Estatus == true 
+                        where e.Estatus == true
                               && (new[] { "Doctor", "Recepcionista", "Enfermera", "Farmaceutico" }.Contains(u.TipoUsuario))
                               && !_context.HorarioEmpleados.Any(h => h.IdUsuario == u.IdUsuario)
-                        select new EmpleadoSinHorarioDto
-                        {
-                            IdUsuario = u.IdUsuario,
-                            NombreCompleto = (u.Nombre + " " + u.ApPat + " " + (u.ApMat ?? "")).Trim(),
-                            TipoUsuario = u.TipoUsuario
-                        };
+                        select new { u, e }; // Seleccionamos anónimo primero para poder filtrar después
 
-            return Ok(await query.ToListAsync());
+            // Filtrado por texto (Búsqueda)
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                search = search.Trim().ToLower();
+                query = query.Where(x => 
+                    (x.u.Nombre + " " + x.u.ApPat + " " + (x.u.ApMat ?? "")).ToLower().Contains(search) || 
+                    x.u.Curp.ToLower().Contains(search)
+                );
+            }
+
+            // Proyección final al DTO
+            var result = await query
+                .Select(x => new EmpleadoSinHorarioDto
+                {
+                    IdUsuario = x.u.IdUsuario,
+                    NombreCompleto = (x.u.Nombre + " " + x.u.ApPat + " " + (x.u.ApMat ?? "")).Trim(),
+                    TipoUsuario = x.u.TipoUsuario,
+                    Curp = x.u.Curp // Agregamos el CURP
+                })
+                .ToListAsync();
+
+            return Ok(result);
         }
 
         [HttpPost("asignar")]
         public async Task<IActionResult> AsignarHorario([FromBody] AsignarHorarioRequestDto dto)
         {
             if (dto.IdUsuario <= 0) return BadRequest("Usuario inválido.");
-
 
             TimeOnly horaInicio, horaFin;
 

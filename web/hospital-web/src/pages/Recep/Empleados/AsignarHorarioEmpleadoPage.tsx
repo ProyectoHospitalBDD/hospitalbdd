@@ -14,6 +14,9 @@ export default function AsignarHorario() {
   // Estados del Formulario
   const [listaCandidatos, setListaCandidatos] = useState<EmpleadoSinHorarioItem[]>([]);
   const [loadingCarga, setLoadingCarga] = useState(true);
+  
+  // Estado para filtrado local en el select
+  const [busqueda, setBusqueda] = useState("");
 
   // Valores seleccionados
   const [selectedId, setSelectedId] = useState<string>("");
@@ -33,6 +36,7 @@ export default function AsignarHorario() {
   async function cargarCandidatos() {
     try {
       setLoadingCarga(true);
+      // Traemos todos los pendientes. Si fueran miles, usaríamos paginación/búsqueda backend.
       const data = await getEmpleadosSinHorario();
       setListaCandidatos(data);
     } catch (e: any) {
@@ -41,6 +45,13 @@ export default function AsignarHorario() {
       setLoadingCarga(false);
     }
   }
+
+  // Filtrado local para el select
+  const candidatosFiltrados = listaCandidatos.filter(emp => 
+    busqueda === "" || 
+    emp.nombreCompleto.toLowerCase().includes(busqueda.toLowerCase()) ||
+    emp.curp.toLowerCase().includes(busqueda.toLowerCase())
+  );
 
   // 2. Manejar el Guardar
   async function handleSubmit(e: React.FormEvent) {
@@ -58,14 +69,14 @@ export default function AsignarHorario() {
       await asignarHorario(Number(selectedId), patron, turno);
       setSuccess(true);
       
-      // Limpiamos formulario y recargamos la lista (el empleado asignado desaparecerá)
+      // Limpiamos formulario
       setSelectedId("");
       setPatron("");
       setTurno("");
+      setBusqueda(""); // Limpiar búsqueda
+      
+      // Recargamos la lista (el empleado asignado desaparecerá)
       await cargarCandidatos();
-
-      // Opcional: Redirigir después de unos segundos
-      // setTimeout(() => nav("/recep/empleados"), 2000); 
 
     } catch (e: any) {
       const msg = e?.response?.data?.message || "Error al asignar horario.";
@@ -76,7 +87,7 @@ export default function AsignarHorario() {
   }
 
   return (
-    <div className="recep-emp-list"> {/* Reusando contenedor */}
+    <div className="recep-emp-list"> 
       
       {/* HEADER */}
       <div className="recep-emp-list__hero">
@@ -116,19 +127,38 @@ export default function AsignarHorario() {
             {/* 1. SELECCIONAR EMPLEADO */}
             <div className="recep-emp-list__field">
               <label style={{ fontSize: "14px" }}>1. Selecciona al Empleado</label>
+              
+              {/* Buscador auxiliar */}
+              <input 
+                type="text" 
+                placeholder="🔍 Buscar por nombre o CURP..."
+                className="recep-emp-list__input"
+                style={{ marginBottom: '5px', fontSize: '13px' }}
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
+              />
+
               <select 
                 className="recep-emp-list__select"
                 value={selectedId}
                 onChange={(e) => setSelectedId(e.target.value)}
                 required
+                size={5} // Mostrar como lista desplegada para ver más opciones
+                style={{ height: '120px', overflowY: 'auto' }}
               >
-                <option value="">-- Selecciona un empleado --</option>
-                {listaCandidatos.map((emp) => (
-                  <option key={emp.idUsuario} value={emp.idUsuario}>
-                    {emp.nombreCompleto} ({emp.tipoUsuario})
-                  </option>
-                ))}
+                {candidatosFiltrados.length === 0 ? (
+                    <option value="" disabled>No se encontraron coincidencias</option>
+                ) : (
+                    candidatosFiltrados.map((emp) => (
+                      <option key={emp.idUsuario} value={emp.idUsuario} style={{ padding: '5px' }}>
+                        {emp.nombreCompleto} ({emp.tipoUsuario}) — CURP: {emp.curp}
+                      </option>
+                    ))
+                )}
               </select>
+              <div style={{ fontSize: '11px', color: '#666', textAlign: 'right' }}>
+                  {selectedId ? "✅ Empleado seleccionado" : "👆 Haz clic en un empleado de la lista"}
+              </div>
             </div>
 
             {/* 2. SELECCIONAR DÍAS */}
