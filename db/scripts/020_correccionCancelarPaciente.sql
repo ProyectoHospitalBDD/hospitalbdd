@@ -81,3 +81,7 @@ BEGIN
   END CATCH
 END
 GO
+
+use hospitalBD
+
+select * from dbo.servicio

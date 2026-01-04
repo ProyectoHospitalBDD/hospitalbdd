@@ -1,4 +1,4 @@
-USE hospitalBD;
+--USE hospitalBD;
 GO
 
 CREATE OR ALTER TRIGGER dbo.tr_CitaLogEstatus

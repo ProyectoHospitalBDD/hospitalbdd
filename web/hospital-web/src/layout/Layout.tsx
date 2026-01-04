@@ -31,6 +31,8 @@ export function Layout() {
     if (!user) return;
     if (user.rol === "Doctor") navigate("/doctor/perfil");
     else if (user.rol === "Paciente") navigate("/perfil");
+    else if (user.rol === "Recepcionista") navigate("/recepcionista/perfil");
+    else if (user.rol === "Farmaceutico") navigate("/farmaceutico/perfil");
     else navigate("/home"); // O una ruta por defecto
   };
 
