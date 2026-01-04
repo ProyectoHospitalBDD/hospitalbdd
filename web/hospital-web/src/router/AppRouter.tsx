@@ -9,6 +9,7 @@ import { CartFisicoProvider } from "../pages/CarroFisico/CartContextFisico";
 
 // Auth Pages
 import LoginPage from "../pages/Auth/LoginPage";
+import RegisterPage from "../pages/Register/RegisterPage";
 
 // Paciente / General
 import AgendarCitaPage from "../pages/Citas/AgendarCitaPage";
@@ -43,6 +44,7 @@ import ComprobanteReceta from "../pages/Receta/ComprobanteReceta";
 import RecepCancelacionesPage from "../pages/Recep/Cancelaciones/RecepCancelacionesPage";
 import RecepEmpleadosCreatePage from "../pages/Recep/Empleados/RecepEmpleadosCreatePage";
 import RecepEmpleadosListPage from "../pages/Recep/Empleados/RecepEmpleadosListPage";
+import BitacoraPage from "../pages/Recep/Bitacora/BitacoraPage";
 
 
 import RecepAsignarHorarioPage from "../pages/Recep/Empleados/AsignarHorarioEmpleadoPage"; 
@@ -55,6 +57,7 @@ export function AppRouter() {
           <Routes>
             {/* ---------- PÚBLICA ---------- */}
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
 
             {/* ---------- CON LAYOUT (Rutas Protegidas) ---------- */}
             <Route element={<Layout />}>
@@ -157,6 +160,17 @@ export function AppRouter() {
                   </PrivateRoute>
                 }
               />
+
+                <Route
+                  path="/recep/bitacora"
+                  element={
+                    <PrivateRoute>
+                      <BitacoraPage />
+                    </PrivateRoute>
+                  }
+                />
+
+
 
               {/* --- Doctor --- */}
               <Route

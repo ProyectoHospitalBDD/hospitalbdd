@@ -97,6 +97,13 @@ export function Layout() {
                 >
                   Administrar empleados
                 </NavLink>
+                <NavLink
+                  to="/recep/bitacora"
+                  onClick={closeMenu}
+                  className={({ isActive }) => `layout-tab ${isActive ? "layout-tab--active" : ""}`}
+                >
+                  Bitácora
+                </NavLink>
               </nav>
             )}
           </div>

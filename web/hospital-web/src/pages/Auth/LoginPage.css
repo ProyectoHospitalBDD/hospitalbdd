@@ -21,8 +21,15 @@
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* === TITULO === */
@@ -105,4 +112,26 @@
   color: #d63031;
   font-size: 0.85rem;
   text-align: center;
+}
+
+/* === BOTÓN CREAR CUENTA === */
+.signup-btn {
+  width: 100%;
+  padding: 10px;
+  background: transparent;
+  color: #1e90ff;
+  border: 2px solid #1e90ff;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.1s;
+}
+
+.signup-btn:hover {
+  background: #1e90ff;
+  color: #ffffff;
+}
+
+.signup-btn:active {
+  transform: scale(0.97);
 }
