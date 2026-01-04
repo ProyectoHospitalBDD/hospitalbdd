@@ -92,9 +92,22 @@ export default function RecepEmpleadosListPage() {
           <p>Consulta empleados y activa/desactiva su estatus.</p>
         </div>
 
-        <button className="btn btn-ok" type="button" onClick={() => nav("/recep/empleados/crear")}>
-          Alta de empleado
-        </button>
+        {/* --- BOTONES DE ACCIÓN --- */}
+        <div style={{ display: 'flex', gap: '10px' }}>
+            {/* Nuevo Botón: Asignar Horario */}
+            <button 
+                className="btn btn-ghost" // O usa otro estilo si prefieres
+                type="button" 
+                style={{ border: '1px solid #ccc', background: 'white' }}
+                onClick={() => nav("/recep/empleados/asignar-horario")}
+            >
+                📅 Asignar Horario
+            </button>
+
+            <button className="btn btn-ok" type="button" onClick={() => nav("/recep/empleados/crear")}>
+                Alta de empleado
+            </button>
+        </div>
       </div>
 
       {error && <div className="recep-emp-list__error">{error}</div>}
@@ -166,11 +179,11 @@ export default function RecepEmpleadosListPage() {
               <tbody>
                 {empleados.map(emp => (
                   <tr key={emp.idUsuario}>
-                    <td>{emp.idUsuario}</td>
-                    <td>{emp.tipoUsuario}</td>
-                    <td>{emp.nombre} {emp.apPat} {emp.apMat ?? ""}</td>
-                    <td>{emp.curp}</td>
-                    <td>
+                    <td data-label="ID">{emp.idUsuario}</td>
+                    <td data-label="Tipo">{emp.tipoUsuario}</td>
+                    <td data-label="Nombre">{emp.nombre} {emp.apPat} {emp.apMat ?? ""}</td>
+                    <td data-label="CURP">{emp.curp}</td>
+                    <td data-label="Estatus">
                       <span
                         className={
                           "recep-emp-list__badge " +
@@ -180,7 +193,7 @@ export default function RecepEmpleadosListPage() {
                         {emp.estatus ? "Activo" : "Inactivo"}
                       </span>
                     </td>
-                    <td>${Number(emp.salario).toFixed(2)}</td>
+                    <td data-label="Salario">${Number(emp.salario).toFixed(2)}</td>
                     <td className="recep-emp-list__actions">
                       <button
                         className={emp.estatus ? "btn btn-bad" : "btn btn-ok"}
@@ -189,7 +202,7 @@ export default function RecepEmpleadosListPage() {
                         title={emp.estatus ? "Desactivar" : "Activar"}
                       >
                         {accionandoEmp === emp.idUsuario
-                          ? "Guardando..."
+                          ? "..."
                           : emp.estatus ? "Desactivar" : "Activar"}
                       </button>
                     </td>

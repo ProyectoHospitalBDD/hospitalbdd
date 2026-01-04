@@ -104,3 +104,22 @@ export async function listarEmpleados(params?: {
 export async function cambiarEstatusEmpleado(idUsuario: number, estatus: boolean) {
   await api.patch(`/api/recep/empleados/${idUsuario}/estatus`, { estatus });
 }
+
+export type EmpleadoSinHorarioItem = {
+  idUsuario: number;
+  nombreCompleto: string;
+  tipoUsuario: string;
+};
+
+export async function getEmpleadosSinHorario() {
+  const r = await api.get<EmpleadoSinHorarioItem[]>("/api/recep/horarios/pendientes");
+  return r.data;
+}
+
+export async function asignarHorario(idUsuario: number, patronDias: "LMV" | "MJS", turno: "Matutino" | "Vespertino") {
+  await api.post("/api/recep/horarios/asignar", {
+    idUsuario,
+    patronDias,
+    turno
+  });
+}

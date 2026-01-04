@@ -639,7 +639,7 @@ public partial class HospitalContext : DbContext
 
             entity.Property(e => e.IdFarmaceutico).HasColumnName("idFarmaceutico");
             entity.Property(e => e.IdFarmacia).HasColumnName("idFarmacia");
-            entity.Property(e => e.IdPaciente).HasColumnName("idPaciente"); // Asegurando que exista la propiedad
+            entity.Property(e => e.IdPaciente).HasColumnName("idPaciente");
 
             entity.HasOne(d => d.IdFarmaciaNavigation).WithMany(p => p.Tickets)
                 .HasForeignKey(d => d.IdFarmacia)

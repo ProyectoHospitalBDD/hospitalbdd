@@ -46,8 +46,8 @@ import RecepEmpleadosCreatePage from "../pages/Recep/Empleados/RecepEmpleadosCre
 import RecepEmpleadosListPage from "../pages/Recep/Empleados/RecepEmpleadosListPage";
 import BitacoraPage from "../pages/Recep/Bitacora/BitacoraPage";
 
-// (Opcional) Recepción (compa, pantalla “todo en uno”)
-// import RecepEmpleadosPage from "../pages/Recep/Empleados/RecepEmpleadosPage";
+
+import RecepAsignarHorarioPage from "../pages/Recep/Empleados/AsignarHorarioEmpleadoPage"; 
 
 export function AppRouter() {
   return (
@@ -198,7 +198,7 @@ export function AppRouter() {
                 }
               />
 
-              {/* --- Receta médica (compa) --- */}
+              {/* --- Receta médica --- */}
               <Route
                 path="/receta"
                 element={
@@ -241,20 +241,17 @@ export function AppRouter() {
                   </PrivateRoute>
                 }
               />
-
-
-
-              {/* (Opcional) Alias si quieres conservar la pantalla “todo en uno” del compa */}
-              {/* 
+              
+              {/* --- NUEVA RUTA: Asignar Horario --- */}
               <Route
-                path="/recep/empleados/todo"
+                path="/recep/empleados/asignar-horario"
                 element={
                   <PrivateRoute>
-                    <RecepEmpleadosPage />
+                    <RecepAsignarHorarioPage />
                   </PrivateRoute>
                 }
               />
-              */}
+
             </Route>
 
             {/* Redirecciones */}
