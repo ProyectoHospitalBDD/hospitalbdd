@@ -14,7 +14,7 @@ interface ServicioReceta {
   indicaciones: string;
 }
 
-interface DatosReceta {
+ export interface DatosReceta {
   idReceta: number;
   paciente: string;
   doctor: string;
