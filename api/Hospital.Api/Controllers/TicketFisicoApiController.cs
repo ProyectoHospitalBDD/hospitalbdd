@@ -23,8 +23,8 @@ namespace Hospital.Api.Controllers
         private int? GetUserIdFromClaims()
         {
             var idStr = User.FindFirstValue(ClaimTypes.NameIdentifier)
-                     ?? User.FindFirstValue("nameid")
-                     ?? User.FindFirstValue("sub");
+                      ?? User.FindFirstValue("nameid")
+                      ?? User.FindFirstValue("sub");
             if (int.TryParse(idStr, out var id)) return id;
             return null;
         }
@@ -37,32 +37,23 @@ namespace Hospital.Api.Controllers
             if (payload.Detalles == null || payload.Detalles.Count == 0)
                 return BadRequest("El ticket no puede estar vacío.");
 
-            // 1. Validar Usuario (Farmacéutico)
             var idUsuario = GetUserIdFromClaims();
             if (!idUsuario.HasValue) return Unauthorized("No se pudo obtener el usuario del token.");
 
-            // 2. Validar Existencia de Farmacia
             var existeFarmacia = await _db.Farmacia.AnyAsync(f => f.IdFarmacia == payload.IdFarmacia);
             if (!existeFarmacia)
+                return BadRequest($"La farmacia con ID {payload.IdFarmacia} no existe.");
+
+            // Validar Paciente
+            if (payload.IdUsuarioPaciente.HasValue)
             {
-                return BadRequest($"La farmacia con ID {payload.IdFarmacia} no existe en la base de datos.");
-            }
-
-
-            var idUsuarioPaciente = payload.IdUsuarioPaciente;   
-
-
-            // 3. Validar Paciente (si aplica)
-            if (idUsuarioPaciente.HasValue)
-            {
-                var existePaciente = await _db.Pacientes.AnyAsync(p => p.IdUsuario == idUsuarioPaciente.Value);
+                var existePaciente = await _db.Pacientes.AnyAsync(p => p.IdUsuario == payload.IdUsuarioPaciente.Value);
                 if (!existePaciente) return BadRequest("Paciente no existe");
             }
 
             using var tx = await _db.Database.BeginTransactionAsync();
             try
             {
-                // 4. Crear Ticket (Cabecera)
                 var ticket = new Ticket
                 {
                     Fecha = DateTime.Now,
@@ -75,9 +66,8 @@ namespace Hospital.Api.Controllers
                 };
 
                 _db.Tickets.Add(ticket);
-                await _db.SaveChangesAsync(); // Genera IdTicket
+                await _db.SaveChangesAsync();
 
-                // 5. Insertar Detalles
                 foreach (var item in payload.Detalles)
                 {
                     if (item.IdMedicamento.HasValue)
@@ -115,14 +105,13 @@ namespace Hospital.Api.Controllers
                     }
                 }
                 
-                await _db.SaveChangesAsync(); // Guardamos detalles para que la función SQL tenga datos
+                await _db.SaveChangesAsync();
 
-                // --- 6. USO DE LA FUNCIÓN SQL PARA OBTENER EL TOTAL (RÚBRICA) ---
+                // Calcular total real desde SQL
                 var totalCalculado = await _db.Database
                     .SqlQuery<decimal>($"SELECT TotalGeneral AS Value FROM dbo.fn_TicketTotales({ticket.IdTicket})")
                     .FirstOrDefaultAsync();
 
-                // 7. Registrar Pago con el Total Real obtenido de la BD
                 var pago = new PagoTicket
                 {
                     EstatusPago = "Pagado",
@@ -130,14 +119,13 @@ namespace Hospital.Api.Controllers
                     HoraPago = TimeOnly.FromDateTime(DateTime.Now),
                     IdTicket = ticket.IdTicket,
                     IdFarmaceutico = idUsuario.Value,
-                    Monto = totalCalculado // Asignamos el valor calculado
+                    Monto = totalCalculado
                 };
                 _db.PagoTickets.Add(pago);
 
                 await _db.SaveChangesAsync();
                 await tx.CommitAsync();
 
-                // Retornamos el total calculado para que el front lo pueda usar si quiere
                 return Ok(new TicketExitosoDto 
                 { 
                     IdTicket = ticket.IdTicket, 
@@ -153,7 +141,7 @@ namespace Hospital.Api.Controllers
             }
         }
 
-        // GET Buscar Paciente
+        // GET Buscar Paciente EXACTO
         [HttpGet("buscar-paciente")]
         [Authorize(Roles = "Farmaceutico,Admin,Enfermera")]
         public async Task<ActionResult<PacienteLookupDto>> BuscarPaciente([FromQuery] string? curp, [FromQuery] string? email, [FromQuery] int? id)
@@ -177,9 +165,38 @@ namespace Hospital.Api.Controllers
                 IdUsuarioPaciente = usuario.IdUsuario,
                 NombreCompleto = $"{usuario.Nombre} {usuario.ApPat} {usuario.ApMat}".Trim(),
                 Curp = usuario.Curp ?? "Sin CURP",
-                Email = usuario.IdContactoNavigation?.CorreoPersonal,
-                Telefono = usuario.IdContactoNavigation?.TelPersonal ?? usuario.IdContactoNavigation?.TelCasa
+                Email = usuario.IdContactoNavigation != null ? usuario.IdContactoNavigation.CorreoPersonal : null,
+                Telefono = usuario.IdContactoNavigation != null ? (usuario.IdContactoNavigation.TelPersonal ?? usuario.IdContactoNavigation.TelCasa) : null
             });
+        }
+
+        // --- NUEVO ENDPOINT PARA BÚSQUEDA PREDICTIVA ---
+        // GET: /api/TicketFisicoApi/buscar-predictivo?q=Juan
+        [HttpGet("buscar-predictivo")]
+        [Authorize(Roles = "Farmaceutico,Admin,Enfermera")]
+        public async Task<ActionResult<List<PacienteLookupDto>>> BuscarPredictivo([FromQuery] string q)
+        {
+            if (string.IsNullOrWhiteSpace(q) || q.Length < 3) return Ok(new List<PacienteLookupDto>());
+
+            var usuarios = await _db.UsuarioSistemas
+                .Include(u => u.Paciente)
+                .Include(u => u.IdContactoNavigation)
+                .AsNoTracking()
+                // FILTRO CLAVE: Verificamos que tenga un registro en la tabla Pacientes
+                // Esto es equivalente a "Es un Paciente" sin depender del nombre de la columna "Rol" o "TipoUsuario"
+                .Where(u => u.Paciente != null) 
+                .Where(u => u.Nombre.Contains(q) || u.ApPat.Contains(q) || u.Curp.Contains(q))
+                .Take(7)
+                .Select(u => new PacienteLookupDto
+                {
+                    IdUsuarioPaciente = u.IdUsuario,
+                    NombreCompleto = $"{u.Nombre} {u.ApPat} {u.ApMat}".Trim(),
+                    Curp = u.Curp ?? "N/A",
+                    Email = u.IdContactoNavigation != null ? u.IdContactoNavigation.CorreoPersonal : ""
+                })
+                .ToListAsync();
+
+            return Ok(usuarios);
         }
     }
 }

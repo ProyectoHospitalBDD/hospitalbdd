@@ -161,7 +161,6 @@ export function Layout() {
                     {/* --- DOCTOR --- */}
                     {esDoctor && (
                         <>
-                           <NavLink to="/medico/agenda" onClick={closeMenu}><li>👨‍⚕️ Mi Agenda</li></NavLink>
                            <NavLink to="/doctor/citas" onClick={closeMenu}><li>Mis citas</li></NavLink>
                         </>
                     )}
@@ -180,10 +179,7 @@ export function Layout() {
                         <NavLink to="/farmacia" onClick={closeMenu}><li>🏥 Farmacia (Caja)</li></NavLink>
                     )}
 
-                    {/* --- RECEPCIÓN --- */}
-                    {(esRecepcionista || esAdmin) && (
-                        <NavLink to="/recepcion" onClick={closeMenu}><li>📋 Recepción</li></NavLink>
-                    )}
+
                   
                   <hr style={{margin: '5px 0', border: '0', borderTop: '1px solid #eee'}}/>
                   
