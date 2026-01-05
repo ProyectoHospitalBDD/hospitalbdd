@@ -46,7 +46,6 @@ import RecepEmpleadosCreatePage from "../pages/Recep/Empleados/RecepEmpleadosCre
 import RecepEmpleadosListPage from "../pages/Recep/Empleados/RecepEmpleadosListPage";
 import BitacoraPage from "../pages/Recep/Bitacora/BitacoraPage";
 
-
 import RecepAsignarHorarioPage from "../pages/Recep/Empleados/AsignarHorarioEmpleadoPage"; 
 
 export function AppRouter() {
@@ -59,19 +58,19 @@ export function AppRouter() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
 
-            {/* ---------- CON LAYOUT (Rutas Protegidas) ---------- */}
+            {/* ---------- CON LAYOUT ---------- */}
             <Route element={<Layout />}>
-              {/* Home / Default */}
+              {/* Home / Default - CORRECCIÓN: Le quité el PrivateRoute para que el invitado vea la bienvenida */}
               <Route
                 path="/home"
-                element={
-                  <PrivateRoute>
-                    <></>
-                  </PrivateRoute>
-                }
+                element={<></>}
               />
 
-              {/* --- Rutas Paciente --- */}
+              {/* --- Tienda y Carrito (Web) - CORRECCIÓN: Públicos para invitados --- */}
+              <Route path="/tienda" element={<Tienda />} />
+              <Route path="/carrito" element={<Carrito />} />
+
+              {/* --- Rutas Paciente (Protegidas) --- */}
               <Route
                 path="/citas/agendar"
                 element={
@@ -93,24 +92,6 @@ export function AppRouter() {
                 element={
                   <PrivateRoute>
                     <Comprobante />
-                  </PrivateRoute>
-                }
-              />
-
-              {/* --- Tienda y Carrito (Web) --- */}
-              <Route
-                path="/tienda"
-                element={
-                  <PrivateRoute>
-                    <Tienda />
-                  </PrivateRoute>
-                }
-              />
-              <Route
-                path="/carrito"
-                element={
-                  <PrivateRoute>
-                    <Carrito />
                   </PrivateRoute>
                 }
               />
@@ -169,8 +150,6 @@ export function AppRouter() {
                     </PrivateRoute>
                   }
                 />
-
-
 
               {/* --- Doctor --- */}
               <Route
@@ -242,7 +221,6 @@ export function AppRouter() {
                 }
               />
               
-              {/* --- NUEVA RUTA: Asignar Horario --- */}
               <Route
                 path="/recep/empleados/asignar-horario"
                 element={
