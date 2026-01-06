@@ -135,3 +135,17 @@
 .signup-btn:active {
   transform: scale(0.97);
 }
+
+.guest-btn {
+  margin-top: 10px;
+  background-color: #e5e7eb;
+  color: #111827;
+  border: 1px solid #d1d5db;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.guest-btn:hover {
+  background-color: #d1d5db;
+}
