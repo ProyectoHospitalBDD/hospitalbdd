@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "../lib/auth/AuthContext"; // Asegúrate de que esta ruta sea correcta
+import { useAuth } from "../lib/auth/AuthContext"; 
 import "./Layout.css";
 
-// Ruta del logo. Nota: En producción, usualmente se usa "/imagenes/..." si está en la carpeta public.
+// Ruta del logo.
 const LOGO_URL = "../../public/imagenes/Logo_PoliMed.png";
 
 export function Layout() {
@@ -33,7 +33,7 @@ export function Layout() {
     else if (user.rol === "Paciente") navigate("/perfil");
     else if (user.rol === "Recepcionista") navigate("/recepcionista/perfil");
     else if (user.rol === "Farmaceutico") navigate("/farmaceutico/perfil");
-    else navigate("/home"); // O una ruta por defecto
+    else navigate("/home"); 
   };
 
   // --- LÓGICA DE ROLES ---
@@ -42,7 +42,7 @@ export function Layout() {
   const esDoctor = userRole.includes("doctor");
   const esPaciente = userRole.includes("paciente");
   const esRecepcionista = userRole.includes("recepcionista");
-  const esFarmaceutico = userRole.includes("farmac"); // Cubre 'Farmacéutico' o 'Farmacia'
+  const esFarmaceutico = userRole.includes("farmac"); 
   const esEnfermera = userRole.includes("enfermera");
   const esAdmin = userRole.includes("admin");
 
@@ -142,18 +142,25 @@ export function Layout() {
                         <li onClick={handleMiPerfil} style={{ cursor: "pointer" }}>Mi perfil</li>
                     )}
                     
-                    {/* --- PACIENTES E INVITADOS --- */}
-                    {(!userRole || esPaciente) && (
+                    {/* --- INVITADO (SIN LOGIN) --- */}
+                    {!user && (
+                        <>
+                           <NavLink to="/tienda" onClick={closeMenu}><li>🛒 Tienda</li></NavLink>
+                           <NavLink to="/carrito" onClick={closeMenu}><li>🛍️ Mi Carrito</li></NavLink>
+                        </>
+                    )}
+
+                    {/* --- PACIENTE --- */}
+                    {esPaciente && (
                         <>
                             <NavLink to="/tienda" onClick={closeMenu}><li>🛒 Tienda</li></NavLink>
                             <NavLink to="/citas/agendar" onClick={closeMenu}><li>📅 Agendar cita</li></NavLink>
                         </>
                     )}
 
-                    {/* --- DOCTOR (Opciones extra en menú móvil) --- */}
+                    {/* --- DOCTOR --- */}
                     {esDoctor && (
                         <>
-                           <NavLink to="/medico/agenda" onClick={closeMenu}><li>👨‍⚕️ Mi Agenda</li></NavLink>
                            <NavLink to="/doctor/citas" onClick={closeMenu}><li>Mis citas</li></NavLink>
                         </>
                     )}
@@ -172,10 +179,7 @@ export function Layout() {
                         <NavLink to="/farmacia" onClick={closeMenu}><li>🏥 Farmacia (Caja)</li></NavLink>
                     )}
 
-                    {/* --- RECEPCIÓN --- */}
-                    {(esRecepcionista || esAdmin) && (
-                        <NavLink to="/recepcion" onClick={closeMenu}><li>📋 Recepción</li></NavLink>
-                    )}
+
                   
                   <hr style={{margin: '5px 0', border: '0', borderTop: '1px solid #eee'}}/>
                   
@@ -202,11 +206,32 @@ export function Layout() {
             <div className="home-welcome-section">
                 <div className="home-text">
                     <h1>Hospital de Especialidades <span style={{color: '#00c897'}}>PoliMed</span></h1>
+                    
+                    {/* --- CORRECCIÓN: TEXTO DINÁMICO --- */}
                     <p>
-                        Hospital PoliMed somos una institución dedicada al diagnóstico y seguimiento integral de diversos padecimientos. Contamos con más de 15 especialidades médicas y un equipo de más de 50 doctores altamente capacitados, además de servicio de farmacia y aplicación de tratamientos, estamos comprometidos con brindar atención de calidad y confianza a nuestros pacientes.
+                        {(!user || esPaciente) ? (
+                            // Texto para Pacientes e Invitados
+                            "Hospital PoliMed somos una institución dedicada al diagnóstico y seguimiento integral de diversos padecimientos. Contamos con más de 15 especialidades médicas y un equipo de más de 50 doctores altamente capacitados, además de servicio de farmacia y aplicación de tratamientos, estamos comprometidos con brindar atención de calidad y confianza a nuestros pacientes."
+                        ) : (
+                            // Texto para Empleados (Doctor, Recepcionista, etc.)
+                            "Hospital PoliMed somos una institución dedicada al diagnóstico y seguimiento integral de diversos padecimientos. Aseguramos un futuro estable para nuestros trabajadores con equipo y tecnologías de punta, comprometidos con la excelencia en el servicio."
+                        )}
                     </p>
                     
-                    {(!userRole || esPaciente) && (
+                    {/* BOTONES PARA INVITADO */}
+                    {!user && (
+                        <div className="home-cta-buttons">
+                            <button className="cta-btn secondary" onClick={() => navigate('/tienda')}>
+                                🛒 Ir a la Tienda
+                            </button>
+                            <button className="cta-btn primary" onClick={() => navigate('/login')}>
+                                👤 Iniciar Sesión
+                            </button>
+                        </div>
+                    )}
+
+                    {/* BOTONES PARA PACIENTE */}
+                    {esPaciente && (
                         <div className="home-cta-buttons">
                             <button className="cta-btn primary" onClick={() => navigate('/citas/agendar')}>
                                 📅 Agendar Cita
