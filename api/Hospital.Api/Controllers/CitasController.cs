@@ -102,6 +102,18 @@ public class CitasController : ControllerBase
         return Ok(res);
     }
 
+    // ==================================================
+    // Doctor → marcar No Acudió
+    // ==================================================
+    [HttpPost("{id:int}/no-acudio")]
+    [Authorize(Roles = "Doctor")]
+    public async Task<IActionResult> MarcarNoAcudio([FromRoute] int id)
+    {
+        var idDoctor = UserClaims.GetIdUsuario(User);
+        await _svc.MarcarNoAcudioAsync(id, idDoctor);
+        return NoContent();
+    }
+
 
 
 

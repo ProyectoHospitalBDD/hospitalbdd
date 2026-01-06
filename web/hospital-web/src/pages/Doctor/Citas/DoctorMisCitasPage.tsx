@@ -5,6 +5,7 @@ import {
   getMisCitasDoctor,
   type CitaDoctor,
   solicitarCancelacionCita,
+  marcarNoAcudioCita,
 } from "../../../api/doctorApi";
 
 type DiaKey = string; // yyyy-mm-dd
@@ -13,12 +14,19 @@ function puedeSolicitarCancelacion(estatus: string) {
   return estatus === "AgendadaPendPago" || estatus === "PagadaPendAtender";
 }
 
+function puedeMarcarNoAcudio(estatus: string) {
+  return estatus === "PagadaPendAtender";
+}
+
 function pillByStatus(estatus: string) {
   const e = (estatus ?? "").toLowerCase();
 
-  if (e.includes("pend") || e.includes("solicit")) return "panel-pill panel-pill--warn panel-pill--status";
-  if (e.includes("atendida")) return "panel-pill panel-pill--ok panel-pill--status";
-  if (e.includes("cancel") || e.includes("noacud") || e.includes("no acud")) return "panel-pill panel-pill--bad panel-pill--status";
+  if (e.includes("pend") || e.includes("solicit"))
+    return "panel-pill panel-pill--warn panel-pill--status";
+  if (e.includes("atendida"))
+    return "panel-pill panel-pill--ok panel-pill--status";
+  if (e.includes("cancel") || e.includes("noacud") || e.includes("no acud"))
+    return "panel-pill panel-pill--bad panel-pill--status";
 
   return "panel-pill panel-pill--neutral panel-pill--status";
 }
@@ -60,10 +68,13 @@ function diaClass(maxScore: number) {
 
 export default function DoctorMisCitasPage() {
   const [cancelandoId, setCancelandoId] = useState<number | null>(null);
+  const [noAcudioId, setNoAcudioId] = useState<number | null>(null);
+
   const [mes, setMes] = useState<Date>(() => startOfMonth(new Date()));
   const [citas, setCitas] = useState<CitaDoctor[]>([]);
   const [loading, setLoading] = useState(false);
   const [seleccion, setSeleccion] = useState<DiaKey | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const desde = useMemo(() => ymd(startOfMonth(mes)), [mes]);
   const hasta = useMemo(() => ymd(endOfMonth(mes)), [mes]);
@@ -76,9 +87,13 @@ export default function DoctorMisCitasPage() {
   useEffect(() => {
     (async () => {
       setLoading(true);
+      setError(null);
       try {
         await recargarMes();
         setSeleccion(null);
+      } catch (e) {
+        console.error(e);
+        setError("No se pudieron cargar las citas.");
       } finally {
         setLoading(false);
       }
@@ -161,6 +176,7 @@ export default function DoctorMisCitasPage() {
         </div>
 
         {loading && <p className="doc-cal-loading">Cargando citas…</p>}
+        {!loading && error && <p className="doc-cal-loading">{error}</p>}
 
         <div className="cal-grid">
           <div className="cal-dow">Lun</div>
@@ -197,9 +213,15 @@ export default function DoctorMisCitasPage() {
         </div>
 
         <div className="doc-cal-legend">
-          <span className="legend-item"><span className="dot dot--warn" /> Pendiente</span>
-          <span className="legend-item"><span className="dot dot--ok" /> Atendida</span>
-          <span className="legend-item"><span className="dot dot--bad" /> Cancelada / No acudió</span>
+          <span className="legend-item">
+            <span className="dot dot--warn" /> Pendiente
+          </span>
+          <span className="legend-item">
+            <span className="dot dot--ok" /> Atendida
+          </span>
+          <span className="legend-item">
+            <span className="dot dot--bad" /> Cancelada / No acudió
+          </span>
         </div>
 
         <div className="doc-cal-panel">
@@ -211,44 +233,65 @@ export default function DoctorMisCitasPage() {
 
           {seleccion && citasSeleccion.length > 0 && (
             <ul className="panel-list">
-              {citasSeleccion.map((c) => (
-                <li key={c.idCita} className="panel-item">
-                  {/* izquierda: info paciente */}
-                  <div className="panel-main">
-                    <div className="panel-name">{c.paciente ?? "—"}</div>
-                    <div className="panel-sub">
-                      Folio {c.idCita} · {c.horaInicio}{c.horaFin ? `–${c.horaFin}` : ""}
+              {citasSeleccion.map((c) => {
+                const busy = cancelandoId === c.idCita || noAcudioId === c.idCita;
+
+                return (
+                  <li key={c.idCita} className="panel-item">
+                    <div className="panel-main">
+                      <div className="panel-name">{c.paciente ?? "—"}</div>
+                      <div className="panel-sub">
+                        Folio {c.idCita} · {c.horaInicio}
+                        {c.horaFin ? `–${c.horaFin}` : ""}
+                      </div>
+
+                      <div className="panel-status-row">
+                        <span className={pillByStatus(c.estatus)}>{c.estatus}</span>
+                      </div>
                     </div>
 
-                    {/* estatus pegado abajo de los datos */}
-                    <div className="panel-status-row">
-                      <span className={pillByStatus(c.estatus)}>{c.estatus}</span>
-                    </div>
-                  </div>
+                    <div className="panel-actions">
+                      {puedeSolicitarCancelacion(c.estatus) && (
+                        <button
+                          className="panel-pill panel-pill--warn"
+                          disabled={busy}
+                          onClick={async () => {
+                            setCancelandoId(c.idCita);
+                            try {
+                              await solicitarCancelacionCita(c.idCita);
+                              await recargarMes();
+                            } finally {
+                              setCancelandoId(null);
+                            }
+                          }}
+                          type="button"
+                        >
+                          {cancelandoId === c.idCita ? "Solicitando…" : "Solicitar cancelación"}
+                        </button>
+                      )}
 
-                  {/* derecha: acciones */}
-                  <div className="panel-actions">
-                    {puedeSolicitarCancelacion(c.estatus) && (
-                      <button
-                        className="panel-pill panel-pill--warn"
-                        disabled={cancelandoId === c.idCita}
-                        onClick={async () => {
-                          setCancelandoId(c.idCita);
-                          try {
-                            await solicitarCancelacionCita(c.idCita);
-                            await recargarMes();
-                          } finally {
-                            setCancelandoId(null);
-                          }
-                        }}
-                        type="button"
-                      >
-                        {cancelandoId === c.idCita ? "Solicitando…" : "Solicitar cancelación"}
-                      </button>
-                    )}
-                  </div>
-                </li>
-              ))}
+                      {puedeMarcarNoAcudio(c.estatus) && (
+                        <button
+                          className="panel-pill panel-pill--bad"
+                          disabled={busy}
+                          onClick={async () => {
+                            setNoAcudioId(c.idCita);
+                            try {
+                              await marcarNoAcudioCita(c.idCita);
+                              await recargarMes();
+                            } finally {
+                              setNoAcudioId(null);
+                            }
+                          }}
+                          type="button"
+                        >
+                          {noAcudioId === c.idCita ? "Marcando…" : "No acudió"}
+                        </button>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </div>

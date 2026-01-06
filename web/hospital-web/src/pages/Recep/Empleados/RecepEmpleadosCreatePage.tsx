@@ -228,10 +228,13 @@ export default function RecepEmpleadosPage() {
           <div className="field">
             <label>Salario</label>
             <input
-              type="number"
-              value={salario}
-              onChange={(e) => setSalario(Number(e.target.value))}
-              min={0}
+              type="text"
+              inputMode="numeric"
+              value={salario === 0 ? "" : String(salario)}
+              onChange={(e) => {
+                const v = e.target.value.replace(/[^\d]/g, "");
+                setSalario(v === "" ? 0 : Number(v));
+              }}
             />
           </div>
 
@@ -273,7 +276,7 @@ export default function RecepEmpleadosPage() {
                 <option value="">Selecciona…</option>
                 {especialidades.map(e => (
                   <option key={e.idEspecialidad} value={e.idEspecialidad}>
-                    {e.nombreEsp} (${e.costo.toFixed(2)})
+                    {e.nombreEsp}
                   </option>
                 ))}
               </select>
