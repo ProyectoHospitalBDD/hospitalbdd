@@ -4,6 +4,7 @@ export interface DoctorListaDto {
   idDoctor: number;
   nombreMostrar: string;
   cedula: string;
+  consultorio: string; // Nuevo
 }
 
 export interface HorarioDisponibleDto {

@@ -25,6 +25,38 @@ namespace Hospital.Api.Controllers
         }
 
         // ==================================================
+        // GET doctores por especialidad (solo activos)
+        // ==================================================
+        [HttpGet]
+        public async Task<ActionResult<List<DoctorListaDto>>> GetPorEspecialidad([FromQuery] int especialidadId)
+        {
+            if (especialidadId <= 0)
+                return BadRequest("especialidadId debe ser mayor que 0.");
+
+            var doctores = await _db.Doctors
+                .Include(d => d.IdUsuarioNavigation)
+                .ThenInclude(e => e.IdUsuarioNavigation)
+                .Include(d => d.IdConsultorioNavigation) // Incluimos Consultorio
+                .Where(d =>
+                    d.IdEspecialidad == especialidadId &&
+                    d.IdUsuarioNavigation.Estatus == true
+                )
+                .Select(d => new DoctorListaDto(
+                    d.IdUsuario,
+                    (
+                        d.IdUsuarioNavigation.IdUsuarioNavigation.Nombre + " " +
+                        d.IdUsuarioNavigation.IdUsuarioNavigation.ApPat + " " +
+                        (d.IdUsuarioNavigation.IdUsuarioNavigation.ApMat ?? "")
+                    ).Trim(),
+                    d.Cedula,
+                    d.IdConsultorioNavigation.Numero // Mapeamos el número
+                ))
+                .ToListAsync();
+
+            return Ok(doctores);
+        }
+
+        // ==================================================
         // GET citas del doctor logueado (rango por fechas)
         // ==================================================
         [HttpGet("me/citas")]
@@ -180,36 +212,6 @@ namespace Hospital.Api.Controllers
                     ? dia
                     : char.ToUpperInvariant(dia[0]) + dia.Substring(1)
             };
-        }
-
-        // ==================================================
-        // GET doctores por especialidad (solo activos)
-        // ==================================================
-        [HttpGet]
-        public async Task<ActionResult<List<DoctorListaDto>>> GetPorEspecialidad([FromQuery] int especialidadId)
-        {
-            if (especialidadId <= 0)
-                return BadRequest("especialidadId debe ser mayor que 0.");
-
-            var doctores = await _db.Doctors
-                .Include(d => d.IdUsuarioNavigation)
-                .ThenInclude(e => e.IdUsuarioNavigation)
-                .Where(d =>
-                    d.IdEspecialidad == especialidadId &&
-                    d.IdUsuarioNavigation.Estatus == true // <- merge: solo doctores activos (dev)
-                )
-                .Select(d => new DoctorListaDto(
-                    d.IdUsuario,
-                    (
-                        d.IdUsuarioNavigation.IdUsuarioNavigation.Nombre + " " +
-                        d.IdUsuarioNavigation.IdUsuarioNavigation.ApPat + " " +
-                        (d.IdUsuarioNavigation.IdUsuarioNavigation.ApMat ?? "")
-                    ).Trim(),
-                    d.Cedula
-                ))
-                .ToListAsync();
-
-            return Ok(doctores);
         }
 
         // ==================================================

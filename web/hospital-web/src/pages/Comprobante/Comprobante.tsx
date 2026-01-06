@@ -10,30 +10,26 @@ export function Comprobante() {
   const [doctor, setDoctor] = useState<DoctorListaDto | null>(null);
   const [resultado, setResultado] = useState<string | null>(null);
 
-const location = useLocation();
-const state = location.state as {
-  citaId: number;
-  estatus: string;
-  fechaInicio: string;
-  fechaFin: string;
-  fechaSeleccionada: string;
-  horarioSeleccionado: string;
-  especialidadId: number;
-  doctorId: number;
-};
+  const location = useLocation();
+  const state = location.state as {
+    citaId: number;
+    estatus: string;
+    fechaInicio: string;
+    fechaFin: string;
+    fechaSeleccionada: string;
+    horarioSeleccionado: string;
+    especialidadId: number;
+    doctorId: number;
+  };
 
-// Convertir horarioSeleccionado a Date
-const horarioDate = new Date(state.horarioSeleccionado);
+  // Convertir horarioSeleccionado a Date
+  const horarioDate = new Date(state.horarioSeleccionado);
 
-const hora = horarioDate.toLocaleTimeString("es-MX", {
-  hour: "2-digit",
-  minute: "2-digit",
-});
+  const hora = horarioDate.toLocaleTimeString("es-MX", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
-const fecha = state.fechaSeleccionada; // ya es string tipo YYYY-MM-DD
-
-
-  const horarioSeleccionado = new Date(state.horarioSeleccionado);
   const fechaSeleccionada = state.fechaSeleccionada;
   const especialidadId = state.especialidadId;
   const doctorId = state.doctorId;
@@ -63,8 +59,6 @@ const fecha = state.fechaSeleccionada; // ya es string tipo YYYY-MM-DD
 
   const { user } = useAuth();
 
-
-
   return (
     <div className="app">
       <div className="centro">
@@ -74,12 +68,21 @@ const fecha = state.fechaSeleccionada; // ya es string tipo YYYY-MM-DD
         <div className="Cuadro">
           <p className="P">Folio: #{state.citaId}</p>
           <p className="P">Nombre: {user?.nombreCompleto}</p>
+          
           <div className="box-fila">
-            <p className="P">Doctor: {doctor?.nombreMostrar}</p> <p className="P2">Fecha: {fechaSeleccionada}</p>
+            <p className="P">Doctor: {doctor?.nombreMostrar}</p> 
+            <p className="P2">Consultorio: {doctor?.consultorio ?? "..."}</p> {/* NUEVO */}
           </div>
+          
           <div className="box-fila">
-            <p className="P">Especialidad: {especialidad?.nombre}</p> <p className="P2">Hora: {hora}</p>
+            <p className="P">Fecha: {fechaSeleccionada}</p>
+            <p className="P2">Hora: {hora}</p>
           </div>
+
+          <div className="box-fila">
+            <p className="P">Especialidad: {especialidad?.nombre}</p> 
+          </div>
+
           <p className="centro">Costo: ${especialidad?.costo}</p>
           <ul className="centro">
             Politicas de cancelacion

@@ -82,6 +82,10 @@ builder.Services.AddSwaggerGen(c =>
         Version = "v1"
     });
 
+    // CORRECCIÓN PARA EL ERROR SWASHBUCKLE (Nombres duplicados de DTOs)
+    // Esto hace que use el nombre completo (Namespace.Clase) en lugar de solo el nombre de la clase.
+    c.CustomSchemaIds(type => type.ToString());
+
     //Esquema de seguridad JWT para que aparezca el botón Authorize
     var securityScheme = new OpenApiSecurityScheme
     {
