@@ -281,7 +281,7 @@ export default function Receta() {
                         {/* Lista final */}
                         {lista.map((item, i) => (
                             <div key={i} className="perfil-field-value" style={{ marginBottom: '10px', padding: '10px', border: '1px solid #ccc' }}>
-                                <div>{item.descripcion} - ${item.precio}</div>
+                                <div>{item.descripcion}</div>
                                 <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
                                     <label>
                                         Cantidad:

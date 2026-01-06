@@ -62,6 +62,10 @@ export async function solicitarCancelacionCita(idCita: number): Promise<void> {
   await api.post(`/api/citas/${idCita}/cancelacion/solicitar`);
 }
 
+export async function marcarNoAcudioCita(idCita: number): Promise<void> {
+  await api.post(`/api/citas/${idCita}/no-acudio`);
+}
+
 
 export type PacienteInfo = {
   idUsuario: number;

@@ -109,6 +109,39 @@ public class CitasService
             .ToListAsync();
     }
 
+    // -------------------------
+    // Doctor: MARCAR No Acudió
+    // -------------------------
+    public async Task MarcarNoAcudioAsync(int idCita, int idDoctor)
+    {
+        // Trae lo mínimo necesario
+        var cita = await _db.Cita
+            .Where(c => c.IdCita == idCita)
+            .Select(c => new { c.IdCita, c.IdDoctor, c.EstatusCita })
+            .FirstOrDefaultAsync();
+
+        if (cita == null)
+            throw new InvalidOperationException("CitaNoExiste");
+
+        // Seguridad: solo el doctor dueño puede marcar
+        if (cita.IdDoctor != idDoctor)
+            throw new UnauthorizedAccessException("CitaNoPerteneceADoctor");
+
+        // Regla: solo de PagadaPendAtender -> NoAcudio
+        if (cita.EstatusCita != "PagadaPendAtender")
+            throw new InvalidOperationException("EstatusInvalidoParaNoAcudio");
+
+        // Ahora sí, actualiza (sin volver a cargar todo el entity)
+        var entity = new Citum { IdCita = idCita }; // OJO: tu entidad parece llamarse Cita o Citum según scaffold
+        _db.Attach(entity);
+        _db.Entry(entity).Property(x => x.EstatusCita).CurrentValue = "NoAcudio";
+        _db.Entry(entity).Property(x => x.EstatusCita).IsModified = true;
+
+        await _db.SaveChangesAsync();
+    }
+
+
+
     public async Task<List<CitaRecepRowDto>> BuscarCitasRecepcionAsync(
         string? texto,
         DateTime? desdeUtc,

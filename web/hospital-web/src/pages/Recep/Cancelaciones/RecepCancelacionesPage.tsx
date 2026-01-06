@@ -307,8 +307,9 @@ export default function RecepCancelacionesPage() {
               <option value="CanceladaPaciente">CanceladaPaciente</option>
               <option value="CanceladaDoctor">CanceladaDoctor</option>
               <option value="Atendida">Atendida</option>
+              <option value="NoAcudio">NoAcudio</option>
             </select>
-          </div>
+          </div>  
 
           <button className="btn btn-ok" onClick={onBuscar} disabled={buscando}>
             {buscando ? "Buscando..." : "Buscar"}
