@@ -80,6 +80,12 @@ export function LoginPage() {
             onClick={() => navigate("/register")}>
             Crear cuenta
           </button>
+          <button
+            type="button"
+            className="guest-btn"
+            onClick={() => navigate("/home")}>
+              Ingresar como invitado
+          </button>
         </form>
       </div>
     </div>
