@@ -114,17 +114,6 @@ En el archivo `api/Hospital.Api/appsettings.json` se define la cadena de conexi�
 
 ---
 
----
-
-## 🧠 Estado actual (Primera Entrega)
-
-✅ Conexión establecida entre C# y SQL Server
-✅ API funcional con Swagger y CORS
-🚧 En desarrollo: CRUD de Doctores y Citas (con validaciones)
-🚧 Próximo: Frontend React conectado a API
-
----
-
 ## 📄 Licencia
 
 Proyecto académico para la materia **Bases de Datos** - ESCOM IPN 2025.
